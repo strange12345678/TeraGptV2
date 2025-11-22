@@ -1,4 +1,5 @@
 # handlers/start.py
+from pyrogram import filters
 
 START_TEXT = """
 <b>👋 Welcome!</b>
