@@ -1,193 +1,138 @@
 # Theinertbotz/engine.py
+import re
 import asyncio
 import logging
-import time
 from urllib.parse import unquote
-
 from Theinertbotz.api import fetch_play_html
 from Theinertbotz.download import download_file
 from Theinertbotz.uploader import upload_file
-from Theinertbotz.database import db
 from config import Config
+from Theinertbotz.database import db
 
 log = logging.getLogger("TeraBoxBot")
 
-# Global semaphore to enforce one-at-a-time processing (Option A)
-# If you prefer per-user queueing later, we can change this to a dict of semaphores keyed by user id.
-GLOBAL_PROCESS_SEMAPHORE = asyncio.Semaphore(1)
+# Patterns tuned to common tera/play html outputs
+CANDIDATE_RE = re.compile(
+    r"https?://(?:d|data|file|data\.)[^\s'\"<>]+(?:/file/|/file\-|/file%2F|/file%3F|/file\?)[^\s'\"<>]*",
+    re.IGNORECASE
+)
 
+GENERIC_URL_RE = re.compile(
+    r"https?://[^\s'\"<>]+(?:d\.1024tera\.com|data\.1024tera\.com|1024tera\.com|data\.)[^\s'\"<>]*",
+    re.IGNORECASE
+)
 
-async def process_video(client, message, user_url: str):
-    """
-    Main processing pipeline:
-      1) Fetch play page HTML via fetch_play_html (it should call the /play API)
-      2) Extract direct link with heuristics (find_direct_link_from_html found in engine import context)
-      3) Download file (download_file)
-      4) Upload file to user (upload_file)
-      5) Backup to storage channel + log to log channel + DB entry
-    This function acquires GLOBAL_PROCESS_SEMAPHORE so only one process runs at a time.
-    """
-    uid = None
-    try:
-        uid = message.from_user.id if message.from_user else None
-        user_display = f"{message.from_user.first_name} ({uid})" if uid else "unknown"
+JS_QUOTE_RE = re.compile(r"""(?:(?:directUrl|direct_url|fastDownloadUrl|direct_link)\s*[:=]\s*["'](https?://[^"']+)["'])""", re.IGNORECASE)
+HREF_RE = re.compile(r'href=["\'](https?://[^"\']+)["\']', re.IGNORECASE)
+URL_ANY_RE = re.compile(r"https?://[^\s'\"<>]+")
 
-        # Acquire the global semaphore (Option A: process links serially)
-        log.info(f"Waiting for global lock to process link: {user_url} (from {user_display})")
-        async with GLOBAL_PROCESS_SEMAPHORE:
-            log.info(f"Processing link: {user_url} from user {uid}")
+async def find_direct_link_from_html(html: str):
+    # 1) JS variable directUrl
+    for m in JS_QUOTE_RE.findall(html):
+        url = m
+        if url and is_plausible_direct(url):
+            return url
 
-            # Fetch the play HTML via your API wrapper (synchronous requests run in executor)
-            loop = asyncio.get_event_loop()
-            start_fetch = time.time()
-            try:
-                html = await loop.run_in_executor(None, fetch_play_html, user_url)
-            except Exception as e:
-                log.exception("Failed fetching play HTML")
-                await _notify_user_and_channels_on_error(client, message, user_url, f"Fetch error: {e}")
-                return
-            fetch_time = time.time() - start_fetch
-            log.info(f"Fetched play HTML in {fetch_time:.2f}s (len={len(html) if html else 0})")
+    cand = CANDIDATE_RE.findall(html)
+    if cand:
+        for c in cand:
+            if is_plausible_direct(c):
+                return c
 
-            # Try to extract direct link using heuristics defined elsewhere in this file's module scope.
-            direct_link = await _find_direct_link(html)
-            if not direct_link:
-                log.warning("Direct link not found in play HTML")
-                await _notify_user_and_channels_on_error(
-                    client,
-                    message,
-                    user_url,
-                    "❌ Failed to extract direct link from play HTML."
-                )
-                return
+    cand2 = GENERIC_URL_RE.findall(html)
+    if cand2:
+        for c in cand2:
+            if is_plausible_direct(c):
+                return c
 
-            log.info(f"Found direct link -> {direct_link}")
+    for m in HREF_RE.findall(html):
+        if is_plausible_direct(m):
+            return m
 
-            # Get bot username for nicer progress (if your download expects it)
-            try:
-                me = await client.get_me()
-                bot_username = ("@" + me.username) if getattr(me, "username", None) else me.first_name
-            except Exception:
-                bot_username = None
+    for u in URL_ANY_RE.findall(html):
+        if any(x in u for x in ("d.1024", "data.1024", "fid=", "/file/")) and is_plausible_direct(u):
+            return u
 
-            # Download the file (download_file should return (filepath, filename))
-            try:
-                filepath, filename = await download_file(client, message, direct_link, bot_username)
-            except Exception as e:
-                log.exception("Download failed")
-                await _notify_user_and_channels_on_error(client, message, user_url, f"Download error: {e}")
-                return
-
-            # Upload to user (uploader signature you used previously accepts bot_username)
-            try:
-                # If your uploader signature doesn't accept bot_username, remove it accordingly.
-                try:
-                    await upload_file(client, message, filepath, bot_username)
-                except TypeError:
-                    # fallback if uploader uses the other signature (client, message, filepath)
-                    await upload_file(client, message, filepath)
-            except Exception as e:
-                log.exception("Upload failed")
-                # still attempt to notify channels and keep file for debugging
-                await _notify_user_and_channels_on_error(client, message, user_url, f"Upload error: {e}")
-                return
-
-            # DB logging
-            try:
-                if uid:
-                    db.add_log(uid, filename)
-            except Exception:
-                log.exception("DB logging failed")
-
-            # Backup to STORAGE_CHANNEL (best-effort)
-            try:
-                if hasattr(Config, "STORAGE_CHANNEL") and Config.STORAGE_CHANNEL:
-                    # send_document is a safer backup; use caption with user info
-                    caption = f"📂 Stored by: <code>{uid}</code>\nFile: {filename}"
-                    await client.send_document(Config.STORAGE_CHANNEL, document=filepath, caption=caption, parse_mode="html")
-            except Exception as e:
-                log.warning("Failed to backup to STORAGE_CHANNEL: %s", e)
-
-            # Admin log
-            try:
-                if hasattr(Config, "LOG_CHANNEL") and Config.LOG_CHANNEL:
-                    await client.send_message(Config.LOG_CHANNEL, f"LOG: user={uid} downloaded {filename}")
-            except Exception as e:
-                log.warning("Failed to send to LOG_CHANNEL: %s", e)
-
-            # Final user confirmation (single message)
-            try:
-                await message.reply(f"✅ Done: <b>{filename}</b>", parse_mode="html", quote=True)
-            except Exception:
-                pass
-
-    except Exception as e:
-        log.exception("Unhandled processing error")
-        try:
-            await _notify_user_and_channels_on_error(client, message, user_url, f"Unhandled error: {e}")
-        except Exception:
-            log.exception("Also failed to notify user")
-    finally:
-        log.info(f"Finished processing: {user_url} for user {uid}")
-
-
-# -------------------------
-# Helper utilities
-# -------------------------
-async def _find_direct_link(html: str):
-    """
-    Wrapper to call the heuristic extractor available at module scope:
-    - prefer exact JS assignment matches, then candidate patterns, then generic urls.
-    If `find_direct_link_from_html` exists in module (older versions), call it.
-    """
-    # Many of your earlier heuristics were top-level async functions; try to call them if present.
-    try:
-        # If the helper exists in module namespace (older code had find_direct_link_from_html)
-        finder = globals().get("find_direct_link_from_html")
-        if finder:
-            # if it's coroutine function or normal function, call appropriately
-            if asyncio.iscoroutinefunction(finder):
-                return await finder(html)
-            else:
-                # run in executor if it might be CPU-bound / blocking
-                loop = asyncio.get_event_loop()
-                return await loop.run_in_executor(None, finder, html)
-    except Exception:
-        log.exception("Error while running find_direct_link_from_html")
-
-    # Fallback minimal heuristic: search for common data.1024tera.com patterns
-    try:
-        # quick pass: unquote encoded HTML then search for 'data.' occurrences
-        decoded = unquote(html or "")
-        for token in ("data.1024tera.com", "d.1024tera.com", "/file/", "fid="):
-            if token in decoded:
-                # extract first http... token containing the token
-                import re
-                m = re.search(r"(https?://[^\s'\"<>]*" + re.escape(token.split(".")[0]) + r"[^\s'\"<>]*)", decoded, re.IGNORECASE)
-                if m:
-                    candidate = m.group(1)
-                    return candidate
-    except Exception:
-        log.exception("Fallback extractor failed")
+    decoded = unquote(html)
+    for u in URL_ANY_RE.findall(decoded):
+        if any(x in u for x in ("d.1024", "data.1024", "fid=", "/file/")) and is_plausible_direct(u):
+            return u
 
     return None
 
-
-async def _notify_user_and_channels_on_error(client, message, user_url, err_text: str):
-    """
-    Notify the user (reply) and try to send a concise message to ERROR_CHANNEL.
-    Failures here are logged and swallowed to avoid crashing the main flow.
-    """
+def is_plausible_direct(url: str) -> bool:
     try:
-        # single user reply
-        await message.reply(err_text, quote=True)
+        u = url.strip()
+        if not u.startswith("http"):
+            return False
+        if any(d in u for d in ("d.1024tera.com", "data.1024tera.com", "1024tera.com", "terabox", "d.tera", "data.")):
+            if any(k in u for k in ("fid=", "/file/", "fin=", "fn=")) or re.search(r"\.(mp4|mkv|mov|webm|mp3)(?:\?|$)", u, re.IGNORECASE):
+                return True
+        if "file" in u and ("sign=" in u or "expires=" in u or "fid=" in u):
+            return True
+        return False
     except Exception:
-        log.exception("Failed to reply to user with error")
+        return False
 
-    # notify ERROR_CHANNEL (best-effort)
+async def process_video(client, message, user_url: str):
+    uid = getattr(message.from_user, "id", None)
     try:
-        if hasattr(Config, "ERROR_CHANNEL") and Config.ERROR_CHANNEL:
-            await client.send_message(Config.ERROR_CHANNEL,
-                                      f"❌ ERROR\nUser: {getattr(message.from_user, 'id', 'unknown')}\nLink: {user_url}\nError: {err_text}")
-    except Exception:
-        log.warning("Failed to send to ERROR_CHANNEL (best-effort)")
+        play_api_url = Config.TERAAPI_PLAY.format(url=user_url) if hasattr(Config, "TERAAPI_PLAY") else user_url
+        log.info(f"Fetching play page via API: {play_api_url}")
+        loop = asyncio.get_running_loop()
+        # fetch HTML (fetch_play_html should be sync; run in executor)
+        html = await loop.run_in_executor(None, fetch_play_html, user_url)
+        log.info("Fetched play HTML in %.2fs (len=%d)", 0.0, len(html) if html else 0)  # placeholder timing if you want
+
+        direct_link = await find_direct_link_from_html(html)
+
+        if not direct_link:
+            await message.reply("❌ Failed to extract direct link from play HTML.", quote=True)
+            try:
+                if getattr(Config, "ERROR_CHANNEL", None):
+                    await client.send_message(Config.ERROR_CHANNEL, f"Failed to extract direct link for {user_url}\nPlay HTML length: {len(html) if html else 0}")
+            except Exception:
+                log.warning("Failed to send to ERROR_CHANNEL")
+            return
+
+        log.info(f"Found direct link: {direct_link}")
+
+        # prepare bot username for ProgressManager
+        me = await client.get_me()
+        bot_username = "@" + me.username if getattr(me, "username", None) else (me.first_name or "@bot")
+
+        # download -> upload -> store
+        filepath, filename = await download_file(client, message, direct_link, bot_username, kind="download")
+
+        # upload to user chat (send_video so Telegram treats as video)
+        await upload_file(client, message, filepath, bot_username)
+
+        # DB log (best-effort)
+        try:
+            if uid:
+                db.add_log(uid, filename)
+        except Exception:
+            log.exception("db.add_log failed")
+
+        # try backup to storage channel (best effort)
+        try:
+            if getattr(Config, "STORAGE_CHANNEL", None):
+                await client.send_document(Config.STORAGE_CHANNEL, document=filepath, caption=f"Stored: {filename}")
+        except Exception:
+            log.warning("Failed to backup to STORAGE_CHANNEL")
+
+        # send admin log
+        try:
+            if getattr(Config, "LOG_CHANNEL", None):
+                await client.send_message(Config.LOG_CHANNEL, f"LOG: user={uid} text=Downloaded {filename}")
+        except Exception:
+            log.warning("Failed to send to LOG_CHANNEL")
+
+    except Exception as e:
+        log.exception("Processing error")
+        try:
+            await message.reply("❌ Processing error: " + str(e))
+            if getattr(Config, "ERROR_CHANNEL", None):
+                await client.send_message(Config.ERROR_CHANNEL, f"ERROR: {e}\nLink: {user_url}")
+        except Exception:
+            log.warning("Failed to notify ERROR_CHANNEL")
