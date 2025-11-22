@@ -1,5 +1,6 @@
-from . import start, download_handler
+from .start import register_handlers as _start
+from .download_handler import register_handlers as _download
 
 def register_all(app):
-    start.register_handlers(app)
-    download_handler.register_handlers(app)
+    _start(app)
+    _download(app)
