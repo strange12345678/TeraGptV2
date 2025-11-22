@@ -62,6 +62,16 @@ async def upload_file(client, message, filepath, bot_username: str):
 
     filename = os.path.basename(filepath)
 
+    # Check if we should include thumbnail (for files under 10MB)
+    thumbnail_path = None
+    if total_size < 10 * 1024 * 1024:  # 10MB in bytes
+        # Look for thumbnail with same base name
+        base_name = os.path.splitext(filepath)[0]
+        potential_thumb = f"{base_name}_thumb.jpg"
+        if os.path.exists(potential_thumb):
+            thumbnail_path = potential_thumb
+            log.info(f"Using thumbnail: {thumbnail_path}")
+
     ############################################################################
     # Upload as video (Pyrogram handles chunking). Provide a simple caption.
     ############################################################################
@@ -70,6 +80,7 @@ async def upload_file(client, message, filepath, bot_username: str):
             chat_id=message.chat.id,
             video=filepath,
             caption=f"<b>Uploaded:</b> {filename}",
+            thumb=thumbnail_path,
             parse_mode=enums.ParseMode.HTML,
             supports_streaming=True,
             progress=_progress_cb,
