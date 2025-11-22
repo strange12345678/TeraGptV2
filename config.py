@@ -1,5 +1,8 @@
 # config.py
 import os
+import logging
+
+logger = logging.getLogger("TeraBoxBot")
 
 class Config:
     BOT_TOKEN = os.getenv("BOT_TOKEN")

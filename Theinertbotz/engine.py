@@ -2,12 +2,19 @@
 import re
 import asyncio
 import logging
+import os
 from urllib.parse import unquote
+from pyrogram import enums
 from Theinertbotz.api import fetch_play_html
 from Theinertbotz.download import download_file
 from Theinertbotz.uploader import upload_file
+from Theinertbotz.thumbnail import generate_thumbnail
+from Theinertbotz.processing import human_size
 from config import Config
 from Theinertbotz.database import db
+from plugins.log_channel import log_action
+from plugins.error_channel import log_error
+from plugins.storage_channel import backup_file
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -76,23 +83,26 @@ def is_plausible_direct(url: str) -> bool:
 
 async def process_video(client, message, user_url: str):
     uid = getattr(message.from_user, "id", None)
+    username = getattr(message.from_user, "username", "Unknown") or "Unknown"
+    filename = None
+    filepath = None
+    
     try:
+        # Log user action
+        await log_action(client, uid, f"Requested download: {user_url}")
+        
         play_api_url = Config.TERAAPI_PLAY.format(url=user_url) if hasattr(Config, "TERAAPI_PLAY") else user_url
-        log.info(f"Fetching play page via API: {play_api_url}")
+        log.info(f"Processing link: {user_url} from user {uid}")
         loop = asyncio.get_running_loop()
-        # fetch HTML (fetch_play_html should be sync; run in executor)
         html = await loop.run_in_executor(None, fetch_play_html, user_url)
-        log.info("Fetched play HTML in %.2fs (len=%d)", 0.0, len(html) if html else 0)  # placeholder timing if you want
+        log.info(f"Fetched play HTML (len={len(html) if html else 0})")
 
         direct_link = await find_direct_link_from_html(html)
 
         if not direct_link:
+            error_msg = f"Failed to extract direct link for {user_url}"
             await message.reply("❌ Failed to extract direct link from play HTML.", quote=True)
-            try:
-                if getattr(Config, "ERROR_CHANNEL", None):
-                    await client.send_message(Config.ERROR_CHANNEL, f"Failed to extract direct link for {user_url}\nPlay HTML length: {len(html) if html else 0}")
-            except Exception:
-                log.warning("Failed to send to ERROR_CHANNEL")
+            await log_error(client, error_msg)
             return
 
         log.info(f"Found direct link: {direct_link}")
@@ -103,36 +113,52 @@ async def process_video(client, message, user_url: str):
 
         # download -> upload -> store
         filepath, filename = await download_file(client, message, direct_link, bot_username, kind="download")
+        
+        # Get file size
+        file_size = human_size(os.path.getsize(filepath)) if os.path.exists(filepath) else "Unknown"
 
-        # upload to user chat (send_video so Telegram treats as video)
+        # Generate thumbnail for video files
+        thumb_path = None
+        if filename and filename.lower().endswith(('.mp4', '.mkv', '.mov', '.webm')):
+            thumb_path = generate_thumbnail(filepath)
+
+        # upload to user chat with thumbnail
         await upload_file(client, message, filepath, bot_username)
 
-        # DB log (best-effort)
+        # DB log
         try:
             if uid:
                 db.add_log(uid, filename)
         except Exception:
             log.exception("db.add_log failed")
 
-        # try backup to storage channel (best effort)
+        # Backup to storage channel with thumbnail
         try:
-            if getattr(Config, "STORAGE_CHANNEL", None):
-                await client.send_document(Config.STORAGE_CHANNEL, document=filepath, caption=f"Stored: {filename}")
+            await backup_file(client, filepath, filename, file_size, username, user_url)
         except Exception:
-            log.warning("Failed to backup to STORAGE_CHANNEL")
+            log.exception("Failed to backup to STORAGE_CHANNEL")
 
-        # send admin log
+        # Send success log
         try:
-            if getattr(Config, "LOG_CHANNEL", None):
-                await client.send_message(Config.LOG_CHANNEL, f"LOG: user={uid} text=Downloaded {filename}")
+            await log_action(client, uid, f"✅ Downloaded: {filename} ({file_size})")
         except Exception:
-            log.warning("Failed to send to LOG_CHANNEL")
+            log.exception("Failed to send to LOG_CHANNEL")
+            
+        # Clean up thumbnail if exists
+        if thumb_path and os.path.exists(thumb_path):
+            try:
+                os.remove(thumb_path)
+            except:
+                pass
 
     except Exception as e:
         log.exception("Processing error")
+        error_text = f"ERROR: {str(e)}\nLink: {user_url}\nUser: {uid}"
         try:
             await message.reply("❌ Processing error: " + str(e))
-            if getattr(Config, "ERROR_CHANNEL", None):
-                await client.send_message(Config.ERROR_CHANNEL, f"ERROR: {e}\nLink: {user_url}")
+        except:
+            pass
+        try:
+            await log_error(client, error_text)
         except Exception:
             log.warning("Failed to notify ERROR_CHANNEL")

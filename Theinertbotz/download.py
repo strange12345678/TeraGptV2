@@ -4,6 +4,7 @@ import asyncio
 import os
 import time
 import logging
+from pyrogram import enums
 from config import Config
 from Theinertbotz.processing import ProgressManager
 log = logging.getLogger("TeraBoxBot")
@@ -28,7 +29,7 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
         # fallback: send_message
         status_msg = await client.send_message(message.chat.id, "⏳ Fetching download...")
 
-    async def edit_coro(text, parse_mode="HTML"):
+    async def edit_coro(text, parse_mode=enums.ParseMode.HTML):
         return await status_msg.edit_text(text, parse_mode=parse_mode)
 
     pm = ProgressManager(edit_coro, bot_username=bot_username, kind=kind)
@@ -102,7 +103,7 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
 
     # final message update to indicate finished
     try:
-        await status_msg.edit_text(f"<b>✅ Download complete:</b>\n{safe_fn}", parse_mode="HTML")
+        await status_msg.edit_text(f"<b>✅ Download complete:</b>\n{safe_fn}", parse_mode=enums.ParseMode.HTML)
     except Exception:
         try:
             await client.send_message(message.chat.id, f"✅ Download complete: {safe_fn}")
