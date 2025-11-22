@@ -1,13 +1,11 @@
-from flask import Flask
-app = Flask(__name__)
+# health.py
+from flask import Flask, jsonify
 
-@app.route("/")
-def home():
-    return "TeraBox Bot is running", 200
+def create_health_app():
+    app = Flask("health")
 
-@app.route("/health")
-def health():
-    return "OK", 200
+    @app.route("/")
+    def index():
+        return jsonify({"status": "ok", "service": "TeraBoxBot"}), 200
 
-def start_server():
-    app.run(host="0.0.0.0", port=8000)
+    return app
