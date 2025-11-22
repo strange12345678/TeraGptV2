@@ -1,8 +1,6 @@
 from config import Config, logger
-from script import Script
-from typing import Any
 
-async def log_error(client: Any, error_text: str):
+async def log_error(client, error_text: str):
     logger.error(f"ERROR: {error_text}")
     if Config.ERROR_CHANNEL:
         try:
