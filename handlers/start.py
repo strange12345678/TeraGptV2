@@ -1,5 +1,6 @@
 from pyrogram import filters, enums
 import logging
+from Theinertbotz.database import db
 
 START_TEXT = """
 <b>👋 Welcome to TeraBox Downloader Bot!</b>
