@@ -2,18 +2,18 @@
 import os
 
 class Config:
-    BOT_TOKEN = os.getenv("BOT_TOKEN", "8593002387:AAHDSfKf7VURo5HemGum4Nza-LmvqDBD8lU")
-    API_ID = int(os.getenv("API_ID", "22582906"))
-    API_HASH = os.getenv("API_HASH", "e3096dde3e27c72a50e0e53d8ab23d6a")
+    BOT_TOKEN = os.getenv("BOT_TOKEN")
+    API_ID = int(os.getenv("API_ID", "0")) if os.getenv("API_ID") else None
+    API_HASH = os.getenv("API_HASH")
 
     # MongoDB
-    MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://testhubpro7:Q7iFC6EYg9URONBN@cluster0.0neghuj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    MONGO_URI = os.getenv("MONGO_URI")
     MONGO_DB = os.getenv("MONGO_DB", "teraboxbot")
 
     # Channels - must be numeric ids (e.g. -1001234567890)
-    LOG_CHANNEL = int(os.getenv("LOG_CHANNEL", "-1003347866431"))
-    ERROR_CHANNEL = int(os.getenv("ERROR_CHANNEL", "-1003347866431"))
-    STORAGE_CHANNEL = int(os.getenv("STORAGE_CHANNEL", "-1003347866431"))
+    LOG_CHANNEL = int(os.getenv("LOG_CHANNEL", "0")) if os.getenv("LOG_CHANNEL") else None
+    ERROR_CHANNEL = int(os.getenv("ERROR_CHANNEL", "0")) if os.getenv("ERROR_CHANNEL") else None
+    STORAGE_CHANNEL = int(os.getenv("STORAGE_CHANNEL", "0")) if os.getenv("STORAGE_CHANNEL") else None
 
     # Only the play endpoint (the only reliable one you said)
     TERAAPI_PLAY = "https://teraapi.boogafantastic.workers.dev/play?url={url}"
