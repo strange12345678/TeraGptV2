@@ -37,3 +37,11 @@ externalPort = 8000
 [[ports]]
 localPort = 33611
 externalPort = 80
+
+[userenv]
+
+[userenv.shared]
+API_ID = "22582906"
+LOG_CHANNEL = "-1003347866431"
+ERROR_CHANNEL = "-1003347866431"
+STORAGE_CHANNEL = "-1003347866431"
