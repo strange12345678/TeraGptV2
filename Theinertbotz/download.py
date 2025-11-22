@@ -1,36 +1,29 @@
-import requests
-from typing import Callable, Optional
-import os
-from config import logger
+from pyrogram import filters
+from pyrogram.types import Message
+from config import Config, logger
+from script import Script
+from Theinertbotz.engine import process_video
+from Theinertbotz.utils import extract_links_from_message
+import asyncio
+import time
 
-CHUNK = 1024 * 256
+def register_handlers(app):
+    @app.on_message(filters.private & (filters.text | filters.caption))
+    async def pm_handler(client, msg: Message):
 
-def download_file(url: str, dest: str, progress: Optional[Callable[[int,int],None]] = None, max_retries: int = 2) -> str:
-    last_exc = None
-    os.makedirs(os.path.dirname(dest) or ".", exist_ok=True)
-    for attempt in range(max_retries + 1):
-        try:
-            with requests.get(url, stream=True, timeout=60) as r:
-                r.raise_for_status()
-                total = int(r.headers.get("Content-Length", 0) or 0)
-                downloaded = 0
-                with open(dest, "wb") as f:
-                    for chunk in r.iter_content(CHUNK):
-                        if not chunk:
-                            continue
-                        f.write(chunk)
-                        downloaded += len(chunk)
-                        if progress:
-                            try:
-                                progress(downloaded, total)
-                            except Exception:
-                                # don't let progress break download
-                                logger.debug("Progress callback error ignored")
-                                pass
-            return dest
-        except Exception as e:
-            last_exc = e
-            logger.warning(f"Download attempt {attempt} failed: {e}")
-            if attempt == max_retries:
-                raise
-    raise last_exc
+        # ---- FIX: datetime vs float comparison ----
+        msg_ts = msg.date.timestamp()  # convert datetime -> float
+        if msg_ts < (time.time() - Config.IGNORE_MESSAGE_AGE):
+            logger.debug("Ignoring old message (too old)")
+            return
+
+        # ---- Extract links ----
+        links = extract_links_from_message(msg)
+        if not links:
+            return
+
+        # ---- Process each link sequentially ----
+        for link in links:
+            logger.info(f"Processing link: {link} from user {msg.from_user.id}")
+            await process_video(client, msg, link)
+            await asyncio.sleep(1)
