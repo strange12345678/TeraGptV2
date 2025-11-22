@@ -138,5 +138,17 @@ class Database:
         if user:
             return user.get("premium_expiry")
         return None
+    
+    def set_premium_upload_channel(self, channel_id):
+        """Set the premium upload channel ID."""
+        self.settings.update_one({"_id": "premium_upload_channel"}, {"$set": {"channel_id": channel_id}}, upsert=True)
+        return True
+    
+    def get_premium_upload_channel(self):
+        """Get the premium upload channel ID."""
+        doc = self.settings.find_one({"_id": "premium_upload_channel"})
+        if doc:
+            return doc.get("channel_id")
+        return None
 
 db = Database()

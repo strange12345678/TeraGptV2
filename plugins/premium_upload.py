@@ -10,11 +10,15 @@ log = logging.getLogger("TeraBoxBot")
 async def upload_to_premium_channel(client, filepath: str, filename: str, file_size: str, user_id: int, username: str) -> None:
     """Upload downloaded file to premium channel for premium users only."""
     
-    # Check if user is premium
+    # Check if user is premium AND NOT expired
     if not db.is_premium_valid(user_id):
         return
     
-    channel = Config.PREMIUM_UPLOAD_CHANNEL
+    # Get channel from database first, fall back to config
+    channel = db.get_premium_upload_channel()
+    if not channel:
+        channel = Config.PREMIUM_UPLOAD_CHANNEL
+    
     if not channel or channel == 0:
         log.debug("PREMIUM_UPLOAD_CHANNEL not configured, skipping")
         return
