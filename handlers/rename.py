@@ -25,32 +25,36 @@ def register_handlers(app):
                 status_text = "Disabled"
             
             help_text = f"""
-<b>🔄 Auto-Rename Feature</b>
+<b>🔄 Auto-Rename Settings</b>
 
 <b>Current Status:</b> {status_text}
 
-<b>Preset Options:</b>
-• <code>/rename on</code> - Enable timestamp
-• <code>/rename datetime</code> - DateTime format
-• <code>/rename off</code> - Disable
+━━━━━━━━━━━━━━━━━━━━
 
-<b>Custom Pattern:</b>
-• <code>/set_rename &lt;pattern&gt;</code> - Set custom pattern
+<b>⚡ Quick Options:</b>
+<code>/rename on</code> - Timestamp (YYYYMMDD_HHMMSS)
+<code>/rename datetime</code> - DateTime (YYYY-MM-DD_HH-MM-SS)
+<code>/rename off</code> - Disable renaming
 
-<b>Available Variables:</b>
-• <code>{{file_name}}</code> - Original filename
-• <code>{{file_size}}</code> - File size
-• <code>{{username}}</code> - Your username
-• <code>{{user_id}}</code> - Your user ID
-• <code>{{date}}</code> - Current date (YYYY-MM-DD)
-• <code>{{time}}</code> - Current time (HH-MM-SS)
-• <code>{{timestamp}}</code> - Full timestamp
-• <code>{{ext}}</code> - File extension
+<b>✨ Custom Naming:</b>
+<code>/set_rename &lt;your_pattern&gt;</code>
 
-<b>Examples:</b>
-<code>/set_rename @Theinertbotz_{{file_name}}_{{file_size}}</code>
-<code>/set_rename {{username}}_{{date}}_{{file_name}}</code>
-<code>/set_rename Video_{{timestamp}}</code>
+<b>📝 Available Variables:</b>
+{{file_name}} • {{file_size}} • {{username}}
+{{user_id}} • {{date}} • {{time}}
+{{timestamp}} • {{ext}}
+
+<b>💡 Pattern Examples:</b>
+<code>@Theinertbotz_{{file_name}}_{{file_size}}</code>
+→ @Theinertbotz_video_42MB.mp4
+
+<code>{{username}}_{{date}}_{{file_name}}</code>
+→ admin_2025-11-22_video.mp4
+
+<code>Archive_{{timestamp}}</code>
+→ Archive_20251122_082326.zip
+
+━━━━━━━━━━━━━━━━━━━━
 """
             await message.reply(help_text, parse_mode=enums.ParseMode.HTML)
             return
@@ -59,25 +63,38 @@ def register_handlers(app):
         
         if command in ["on", "yes", "enable", "timestamp"]:
             db.set_user_rename_setting(user_id, "timestamp")
-            await message.reply("✅ Auto-rename <b>enabled</b> (Timestamp format: YYYYMMDD_HHMMSS)", 
-                              parse_mode=enums.ParseMode.HTML)
+            await message.reply(
+                "✅ <b>Auto-rename Enabled</b>\n\n"
+                "📌 Format: <code>filename_YYYYMMDD_HHMMSS.ext</code>\n"
+                "💾 Applied to all downloads\n"
+                "Type <code>/rename</code> to change", 
+                parse_mode=enums.ParseMode.HTML)
             log.info(f"User {user_id} enabled auto-rename (timestamp)")
         
         elif command == "datetime":
             db.set_user_rename_setting(user_id, "datetime")
-            await message.reply("✅ Auto-rename <b>enabled</b> (DateTime format: YYYY-MM-DD_HH-MM-SS)", 
-                              parse_mode=enums.ParseMode.HTML)
+            await message.reply(
+                "✅ <b>Auto-rename Enabled</b>\n\n"
+                "📌 Format: <code>filename_YYYY-MM-DD_HH-MM-SS.ext</code>\n"
+                "💾 Applied to all downloads\n"
+                "Type <code>/rename</code> to change", 
+                parse_mode=enums.ParseMode.HTML)
             log.info(f"User {user_id} enabled auto-rename (datetime)")
         
         elif command in ["off", "no", "disable"]:
             db.set_user_rename_setting(user_id, "")
-            await message.reply("❌ Auto-rename <b>disabled</b>. Files will keep original names.", 
-                              parse_mode=enums.ParseMode.HTML)
+            await message.reply(
+                "❌ <b>Auto-rename Disabled</b>\n\n"
+                "📌 Files will keep original names\n"
+                "Use <code>/rename on</code> to enable again", 
+                parse_mode=enums.ParseMode.HTML)
             log.info(f"User {user_id} disabled auto-rename")
         
         else:
-            await message.reply("❌ Invalid option. Type <code>/rename</code> for help.", 
-                              parse_mode=enums.ParseMode.HTML)
+            await message.reply(
+                "❓ <b>Unknown Option</b>\n\n"
+                "Type <code>/rename</code> for help or examples.", 
+                parse_mode=enums.ParseMode.HTML)
     
     @app.on_message(filters.command("set_rename") & filters.private)
     async def set_rename_cmd(client, message):
@@ -109,10 +126,12 @@ def register_handlers(app):
             db.set_custom_rename_pattern(user_id, pattern)
             
             await message.reply(
-                f"✅ Custom rename pattern set!\n\n"
-                f"<b>Pattern:</b> <code>{pattern}</code>\n\n"
-                f"<b>Example output:</b>\n"
-                f"<code>@Bot_myvideo_19.4MB.mp4</code>",
+                f"✅ <b>Custom Pattern Saved!</b>\n\n"
+                f"📝 <b>Your Pattern:</b>\n"
+                f"<code>{pattern}</code>\n\n"
+                f"💾 <b>Applied to:</b> All future downloads\n\n"
+                f"📌 <b>Example:</b>\n"
+                f"<code>your_renamed_file.mp4</code>",
                 parse_mode=enums.ParseMode.HTML
             )
             log.info(f"User {user_id} set custom rename pattern: {pattern}")

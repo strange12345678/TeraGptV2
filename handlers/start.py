@@ -1,26 +1,72 @@
 from pyrogram import filters, enums
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import logging
 from Theinertbotz.database import db
 
 START_TEXT = """
-<b>👋 Welcome to TeraBox Downloader Bot!</b>
+<b>🎬 TeraBox Downloader Bot</b>
 
-<b>📌 How to use:</b>
-1️⃣ Send any TeraBox link
-2️⃣ Bot will download and upload to your PM
-3️⃣ Videos > 10MB get automatic thumbnails
+<b>⚡ Ultra-Fast File Downloads</b>
 
-<b>✨ Features:</b>
-• Fast file downloads from TeraBox
-• Direct upload to Telegram
-• Video thumbnail previews
-• Progress tracking
-• Support for all file types
+Simply send a <code>TeraBox</code> link and I'll:
+✅ Download the file instantly
+✅ Send it directly to your chat
+✅ Generate thumbnails for videos
+✅ Track download progress
+✅ Support all file types
 
-<b>🔗 Example:</b>
+<b>📝 Quick Start:</b>
 <code>https://1024terabox.com/s/1abc123def456ghi</code>
 
-<b>⏱️ Wait for the download to complete...</b>
+<b>🎛️ Advanced Features:</b>
+• <code>/rename</code> - Customize file naming
+• <code>/set_rename &lt;pattern&gt;</code> - Custom patterns
+• <code>/help</code> - View all commands
+
+<b>💡 Pro Tips:</b>
+💬 Send multiple links at once
+🎬 Videos get automatic thumbnails
+⚡ Progress tracked in real-time
+"""
+
+START_BUTTONS = InlineKeyboardMarkup([
+    [InlineKeyboardButton("📚 Commands", callback_data="help")],
+    [InlineKeyboardButton("🔄 Rename Settings", callback_data="rename_help")],
+    [InlineKeyboardButton("⚙️ About", callback_data="about")]
+])
+
+COMMANDS_TEXT = """
+<b>📋 Available Commands:</b>
+
+<b>/start</b> - Show this welcome message
+<b>/rename</b> - View rename settings
+<b>/set_rename &lt;pattern&gt;</b> - Set custom naming pattern
+<b>/help</b> - Show this message
+
+<b>📌 Rename Variables:</b>
+• {file_name} • {file_size}
+• {username} • {user_id}
+• {date} • {time} • {timestamp}
+"""
+
+ABOUT_TEXT = """
+<b>ℹ️ About TeraBox Bot</b>
+
+A powerful Telegram bot for downloading files from TeraBox with:
+
+✨ <b>Features:</b>
+• Lightning-fast downloads
+• Automatic video thumbnails
+• Custom file naming
+• Real-time progress tracking
+• Multi-file support
+
+🛠️ <b>Built with:</b>
+Pyrogram • Python 3.11 • MongoDB
+
+📊 <b>Status:</b>
+✅ All systems operational
+
 """
 
 def register_handlers(app):
@@ -30,12 +76,18 @@ def register_handlers(app):
         user_id = message.from_user.id
         is_new = db.add_user(user_id)
 
-        # Log only new users
         if is_new:
             username = message.from_user.username or message.from_user.first_name or "Unknown"
             await log_action(client, user_id, f"🆕 New User: @{username}")
 
         try:
-            await message.reply(START_TEXT, parse_mode=enums.ParseMode.HTML)
+            await message.reply(START_TEXT, reply_markup=START_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             logging.getLogger("TeraBoxBot").exception("start handler error")
+    
+    @app.on_message(filters.command("help") & filters.private)
+    async def help_cmd(client, message):
+        try:
+            await message.reply(COMMANDS_TEXT, parse_mode=enums.ParseMode.HTML)
+        except Exception:
+            logging.getLogger("TeraBoxBot").exception("help handler error")
