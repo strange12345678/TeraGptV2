@@ -1,39 +1,32 @@
+# Theinertbotz/database.py
+import logging
 from pymongo import MongoClient
-from config import Config, logger
+from config import Config
+
+log = logging.getLogger("TeraBoxBot")
 
 class Database:
     def __init__(self):
-        self.client = None
-        self.db = None
-        self.users = None
-        self.downloads = None
-        self.errors = None
-        try:
-            if Config.MONGO_URI:
-                self.client = MongoClient(Config.MONGO_URI, serverSelectionTimeoutMS=5000)
-                self.db = self.client[Config.MONGO_DB]
-                self.users = self.db["users"]
-                self.downloads = self.db["downloads"]
-                self.errors = self.db["errors"]
-                logger.info("Connected to MongoDB")
-        except Exception as e:
-            logger.warning(f"MongoDB init failed: {e}")
-            self.client = None
+        self.client = MongoClient(Config.MONGO_URI)
+        self.db = self.client[Config.MONGO_DB]
+        self.users = self.db["users"]
+        self.logs = self.db["logs"]
+        self.settings = self.db["settings"]
+        log.info("Connected to MongoDB")
 
-    def add_user(self, user_id: int, name: str = None):
-        if not self.client:
-            return
+    def add_user(self, user_id):
         if not self.users.find_one({"_id": user_id}):
-            self.users.insert_one({"_id": user_id, "name": name})
+            self.users.insert_one({"_id": user_id})
+            return True
+        return False
 
-    def log_download(self, user_id: int, file_name: str, size: str = None):
-        if not self.client:
-            return
-        self.downloads.insert_one({"user_id": user_id, "file_name": file_name, "size": size})
+    def is_user(self, user_id):
+        return self.users.find_one({"_id": user_id}) is not None
 
-    def log_error(self, user_id: int, error_text: str):
-        if not self.client:
-            return
-        self.errors.insert_one({"user_id": user_id, "error": error_text})
+    def add_log(self, user_id, file_name, meta=None):
+        doc = {"user_id": user_id, "file": file_name}
+        if meta:
+            doc.update(meta)
+        self.logs.insert_one(doc)
 
 db = Database()
