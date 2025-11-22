@@ -45,13 +45,12 @@ async def first_message_handler(client, message):
 
 def run_bot():
     log.info("🔥 Pyrogram client initialized & handlers loaded!")
-    
-    # Schedule startup message in a background task
-    def schedule_startup():
-        asyncio.run(send_startup_message())
-    
-    # Run startup in a separate thread after a delay
-    startup_thread = threading.Thread(target=lambda: (asyncio.sleep(2), schedule_startup()), daemon=True)
-    
-    # Actually, simpler - just run app and let handler catch it
     app.run()
+
+if __name__ == "__main__":
+    # Start health server (Flask) in background thread
+    health_app = create_health_app()
+    t = threading.Thread(target=lambda: health_app.run(host="0.0.0.0", port=8000), daemon=True)
+    t.start()
+
+    run_bot()
