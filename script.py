@@ -222,3 +222,27 @@ Click button below to upgrade!
 <b>Contact:</b>
 DM @Theinertbotz for details</code>
 """
+
+    # ===== Admin Panel =====
+    ADMIN_PANEL_TEXT = """
+<b>🛠️ Admin Panel</b>
+
+<b>⚙️ Options:</b>
+• 👥 Manage Premium Users
+• 🔍 Check User Status
+• 📊 View System Info
+
+Use buttons below to manage users.
+"""
+
+    ADMIN_MANAGE_TEXT = """
+<b>👥 Premium User Management</b>
+
+<b>📋 Commands:</b>
+• <code>/addpremium &lt;user_id&gt;</code> - Add premium
+• <code>/removepremium &lt;user_id&gt;</code> - Remove premium
+• <code>/checkuser &lt;user_id&gt;</code> - Check status
+
+<b>Example:</b>
+<code>/addpremium 123456789</code>
+"""

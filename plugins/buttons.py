@@ -37,4 +37,18 @@ PREMIUM_UPGRADE_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("← Back", callback_data="premium_status")]
 ])
 
-__all__ = ["START_BUTTONS", "HELP_BUTTONS", "RENAME_BUTTONS", "PREMIUM_BUTTONS", "PREMIUM_STATUS_BUTTONS", "PREMIUM_UPGRADE_BUTTONS"]
+# Admin panel buttons
+ADMIN_PANEL_BUTTONS = InlineKeyboardMarkup([
+    [InlineKeyboardButton("👥 Manage Premium Users", callback_data="admin_manage")],
+    [InlineKeyboardButton("🔍 Check User Status", callback_data="admin_check")],
+    [InlineKeyboardButton("← Back to Commands", callback_data="help")]
+])
+
+# Admin manage buttons
+ADMIN_MANAGE_BUTTONS = InlineKeyboardMarkup([
+    [InlineKeyboardButton("➕ Add Premium User", callback_data="admin_add_premium")],
+    [InlineKeyboardButton("➖ Remove Premium User", callback_data="admin_remove_premium")],
+    [InlineKeyboardButton("← Back", callback_data="admin_panel")]
+])
+
+__all__ = ["START_BUTTONS", "HELP_BUTTONS", "RENAME_BUTTONS", "PREMIUM_BUTTONS", "PREMIUM_STATUS_BUTTONS", "PREMIUM_UPGRADE_BUTTONS", "ADMIN_PANEL_BUTTONS", "ADMIN_MANAGE_BUTTONS"]

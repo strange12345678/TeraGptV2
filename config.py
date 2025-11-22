@@ -26,3 +26,9 @@ class Config:
     
     # Auto-rename pattern: "timestamp", "datetime", or "" (disabled)
     AUTO_RENAME = os.getenv("AUTO_RENAME", "timestamp")
+    
+    # Admin user IDs (comma-separated)
+    ADMIN_IDS = []
+    admin_str = os.getenv("ADMIN_IDS", "")
+    if admin_str:
+        ADMIN_IDS = [int(uid.strip()) for uid in admin_str.split(",") if uid.strip()]
