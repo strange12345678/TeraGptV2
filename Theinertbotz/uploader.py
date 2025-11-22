@@ -1,61 +1,84 @@
 # Theinertbotz/uploader.py
+
 import os
-import math
 import time
+import asyncio
 import logging
-from Theinertbotz.processing import ProgressManager, human_size
+
+from Theinertbotz.processing import format_upload_progress
+
 log = logging.getLogger("TeraBoxBot")
 
-async def upload_file(client, message, filepath, bot_username):
-    # Send a placeholder message
+
+async def upload_file(client, message, filepath):
+    """
+    Upload file to Telegram with beautiful progress bar.
+    """
+
+    filename = os.path.basename(filepath)
     status_msg = await message.reply("⏳ Preparing upload...", parse_mode="html")
 
-    async def edit_coro(text, parse_mode="html"):
-        return await status_msg.edit_text(text, parse_mode=parse_mode)
-
-    pm = ProgressManager(edit_coro, bot_username=bot_username, kind="upload")
-
     total = os.path.getsize(filepath)
-    start = time.time()
-    state = {"last_bytes": 0, "last_time": start}
+    last_percentage = None
 
-    # Pyrogram progress callback signature: (current, total)
-    def _progress_cb(current, total_bytes):
-        # schedule coroutine update safely
+    # Track speed
+    last_time = time.time()
+    last_bytes = 0
+
+    # Progress callback (Pyrogram-style)
+    async def update_progress(current, total_bytes):
+        nonlocal last_bytes, last_time, last_percentage
+
         now = time.time()
-        elapsed = now - state["last_time"]
+        elapsed = now - last_time
         if elapsed <= 0:
-            elapsed = 0.0001
-        speed = (current - state["last_bytes"]) / elapsed
-        state["last_time"] = now
-        state["last_bytes"] = current
+            elapsed = 0.1
 
-        # create coroutine to update progress manager
-        coro = pm.update(current, total_bytes, speed)
-        # schedule on loop properly
-        try:
-            import asyncio
-            asyncio.create_task(coro)
-        except Exception:
-            # If scheduling fails, ignore; the main flow will continue
-            log.exception("Failed to schedule progress coroutine")
+        speed = (current - last_bytes) / elapsed
+        eta = (total_bytes - current) / speed if speed > 0 else 0
 
-    # Send as video (Pyrogram will use its own media methods)
+        # Format upload progress
+        formatted, last_percentage = await format_upload_progress(
+            client,
+            current,
+            total_bytes,
+            speed,
+            eta,
+            last_percentage
+        )
+
+        if formatted:
+            try:
+                await status_msg.edit_text(formatted)
+            except Exception:
+                pass
+
+        last_time = now
+        last_bytes = current
+
+    # Wrapper so Pyrogram can call async update
+    def progress_cb(current, total_bytes):
+        asyncio.create_task(update_progress(current, total_bytes))
+
+    # Upload as VIDEO (not document)
     try:
         await client.send_video(
             chat_id=message.chat.id,
             video=filepath,
-            caption=f"Uploaded: {os.path.basename(filepath)}",
-            progress=_progress_cb,
-            progress_args=()
+            caption=f"<b>📤 Uploaded:</b> {filename}",
+            parse_mode="html",
+            supports_streaming=True,
+            progress=progress_cb,
         )
     except Exception as e:
-        log.exception("upload failed")
-        raise
-    finally:
-        try:
-            await status_msg.edit_text(f"<b>✅ Upload complete:</b>\n{os.path.basename(filepath)}", parse_mode="html")
-        except:
-            pass
+        log.exception("Upload failed")
+        await status_msg.edit("<b>❌ Upload Failed!</b>", parse_mode="html")
+        raise e
 
-    log.info(f"Uploaded file {filepath}")
+    # Final message
+    try:
+        await status_msg.edit(f"<b>✅ Upload Complete:</b>\n{filename}", parse_mode="html")
+    except:
+        pass
+
+    log.info(f"[UPLOAD] Completed -> {filepath}")
