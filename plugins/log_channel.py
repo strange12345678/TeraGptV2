@@ -14,7 +14,7 @@ async def log_action(client, user_id: Optional[int], text: str) -> None:
     try:
         uid_str = str(user_id) if user_id else "Unknown"
         msg = f"<b>#Action</b>\n<b>User:</b> <code>{uid_str}</code>\n{text}"
-        await client.send_message(int(channel), msg, parse_mode=enums.ParseMode.HTML)
+        await client.send_message(chat_id=channel, text=msg, parse_mode=enums.ParseMode.HTML)
         log.debug(f"Log sent to channel {channel}")
     except Exception as e:
         log.error(f"Failed to send to LOG_CHANNEL {channel}: {e}")

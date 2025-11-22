@@ -12,7 +12,7 @@ async def log_error(client, error_text: str) -> None:
         return
     try:
         msg = f"<b>❌ Error Report</b>\n<pre>{error_text}</pre>"
-        await client.send_message(int(channel), msg, parse_mode=enums.ParseMode.HTML)
+        await client.send_message(chat_id=channel, text=msg, parse_mode=enums.ParseMode.HTML)
         log.debug(f"Error sent to channel {channel}")
     except Exception as e:
         log.error(f"Failed to send to ERROR_CHANNEL {channel}: {e}")
