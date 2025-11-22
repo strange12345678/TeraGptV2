@@ -164,7 +164,7 @@ class ProgressManager:
         Wrap edit_coro in try/except. Keep a fallback and small delay to avoid rate limits.
         """
         try:
-            coro = self.edit_coro(text, parse_mode="HTML")
+            coro = self.edit_coro(text, parse_mode="html")
             if asyncio.iscoroutine(coro):
                 await coro
             else:
