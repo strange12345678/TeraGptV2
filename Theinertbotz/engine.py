@@ -150,6 +150,15 @@ async def process_video(client, message, user_url: str) -> None:
                 os.remove(thumb_path)
             except:
                 pass
+        
+        # Auto-delete downloaded file if enabled
+        if db.is_auto_delete_enabled():
+            try:
+                if filepath and os.path.exists(filepath):
+                    os.remove(filepath)
+                    log.info(f"Auto-deleted file: {filename}")
+            except Exception as e:
+                log.error(f"Failed to auto-delete {filename}: {e}")
 
     except Exception as e:
         log.exception("Processing error")

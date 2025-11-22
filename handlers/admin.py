@@ -4,7 +4,7 @@ from pyrogram import filters, enums
 from config import Config
 from Theinertbotz.database import db
 from script import Script
-from plugins.buttons import ADMIN_PANEL_BUTTONS, ADMIN_MANAGE_BUTTONS
+from plugins.buttons import ADMIN_PANEL_BUTTONS, ADMIN_MANAGE_BUTTONS, ADMIN_SETTINGS_BUTTONS
 import logging
 
 log = logging.getLogger("TeraBoxBot")
@@ -86,7 +86,14 @@ def register_handlers(app):
         
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text(Script.ADMIN_PANEL_TEXT, reply_markup=ADMIN_PANEL_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            panel_text = Script.ADMIN_PANEL_TEXT + "\n\n<b>⚙️ Settings:</b>\n• ♻️ Auto-Delete Files"
+            buttons = InlineKeyboardMarkup([
+                [InlineKeyboardButton("👥 Manage Premium Users", callback_data="admin_manage")],
+                [InlineKeyboardButton("🔍 Check User Status", callback_data="admin_check")],
+                [InlineKeyboardButton("⚙️ Settings", callback_data="admin_settings")],
+                [InlineKeyboardButton("← Back to Commands", callback_data="help")]
+            ])
+            await callback_query.message.edit_text(panel_text, reply_markup=buttons, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("admin_panel_callback error")
     
@@ -193,6 +200,57 @@ def register_handlers(app):
             log.info(f"Admin {message.from_user.id} removed upload channel")
         except Exception:
             log.exception("remove_upload_channel_cmd error")
+    
+    # ===== Admin Settings Callback =====
+    @app.on_callback_query(filters.regex("^admin_settings$"))
+    async def admin_settings_callback(client, callback_query):
+        if not is_admin(callback_query.from_user.id):
+            await callback_query.answer("❌ Admin access required", show_alert=True)
+            return
+        
+        try:
+            await callback_query.answer()
+            await callback_query.message.edit_text("⚙️ <b>Admin Settings</b>", reply_markup=ADMIN_SETTINGS_BUTTONS, parse_mode=enums.ParseMode.HTML)
+        except Exception:
+            log.exception("admin_settings_callback error")
+    
+    # ===== Auto-Delete Toggle Callback =====
+    @app.on_callback_query(filters.regex("^admin_auto_delete$"))
+    async def admin_auto_delete_callback(client, callback_query):
+        if not is_admin(callback_query.from_user.id):
+            await callback_query.answer("❌ Admin access required", show_alert=True)
+            return
+        
+        try:
+            current_status = db.is_auto_delete_enabled()
+            new_status = not current_status
+            db.set_auto_delete(new_status)
+            
+            status_text = Script.AUTO_DELETE_ON if new_status else Script.AUTO_DELETE_OFF
+            await callback_query.answer()
+            await callback_query.message.edit_text(status_text, reply_markup=ADMIN_SETTINGS_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            log.info(f"Admin {callback_query.from_user.id} toggled auto-delete to {new_status}")
+        except Exception:
+            log.exception("admin_auto_delete_callback error")
+    
+    # ===== Toggle Auto-Delete Command =====
+    @app.on_message(filters.command("toggle_autodelete") & filters.private)
+    async def toggle_autodelete_cmd(client, message):
+        """Toggle auto-delete feature."""
+        if not is_admin(message.from_user.id):
+            await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
+            return
+        
+        try:
+            current_status = db.is_auto_delete_enabled()
+            new_status = not current_status
+            db.set_auto_delete(new_status)
+            
+            status_text = Script.AUTO_DELETE_ON if new_status else Script.AUTO_DELETE_OFF
+            await message.reply(status_text, parse_mode=enums.ParseMode.HTML)
+            log.info(f"Admin {message.from_user.id} toggled auto-delete to {new_status}")
+        except Exception:
+            log.exception("toggle_autodelete_cmd error")
     
     # ===== Add Premium User =====
     @app.on_message(filters.command("addpremium") & filters.private)

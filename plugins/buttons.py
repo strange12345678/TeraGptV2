@@ -51,4 +51,10 @@ ADMIN_MANAGE_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("← Back", callback_data="admin_panel")]
 ])
 
-__all__ = ["START_BUTTONS", "HELP_BUTTONS", "RENAME_BUTTONS", "PREMIUM_BUTTONS", "PREMIUM_STATUS_BUTTONS", "PREMIUM_UPGRADE_BUTTONS", "ADMIN_PANEL_BUTTONS", "ADMIN_MANAGE_BUTTONS"]
+# Admin settings buttons
+ADMIN_SETTINGS_BUTTONS = InlineKeyboardMarkup([
+    [InlineKeyboardButton("♻️ Auto-Delete", callback_data="admin_auto_delete")],
+    [InlineKeyboardButton("← Back", callback_data="admin_panel")]
+])
+
+__all__ = ["START_BUTTONS", "HELP_BUTTONS", "RENAME_BUTTONS", "PREMIUM_BUTTONS", "PREMIUM_STATUS_BUTTONS", "PREMIUM_UPGRADE_BUTTONS", "ADMIN_PANEL_BUTTONS", "ADMIN_MANAGE_BUTTONS", "ADMIN_SETTINGS_BUTTONS"]

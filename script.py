@@ -247,3 +247,6 @@ Use buttons below to manage users.
 <code>/addpremium 123456789</code> - Permanent
 <code>/addpremium 123456789 30</code> - 30 days
 """
+    
+    AUTO_DELETE_ON = "✅ Auto-delete <b>ENABLED</b>\n\nDownloaded files will be deleted after upload to save storage."
+    AUTO_DELETE_OFF = "❌ Auto-delete <b>DISABLED</b>\n\nDownloaded files will be kept after upload."

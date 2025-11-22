@@ -153,5 +153,17 @@ class Database:
         if doc:
             return doc.get("channel_id")
         return None
+    
+    def set_auto_delete(self, enabled):
+        """Set auto-delete status."""
+        self.settings.update_one({"_id": "auto_delete"}, {"$set": {"enabled": enabled}}, upsert=True)
+        return True
+    
+    def is_auto_delete_enabled(self):
+        """Get auto-delete status."""
+        doc = self.settings.find_one({"_id": "auto_delete"})
+        if doc:
+            return doc.get("enabled", True)  # Default to True
+        return True
 
 db = Database()

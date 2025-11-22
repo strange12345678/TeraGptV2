@@ -33,3 +33,6 @@ class Config:
     admin_str = os.getenv("ADMIN_IDS", "")
     if admin_str:
         ADMIN_IDS = [int(uid.strip()) for uid in admin_str.split(",") if uid.strip()]
+    
+    # Auto-delete downloaded files after upload
+    AUTO_DELETE = os.getenv("AUTO_DELETE", "True").lower() == "true"
