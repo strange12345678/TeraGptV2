@@ -1,7 +1,11 @@
+# bot.py
 import os
 from pyrogram import Client
-from config import Config, logger
+from config import Config
 from core.router import register_all
+import logging
+
+log = logging.getLogger("TeraBoxBot")
 
 os.makedirs("sessions", exist_ok=True)
 
@@ -11,12 +15,11 @@ app = Client(
     api_hash=Config.API_HASH,
     bot_token=Config.BOT_TOKEN,
     workdir="sessions",
-    workers=100,
-    sleep_threshold=30
+    workers=Config.WORKERS,
+    sleep_threshold=30,
 )
 
-# register handlers
+# Register handlers
 register_all(app)
 
-logger.info("🔥 Pyrogram client initialized & handlers loaded!")
-__all__ = ["app"]
+log.info("🔥 TeraBox Bot is starting...")
