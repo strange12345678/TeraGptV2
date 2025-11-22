@@ -5,13 +5,13 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 START_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("📚 Commands", callback_data="help")],
     [InlineKeyboardButton("🔄 Rename Settings", callback_data="rename_help")],
-    [InlineKeyboardButton("⚙️ About", callback_data="about")]
+    [InlineKeyboardButton("💎 Premium", callback_data="premium")]
 ])
 
 # Help command buttons (with back to start)
 HELP_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("🔄 Rename Help", callback_data="rename_help")],
-    [InlineKeyboardButton("⚙️ About", callback_data="about")],
+    [InlineKeyboardButton("💎 Premium", callback_data="premium")],
     [InlineKeyboardButton("← Back to Menu", callback_data="start")]
 ])
 
@@ -20,9 +20,21 @@ RENAME_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("← Back to Commands", callback_data="help")]
 ])
 
-# About buttons (with back to help)
-ABOUT_BUTTONS = InlineKeyboardMarkup([
+# Premium buttons
+PREMIUM_BUTTONS = InlineKeyboardMarkup([
+    [InlineKeyboardButton("👤 My Status", callback_data="premium_status")],
     [InlineKeyboardButton("← Back to Commands", callback_data="help")]
 ])
 
-__all__ = ["START_BUTTONS", "HELP_BUTTONS", "RENAME_BUTTONS", "ABOUT_BUTTONS"]
+# Premium status buttons
+PREMIUM_STATUS_BUTTONS = InlineKeyboardMarkup([
+    [InlineKeyboardButton("💳 Upgrade", callback_data="premium_upgrade")],
+    [InlineKeyboardButton("← Back", callback_data="premium")]
+])
+
+# Upgrade buttons
+PREMIUM_UPGRADE_BUTTONS = InlineKeyboardMarkup([
+    [InlineKeyboardButton("← Back", callback_data="premium_status")]
+])
+
+__all__ = ["START_BUTTONS", "HELP_BUTTONS", "RENAME_BUTTONS", "PREMIUM_BUTTONS", "PREMIUM_STATUS_BUTTONS", "PREMIUM_UPGRADE_BUTTONS"]

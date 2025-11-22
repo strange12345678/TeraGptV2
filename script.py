@@ -160,3 +160,65 @@ Type <code>/rename</code> for available variables."""
 
     CUSTOM_PATTERN_ERROR = """❌ Pattern must contain at least one variable.
 Example: <code>/set_rename @Bot_{{file_name}}_{{file_size}}</code>"""
+
+    # ===== Premium System =====
+    LIMIT_REACHED = """❌ <b>Daily Limit Reached</b>
+
+📊 Free users can download <b>5 videos per day</b>
+
+💎 <b>Upgrade to Premium for:</b>
+• Unlimited downloads
+• Unlimited storage
+• Priority support
+• No daily limits
+• Special features
+
+Type <code>/premium</code> to upgrade!"""
+
+    PREMIUM_TEXT = """
+<b>💎 Premium Features</b>
+
+<b>✨ What's Included:</b>
+• ✅ Unlimited downloads
+• ✅ Unlimited video storage
+• ✅ Priority support
+• ✅ No daily limits
+• ✅ Custom branding
+• ✅ Advanced analytics
+
+<b>📊 Free Plan Limits:</b>
+• 5 downloads per day
+• Basic features
+• Standard support
+
+<b>💳 Pricing:</b>
+Coming soon...
+
+Click button below to upgrade!
+"""
+
+    PREMIUM_STATUS = """
+<b>👤 Your Account Status</b>
+
+{status}
+
+<code>/premium</code> - Premium info
+<code>/rename</code> - Rename settings
+"""
+
+    UPGRADE_TEXT = """
+<b>💳 Premium Membership</b>
+
+<b>🎯 Get Premium Access:</b>
+• Unlimited downloads
+• Priority support
+• Advanced features
+• Save time & effort
+
+<b>💰 Plans:</b>
+• Monthly: $4.99/month
+• Yearly: $39.99/year (Save 33%)
+
+<b>Contact:</b>
+DM @Theinertbotz for details</code>
+"""

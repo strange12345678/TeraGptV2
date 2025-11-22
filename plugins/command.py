@@ -3,7 +3,7 @@ from pyrogram import filters, enums
 import logging
 from Theinertbotz.database import db
 from script import Script
-from plugins.buttons import START_BUTTONS, HELP_BUTTONS, RENAME_BUTTONS, ABOUT_BUTTONS
+from plugins.buttons import START_BUTTONS, HELP_BUTTONS, RENAME_BUTTONS
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -80,7 +80,7 @@ def register_commands(app):
     async def about_callback(client, callback_query):
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text(Script.ABOUT_TEXT, reply_markup=ABOUT_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.edit_text(Script.ABOUT_TEXT, reply_markup=HELP_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("about_callback error")
 
