@@ -2,9 +2,24 @@ from pyrogram import filters, enums
 import logging
 
 START_TEXT = """
-<b>👋 Welcome!</b>
+<b>👋 Welcome to TeraBox Downloader Bot!</b>
 
-Send me any valid TeraBox link.
+<b>📌 How to use:</b>
+1️⃣ Send any TeraBox link
+2️⃣ Bot will download and upload to your PM
+3️⃣ Videos > 10MB get automatic thumbnails
+
+<b>✨ Features:</b>
+• Fast file downloads from TeraBox
+• Direct upload to Telegram
+• Video thumbnail previews
+• Progress tracking
+• Support for all file types
+
+<b>🔗 Example:</b>
+<code>https://1024terabox.com/s/1abc123def456ghi</code>
+
+<b>⏱️ Wait for the download to complete...</b>
 """
 
 def register_handlers(app):
