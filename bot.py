@@ -1,37 +1,22 @@
-# bot.py
-
 import os
 from pyrogram import Client
 from config import Config, logger
-from handlers import register_all
+from core.router import register_all
 
-# ---------------------------------------------------------
-# Ensure sessions directory exists for Pyrogram state files
-# ---------------------------------------------------------
 os.makedirs("sessions", exist_ok=True)
 
-# ---------------------------------------------------------
-# Initialize bot client
-# ---------------------------------------------------------
 app = Client(
     name="TeraBoxBot",
     api_id=Config.API_ID,
     api_hash=Config.API_HASH,
     bot_token=Config.BOT_TOKEN,
     workdir="sessions",
-    workers=200,                 # High performance
-    sleep_threshold=30,          # Prevent API flooding
-    in_memory=False              # Required for Koyeb restarts
+    workers=100,
+    sleep_threshold=30
 )
 
-# ---------------------------------------------------------
-# Register ALL handlers (start + download handler)
-# ---------------------------------------------------------
+# register handlers
 register_all(app)
 
 logger.info("🔥 Pyrogram client initialized & handlers loaded!")
-
-# ---------------------------------------------------------
-# Export app
-# ---------------------------------------------------------
 __all__ = ["app"]
