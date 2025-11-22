@@ -5,13 +5,15 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 START_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("📚 Commands", callback_data="help")],
     [InlineKeyboardButton("🔄 Rename Settings", callback_data="rename_help")],
-    [InlineKeyboardButton("💎 Premium", callback_data="premium")]
+    [InlineKeyboardButton("💎 Premium", callback_data="premium")],
+    [InlineKeyboardButton("📸 Send Screenshot to Admin", url="https://t.me/darkworld008")]
 ])
 
 # Help command buttons (with back to start)
 HELP_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("🔄 Rename Help", callback_data="rename_help")],
     [InlineKeyboardButton("💎 Premium", callback_data="premium")],
+    [InlineKeyboardButton("📸 Send Screenshot to Admin", url="https://t.me/darkworld008")],
     [InlineKeyboardButton("← Back to Menu", callback_data="start")]
 ])
 
