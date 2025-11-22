@@ -1,6 +1,7 @@
 import logging
 from config import Config
 from pyrogram import enums
+from Theinertbotz.thumbnail import generate_thumbnail
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -13,7 +14,45 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
     try:
         user_str = f"@{user}" if user and user != "Unknown" else "Unknown"
         caption = f"<b>📂 File:</b> <code>{file_name}</code>\n<b>📊 Size:</b> {file_size}\n<b>👤 User:</b> {user_str}\n<b>🔗 Link:</b> <code>{link}</code>"
-        await client.send_document(chat_id=channel, document=path, caption=caption, parse_mode=enums.ParseMode.HTML)
+        
+        # Check if it's a video file
+        video_extensions = ('.mp4', '.mkv', '.avi', '.mov', '.flv', '.wmv', '.webm')
+        is_video = file_name.lower().endswith(video_extensions)
+        
+        # Parse file size to get bytes
+        size_bytes = 0
+        try:
+            if 'MB' in file_size:
+                size_bytes = int(float(file_size.split()[0]) * 1024 * 1024)
+            elif 'KB' in file_size:
+                size_bytes = int(float(file_size.split()[0]) * 1024)
+            elif 'GB' in file_size:
+                size_bytes = int(float(file_size.split()[0]) * 1024 * 1024 * 1024)
+        except:
+            pass
+        
+        # Generate thumbnail for videos > 10MB
+        thumbnail = None
+        if is_video and size_bytes > 10 * 1024 * 1024:
+            thumbnail = generate_thumbnail(path)
+        
+        # Send as video if it's a video file, otherwise as document
+        if is_video:
+            await client.send_video(
+                chat_id=channel,
+                video=path,
+                caption=caption,
+                parse_mode=enums.ParseMode.HTML,
+                thumb=thumbnail
+            )
+        else:
+            await client.send_document(
+                chat_id=channel,
+                document=path,
+                caption=caption,
+                parse_mode=enums.ParseMode.HTML
+            )
+        
         log.debug(f"Backup sent to channel {channel}")
     except Exception as e:
         log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: {e}")
