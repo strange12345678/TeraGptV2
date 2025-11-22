@@ -3,7 +3,7 @@ import os
 import math
 import time
 import logging
-from Theinertbotz.progress import ProgressManager, human_size
+from Theinertbotz.processing import ProgressManager, human_size
 log = logging.getLogger("TeraBoxBot")
 
 async def upload_file(client, message, filepath, bot_username):
