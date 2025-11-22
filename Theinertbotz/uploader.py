@@ -1,46 +1,42 @@
-# Theinertbotz/uploader.py
 import os
 import time
 import logging
 import asyncio
-from Theinertbotz.processing import ProgressManager, human_size
+from Theinertbotz.processing import ProgressManager, human_size  # keep if used elsewhere
 
 log = logging.getLogger("TeraBoxBot")
 
 
 async def upload_file(client, message, filepath, bot_username: str):
     """
-    Upload a file to the user using Pyrogram's send_video() with
-    a fully integrated ProgressManager for upload progress.
-
-    Args:
-        client: pyrogram client
-        message: incoming message
-        filepath: local file path to upload
-        bot_username: bot's @username for progress display
+    Upload a file and update a status message with ProgressManager.
+    Uses asyncio.run_coroutine_threadsafe(...) for safe scheduling from Pyrogram's worker thread.
     """
 
-    # Create status message
+    # Create status message (use lowercase html parse mode)
     try:
-        status_msg = await message.reply("⏳ Preparing upload...", quote=True, parse_mode="HTML")
+        status_msg = await message.reply("⏳ Preparing upload...", quote=True, parse_mode="html")
     except Exception:
         status_msg = await client.send_message(message.chat.id, "⏳ Preparing upload...")
 
-    async def edit_coro(text, parse_mode="HTML"):
+    async def edit_coro(text, parse_mode="html"):
         return await status_msg.edit_text(text, parse_mode=parse_mode)
 
-    # Initialize Progress Manager for UPLOAD
+    # Initialize ProgressManager for upload
     pm = ProgressManager(edit_coro, bot_username=bot_username, kind="upload")
 
     total_size = os.path.getsize(filepath)
     state = {"last_time": time.time(), "last_bytes": 0}
 
-    # Progress callback
+    # capture the running loop to allow safe scheduling from other threads
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        # Fallback: create a new loop reference (shouldn't normally happen when called from async)
+        loop = asyncio.new_event_loop()
+
+    # Progress callback invoked by Pyrogram from a worker thread
     def _progress_cb(current, total):
-        """
-        Pyrogram calls this in a worker thread.
-        We schedule ProgressManager.update() back on the event loop.
-        """
         try:
             now = time.time()
             elapsed = now - state["last_time"]
@@ -53,8 +49,12 @@ async def upload_file(client, message, filepath, bot_username: str):
 
             coro = pm.update(current, total, speed)
 
-            # Schedule coroutine safely
-            asyncio.get_running_loop().create_task(coro)
+            # Schedule the coroutine safely on the captured loop
+            try:
+                asyncio.run_coroutine_threadsafe(coro, loop)
+            except Exception as e:
+                # If scheduling fails, log and continue — we do not want to crash the upload
+                log.error(f"Failed to schedule progress update: {e}")
 
         except Exception as e:
             log.error(f"Upload progress callback failed: {e}")
@@ -62,15 +62,14 @@ async def upload_file(client, message, filepath, bot_username: str):
     filename = os.path.basename(filepath)
 
     ############################################################################
-    # UPLOAD as VIDEO (auto detects mime type & sends as video with thumbnail)
+    # Upload as video (Pyrogram handles chunking). Provide a simple caption.
     ############################################################################
-
     try:
         await client.send_video(
             chat_id=message.chat.id,
             video=filepath,
             caption=f"<b>Uploaded:</b> {filename}",
-            parse_mode="HTML",
+            parse_mode="html",
             supports_streaming=True,
             progress=_progress_cb,
             progress_args=()
@@ -79,19 +78,14 @@ async def upload_file(client, message, filepath, bot_username: str):
     except Exception as e:
         log.exception("upload failed")
         try:
-            await status_msg.edit_text(f"❌ Upload failed:\n{str(e)}", parse_mode="HTML")
-        except:
+            await status_msg.edit_text(f"❌ Upload failed:\n{str(e)}", parse_mode="html")
+        except Exception:
             pass
-        raise e
+        raise
 
-    ##########################################################################
-    # Final message (when progress finishes)
-    ##########################################################################
+    # Final update (best-effort)
     try:
-        await status_msg.edit_text(
-            f"<b>✅ Upload complete:</b>\n{filename}",
-            parse_mode="HTML"
-        )
+        await status_msg.edit_text(f"<b>✅ Upload complete:</b>\n{filename}", parse_mode="html")
     except Exception:
         pass
 
