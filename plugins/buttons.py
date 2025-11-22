@@ -8,18 +8,21 @@ START_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("⚙️ About", callback_data="about")]
 ])
 
-# Rename command buttons
-RENAME_BUTTONS = InlineKeyboardMarkup([
-    [InlineKeyboardButton("⚡ Quick Options", callback_data="rename_quick")],
-    [InlineKeyboardButton("✨ Custom Pattern", callback_data="rename_custom")],
-    [InlineKeyboardButton("← Back", callback_data="help")]
-])
-
-# Help command buttons
+# Help command buttons (with back to start)
 HELP_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("🔄 Rename Help", callback_data="rename_help")],
     [InlineKeyboardButton("⚙️ About", callback_data="about")],
-    [InlineKeyboardButton("← Back", callback_data="help")]
+    [InlineKeyboardButton("← Back to Menu", callback_data="start")]
 ])
 
-__all__ = ["START_BUTTONS", "RENAME_BUTTONS", "HELP_BUTTONS"]
+# Rename help buttons (with back to help)
+RENAME_BUTTONS = InlineKeyboardMarkup([
+    [InlineKeyboardButton("← Back to Commands", callback_data="help")]
+])
+
+# About buttons (with back to help)
+ABOUT_BUTTONS = InlineKeyboardMarkup([
+    [InlineKeyboardButton("← Back to Commands", callback_data="help")]
+])
+
+__all__ = ["START_BUTTONS", "HELP_BUTTONS", "RENAME_BUTTONS", "ABOUT_BUTTONS"]

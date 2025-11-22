@@ -3,7 +3,7 @@ from pyrogram import filters, enums
 import logging
 from Theinertbotz.database import db
 from script import Script
-from plugins.buttons import START_BUTTONS
+from plugins.buttons import START_BUTTONS, HELP_BUTTONS, RENAME_BUTTONS, ABOUT_BUTTONS
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -30,16 +30,25 @@ def register_commands(app):
     @app.on_message(filters.command("help") & filters.private)
     async def help_cmd(client, message):
         try:
-            await message.reply(Script.COMMANDS_TEXT, parse_mode=enums.ParseMode.HTML)
+            await message.reply(Script.COMMANDS_TEXT, reply_markup=HELP_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("help_cmd error")
+    
+    # ===== Start Button Callback =====
+    @app.on_callback_query(filters.regex("^start$"))
+    async def start_callback(client, callback_query):
+        try:
+            await callback_query.answer()
+            await callback_query.message.edit_text(Script.START_TEXT, reply_markup=START_BUTTONS, parse_mode=enums.ParseMode.HTML)
+        except Exception:
+            log.exception("start_callback error")
     
     # ===== Help Button Callback =====
     @app.on_callback_query(filters.regex("^help$"))
     async def help_callback(client, callback_query):
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text(Script.COMMANDS_TEXT, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.edit_text(Script.COMMANDS_TEXT, reply_markup=HELP_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("help_callback error")
     
@@ -62,7 +71,7 @@ def register_commands(app):
             
             text = Script.RENAME_HELP_TEXT.format(status=status)
             await callback_query.answer()
-            await callback_query.message.edit_text(text, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.edit_text(text, reply_markup=RENAME_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("rename_help_callback error")
     
@@ -71,7 +80,7 @@ def register_commands(app):
     async def about_callback(client, callback_query):
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text(Script.ABOUT_TEXT, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.edit_text(Script.ABOUT_TEXT, reply_markup=ABOUT_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("about_callback error")
 
