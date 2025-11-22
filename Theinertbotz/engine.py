@@ -148,7 +148,7 @@ async def process_video(client, message, user_url: str) -> None:
         error_text = f"ERROR: {str(e)}\nLink: {user_url}\nUser: {uid}"
         try:
             # Show clean error to user without API URL
-            await message.reply(f"❌ Processing Error: {str(e)}\n\n🔗 Link: {user_url}")
+            await message.reply(f"❌ Processing Error: Failed to process file. Please try again.\n\n🔗 Link: {user_url}")
         except:
             pass
         try:

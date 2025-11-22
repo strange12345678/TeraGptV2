@@ -131,7 +131,7 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
         except Exception as e:
             log.exception(f"Download failed for {url}")
             try:
-                await status_msg.edit_text(f"❌ Processing Error : {str(e)} \n\n{url}", parse_mode=enums.ParseMode.HTML)
+                await status_msg.edit_text(f"❌ Processing Error: Failed to download file. Please try again.", parse_mode=enums.ParseMode.HTML)
             except Exception:
                 pass
             raise

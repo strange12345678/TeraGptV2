@@ -34,10 +34,6 @@ outputType = "console"
 localPort = 8000
 externalPort = 8000
 
-[[ports]]
-localPort = 42539
-externalPort = 80
-
 [userenv]
 
 [userenv.shared]
