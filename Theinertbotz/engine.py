@@ -81,7 +81,7 @@ def is_plausible_direct(url: str) -> bool:
     except Exception:
         return False
 
-async def process_video(client, message, user_url: str):
+async def process_video(client, message, user_url: str) -> None:
     uid = getattr(message.from_user, "id", None)
     username = getattr(message.from_user, "username", "Unknown") or "Unknown"
     filename = None

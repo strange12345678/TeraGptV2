@@ -4,7 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["cacert"]
+packages = ["cacert", "ffmpeg"]
 
 [workflows]
 runButton = "Project"
@@ -33,6 +33,10 @@ outputType = "console"
 [[ports]]
 localPort = 8000
 externalPort = 8000
+
+[[ports]]
+localPort = 41833
+externalPort = 80
 
 [userenv]
 

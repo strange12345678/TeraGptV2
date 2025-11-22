@@ -1,10 +1,11 @@
 import os
 import subprocess
 import logging
+from typing import Optional
 
 log = logging.getLogger("TeraBoxBot")
 
-def generate_thumbnail(video_path: str, output_path: str = None) -> str:
+def generate_thumbnail(video_path: str, output_path: Optional[str] = None) -> Optional[str]:
     """
     Generate thumbnail from video file at 25% into the video.
     Returns path to thumbnail or None if failed.
