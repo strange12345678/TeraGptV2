@@ -140,8 +140,11 @@ class Database:
         return None
     
     def set_premium_upload_channel(self, channel_id):
-        """Set the premium upload channel ID."""
-        self.settings.update_one({"_id": "premium_upload_channel"}, {"$set": {"channel_id": channel_id}}, upsert=True)
+        """Set the premium upload channel ID. Use None to remove."""
+        if channel_id is None:
+            self.settings.update_one({"_id": "premium_upload_channel"}, {"$set": {"channel_id": None}}, upsert=True)
+        else:
+            self.settings.update_one({"_id": "premium_upload_channel"}, {"$set": {"channel_id": channel_id}}, upsert=True)
         return True
     
     def get_premium_upload_channel(self):

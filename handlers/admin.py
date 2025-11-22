@@ -142,10 +142,10 @@ def register_handlers(app):
         except Exception:
             log.exception("admin_remove_premium_callback error")
     
-    # ===== Set Premium Upload Channel =====
-    @app.on_message(filters.command("setpremiumchannel") & filters.private)
-    async def set_premium_channel_cmd(client, message):
-        """Set premium upload channel. Usage: /setpremiumchannel <channel_id>"""
+    # ===== Set Upload Channel =====
+    @app.on_message(filters.command("set_upload_channel") & filters.private)
+    async def set_upload_channel_cmd(client, message):
+        """Set premium upload channel. Usage: /set_upload_channel <channel_id>"""
         if not is_admin(message.from_user.id):
             await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
             return
@@ -155,7 +155,7 @@ def register_handlers(app):
             if len(args) < 2:
                 current = db.get_premium_upload_channel()
                 status = f"<code>{current}</code>" if current else "Not set"
-                await message.reply(f"📝 Usage: <code>/setpremiumchannel &lt;channel_id&gt;</code>\n\n<b>Current Channel:</b> {status}", parse_mode=enums.ParseMode.HTML)
+                await message.reply(f"📝 Usage: <code>/set_upload_channel &lt;channel_id&gt;</code>\n\n<b>Current Channel:</b> {status}", parse_mode=enums.ParseMode.HTML)
                 return
             
             channel_id = int(args[1])
@@ -164,15 +164,35 @@ def register_handlers(app):
             try:
                 chat = await client.get_chat(channel_id)
                 db.set_premium_upload_channel(channel_id)
-                await message.reply(f"✅ Premium upload channel set to: <b>{chat.title}</b> (<code>{channel_id}</code>)", parse_mode=enums.ParseMode.HTML)
-                log.info(f"Admin {message.from_user.id} set premium channel to {channel_id}")
+                await message.reply(f"✅ Upload channel set to: <b>{chat.title}</b> (<code>{channel_id}</code>)", parse_mode=enums.ParseMode.HTML)
+                log.info(f"Admin {message.from_user.id} set upload channel to {channel_id}")
             except Exception as e:
                 error_msg = "Bot not added to channel" if "Peer id invalid" in str(e) else str(e)
                 await message.reply(f"❌ Error: {error_msg}\n\n💡 Make sure the bot is added to the channel as admin", parse_mode=enums.ParseMode.HTML)
         except ValueError:
             await message.reply("❌ Invalid channel ID format", parse_mode=enums.ParseMode.HTML)
         except Exception:
-            log.exception("set_premium_channel_cmd error")
+            log.exception("set_upload_channel_cmd error")
+    
+    # ===== Remove Upload Channel =====
+    @app.on_message(filters.command("remove_upload_channel") & filters.private)
+    async def remove_upload_channel_cmd(client, message):
+        """Remove premium upload channel."""
+        if not is_admin(message.from_user.id):
+            await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
+            return
+        
+        try:
+            current = db.get_premium_upload_channel()
+            if not current:
+                await message.reply("⚠️ No upload channel is currently set", parse_mode=enums.ParseMode.HTML)
+                return
+            
+            db.set_premium_upload_channel(None)
+            await message.reply(f"✅ Upload channel removed", parse_mode=enums.ParseMode.HTML)
+            log.info(f"Admin {message.from_user.id} removed upload channel")
+        except Exception:
+            log.exception("remove_upload_channel_cmd error")
     
     # ===== Add Premium User =====
     @app.on_message(filters.command("addpremium") & filters.private)
