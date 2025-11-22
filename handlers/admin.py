@@ -106,7 +106,7 @@ def register_handlers(app):
     # ===== Add Premium User =====
     @app.on_message(filters.command("addpremium") & filters.private)
     async def add_premium_cmd(client, message):
-        """Add a user to premium. Usage: /addpremium <user_id>"""
+        """Add a user to premium. Usage: /addpremium <user_id> [days]"""
         if not is_admin(message.from_user.id):
             await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
             return
@@ -114,15 +114,29 @@ def register_handlers(app):
         try:
             args = message.text.split()
             if len(args) < 2:
-                await message.reply("📝 Usage: <code>/addpremium &lt;user_id&gt;</code>", parse_mode=enums.ParseMode.HTML)
+                await message.reply("📝 Usage: <code>/addpremium &lt;user_id&gt; [days]</code>\n\n<b>Examples:</b>\n<code>/addpremium 123456789</code> - Permanent\n<code>/addpremium 123456789 30</code> - 30 days", parse_mode=enums.ParseMode.HTML)
                 return
             
             user_id = int(args[1])
-            db.set_user_tier(user_id, "premium")
-            await message.reply(f"✅ User {user_id} upgraded to <b>Premium</b>", parse_mode=enums.ParseMode.HTML)
-            log.info(f"Admin {message.from_user.id} added premium for user {user_id}")
-        except ValueError:
-            await message.reply("❌ Invalid user ID format", parse_mode=enums.ParseMode.HTML)
+            days = None
+            
+            if len(args) > 2:
+                days = int(args[2])
+                if days <= 0:
+                    await message.reply("❌ Days must be greater than 0", parse_mode=enums.ParseMode.HTML)
+                    return
+            
+            db.set_premium_expiry(user_id, days)
+            
+            if days is None:
+                duration = "Permanent"
+            else:
+                duration = f"{days} days"
+            
+            await message.reply(f"✅ User {user_id} upgraded to <b>Premium</b> ({duration})", parse_mode=enums.ParseMode.HTML)
+            log.info(f"Admin {message.from_user.id} added premium for user {user_id} for {duration}")
+        except ValueError as e:
+            await message.reply(f"❌ Invalid format. {str(e)}", parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("add_premium_cmd error")
     

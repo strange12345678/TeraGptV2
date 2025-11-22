@@ -97,9 +97,46 @@ class Database:
     def can_download(self, user_id):
         """Check if user can download (respects daily limits)."""
         tier = self.get_user_tier(user_id)
-        if tier == "premium":
+        if tier == "premium" and self.is_premium_valid(user_id):
             return True
         remaining = self.get_remaining_downloads(user_id)
         return remaining > 0
+    
+    def set_premium_expiry(self, user_id, days):
+        """Set premium expiry date. Days from now."""
+        from datetime import datetime, timedelta
+        if days is None or days == 0:
+            # Permanent premium
+            expiry = None
+        else:
+            expiry = (datetime.now() + timedelta(days=days)).isoformat()
+        self.users.update_one({"_id": user_id}, {"$set": {"tier": "premium", "premium_expiry": expiry}}, upsert=True)
+        return True
+    
+    def is_premium_valid(self, user_id):
+        """Check if user's premium is still valid (not expired)."""
+        from datetime import datetime
+        user = self.users.find_one({"_id": user_id})
+        if not user or user.get("tier") != "premium":
+            return False
+        
+        expiry = user.get("premium_expiry")
+        if expiry is None:
+            return True  # Permanent premium
+        
+        expiry_dt = datetime.fromisoformat(expiry)
+        if datetime.now() > expiry_dt:
+            # Premium has expired, downgrade to free
+            self.set_user_tier(user_id, "free")
+            return False
+        
+        return True
+    
+    def get_premium_expiry(self, user_id):
+        """Get premium expiry date for user."""
+        user = self.users.find_one({"_id": user_id})
+        if user:
+            return user.get("premium_expiry")
+        return None
 
 db = Database()

@@ -31,8 +31,12 @@ class PremiumManager:
         """Get formatted user status message."""
         tier = db.get_user_tier(user_id)
         
-        if tier == "premium":
-            return "👑 <b>Premium Member</b>\n\n✨ Unlimited downloads\n🎯 No restrictions"
+        if tier == "premium" and db.is_premium_valid(user_id):
+            expiry = db.get_premium_expiry(user_id)
+            if expiry:
+                return f"👑 <b>Premium Member</b>\n\n✨ Unlimited downloads\n🎯 No restrictions\n⏰ Expires: {expiry[:10]}"
+            else:
+                return "👑 <b>Premium Member</b>\n\n✨ Unlimited downloads\n🎯 No restrictions\n♾️ Permanent"
         
         daily_downloads = db.get_daily_downloads(user_id)
         remaining = db.get_remaining_downloads(user_id)

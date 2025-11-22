@@ -239,10 +239,11 @@ Use buttons below to manage users.
 <b>👥 Premium User Management</b>
 
 <b>📋 Commands:</b>
-• <code>/addpremium &lt;user_id&gt;</code> - Add premium
+• <code>/addpremium &lt;user_id&gt; [days]</code> - Add premium
 • <code>/removepremium &lt;user_id&gt;</code> - Remove premium
 • <code>/checkuser &lt;user_id&gt;</code> - Check status
 
-<b>Example:</b>
-<code>/addpremium 123456789</code>
+<b>Examples:</b>
+<code>/addpremium 123456789</code> - Permanent
+<code>/addpremium 123456789 30</code> - 30 days
 """
