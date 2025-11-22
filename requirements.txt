@@ -3,5 +3,4 @@ tgcrypto
 requests
 dnspython
 pymongo
-ffmpeg-python
 flask
