@@ -6,31 +6,65 @@ import time
 import logging
 from config import Config
 from Theinertbotz.processing import ProgressManager
-
 log = logging.getLogger("TeraBoxBot")
-os.makedirs(Config.DOWNLOAD_DIR, exist_ok=True)
 
-async def download_file(client, message, url: str, bot_username: str):
+os.makedirs(getattr(Config, "DOWNLOAD_DIR", "downloads"), exist_ok=True)
+
+async def download_file(client, message, url: str, bot_username: str, kind: str = "download"):
     """
-    Streams a file to disk with progress updates.
-    bot_username is used for the custom progress bar.
+    Streams the given download URL to disk and updates message progress using ProgressManager.
+    Returns (filepath, safe_filename) on success.
+    Args:
+      client: pyrogram client (not used heavily here, kept for parity)
+      message: incoming pyrogram Message (used for replies/edit)
+      url: direct download URL
+      bot_username: string like "@inert_test_bot" (for display)
+      kind: "download" (default)
     """
-    status_msg = await message.reply("⏳ Fetching download...", parse_mode="HTML")
+    # Create a status message
+    try:
+        status_msg = await message.reply("⏳ Fetching download...", quote=True)
+    except Exception:
+        # fallback: send_message
+        status_msg = await client.send_message(message.chat.id, "⏳ Fetching download...")
 
     async def edit_coro(text, parse_mode="HTML"):
         return await status_msg.edit_text(text, parse_mode=parse_mode)
 
-    pm = ProgressManager(edit_coro, bot_username=bot_username, kind="download")
+    pm = ProgressManager(edit_coro, bot_username=bot_username, kind=kind)
 
-    filename = url.split("filename=")[-1] if "filename=" in url else f"{int(time.time())}.bin"
+    # derive filename
+    filename = None
+    # try common query param
+    try:
+        from urllib.parse import urlparse, parse_qs, unquote
+        qp = parse_qs(urlparse(url).query)
+        if "filename" in qp and qp["filename"]:
+            filename = unquote(qp["filename"][0])
+        elif "fin" in qp and qp["fin"]:
+            filename = unquote(qp["fin"][0])
+    except Exception:
+        filename = None
+
+    if not filename:
+        # fallback to last path segment
+        try:
+            filename = os.path.basename(url.split("?")[0])
+        except Exception:
+            filename = None
+
+    if not filename:
+        filename = f"{int(time.time())}.bin"
+
     safe_fn = "".join(c for c in filename if c.isalnum() or c in " .-_()[]{}%").strip()
     if not safe_fn:
         safe_fn = f"{int(time.time())}.bin"
-    filepath = os.path.join(Config.DOWNLOAD_DIR, safe_fn)
+    filepath = os.path.join(getattr(Config, "DOWNLOAD_DIR", "downloads"), safe_fn)
 
     CHUNK = 64 * 1024
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, timeout=120) as resp:
+    timeout = aiohttp.ClientTimeout(total=0, sock_read=120)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.get(url) as resp:
             resp.raise_for_status()
             total = int(resp.headers.get("Content-Length") or 0)
             processed = 0
@@ -38,6 +72,7 @@ async def download_file(client, message, url: str, bot_username: str):
             last_t = start
             last_bytes = 0
 
+            # write streaming
             with open(filepath, "wb") as f:
                 async for chunk in resp.content.iter_chunked(CHUNK):
                     if not chunk:
@@ -45,18 +80,34 @@ async def download_file(client, message, url: str, bot_username: str):
                     f.write(chunk)
                     processed += len(chunk)
 
+                    # compute speed & update every ~0.5s (ProgressManager will throttle)
                     now = time.time()
                     elapsed = now - last_t
                     if elapsed >= 0.5:
-                        speed = (processed - last_bytes) / elapsed
-                        await pm.update(processed, total, speed)
+                        speed = (processed - last_bytes) / elapsed if (elapsed > 0) else None
+                        try:
+                            await pm.update(processed, total, speed)
+                        except Exception:
+                            log.exception("pm.update failed during download")
                         last_t = now
                         last_bytes = processed
 
+            # final update
             total_time = time.time() - start
             avg_speed = processed / total_time if total_time > 0 else 0
-            await pm.update(processed, total, avg_speed)
+            try:
+                await pm.update(processed, total, avg_speed)
+            except Exception:
+                log.exception("pm.update final failed")
 
-    await status_msg.edit_text(f"<b>✅ Download complete:</b>\n{safe_fn}", parse_mode="HTML")
+    # final message update to indicate finished
+    try:
+        await status_msg.edit_text(f"<b>✅ Download complete:</b>\n{safe_fn}", parse_mode="HTML")
+    except Exception:
+        try:
+            await client.send_message(message.chat.id, f"✅ Download complete: {safe_fn}")
+        except Exception:
+            pass
+
     log.info(f"Downloaded file -> {filepath}")
     return filepath, safe_fn
