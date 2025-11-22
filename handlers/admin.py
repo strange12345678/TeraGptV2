@@ -103,6 +103,45 @@ def register_handlers(app):
         except Exception:
             log.exception("admin_manage_callback error")
     
+    # ===== Check User Status Callback =====
+    @app.on_callback_query(filters.regex("^admin_check$"))
+    async def admin_check_callback(client, callback_query):
+        if not is_admin(callback_query.from_user.id):
+            await callback_query.answer("❌ Admin access required", show_alert=True)
+            return
+        
+        try:
+            await callback_query.answer()
+            await callback_query.message.edit_text("📝 <b>Check User Status</b>\n\nReply with: <code>/checkuser &lt;user_id&gt;</code>", reply_markup=ADMIN_PANEL_BUTTONS, parse_mode=enums.ParseMode.HTML)
+        except Exception:
+            log.exception("admin_check_callback error")
+    
+    # ===== Add Premium Callback =====
+    @app.on_callback_query(filters.regex("^admin_add_premium$"))
+    async def admin_add_premium_callback(client, callback_query):
+        if not is_admin(callback_query.from_user.id):
+            await callback_query.answer("❌ Admin access required", show_alert=True)
+            return
+        
+        try:
+            await callback_query.answer()
+            await callback_query.message.edit_text("➕ <b>Add Premium User</b>\n\nReply with: <code>/addpremium &lt;user_id&gt; [days]</code>", reply_markup=ADMIN_MANAGE_BUTTONS, parse_mode=enums.ParseMode.HTML)
+        except Exception:
+            log.exception("admin_add_premium_callback error")
+    
+    # ===== Remove Premium Callback =====
+    @app.on_callback_query(filters.regex("^admin_remove_premium$"))
+    async def admin_remove_premium_callback(client, callback_query):
+        if not is_admin(callback_query.from_user.id):
+            await callback_query.answer("❌ Admin access required", show_alert=True)
+            return
+        
+        try:
+            await callback_query.answer()
+            await callback_query.message.edit_text("➖ <b>Remove Premium User</b>\n\nReply with: <code>/removepremium &lt;user_id&gt;</code>", reply_markup=ADMIN_MANAGE_BUTTONS, parse_mode=enums.ParseMode.HTML)
+        except Exception:
+            log.exception("admin_remove_premium_callback error")
+    
     # ===== Add Premium User =====
     @app.on_message(filters.command("addpremium") & filters.private)
     async def add_premium_cmd(client, message):
