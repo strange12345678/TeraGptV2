@@ -7,6 +7,7 @@ from pyrogram.types import Message
 from config import Config
 from Theinertbotz.engine import process_video
 from Theinertbotz.database import db
+from script import Script
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -24,13 +25,7 @@ def register_handlers(app):
             text = message.text or message.caption or ""
             links = extract_links(text)
             if not links:
-                await message.reply(
-                    "❌ <b>No TeraBox link detected</b>\n\n"
-                    "Please send a valid TeraBox link:\n"
-                    "<code>https://1024terabox.com/s/...</code>\n\n"
-                    "Type <code>/help</code> for more info.",
-                    parse_mode=enums.ParseMode.HTML
-                )
+                await message.reply(Script.NO_LINK, parse_mode=enums.ParseMode.HTML)
                 return
 
             # Show processing status
@@ -57,10 +52,6 @@ def register_handlers(app):
         except Exception as e:
             log.exception("main_handler error")
             try:
-                await message.reply(
-                    "❌ <b>An unexpected error occurred</b>\n\n"
-                    "Please try again or contact support.",
-                    parse_mode=enums.ParseMode.HTML
-                )
+                await message.reply(Script.UNEXPECTED_ERROR, parse_mode=enums.ParseMode.HTML)
             except:
                 pass
