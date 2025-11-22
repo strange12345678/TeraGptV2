@@ -41,12 +41,11 @@ def register_handlers(app):
     async def premium_upgrade_callback(client, callback_query):
         try:
             await callback_query.answer()
-            await callback_query.message.edit_media(
-                media=InputMediaPhoto(Config.QR_CODE),
-                reply_markup=PREMIUM_UPGRADE_BUTTONS
-            )
-            # Edit caption with premium info
-            await callback_query.message.edit_caption(
+            # Delete old message and send new photo
+            await callback_query.message.delete()
+            await client.send_photo(
+                chat_id=callback_query.message.chat.id,
+                photo=Config.QR_CODE,
                 caption=Script.UPGRADE_TEXT,
                 parse_mode=enums.ParseMode.HTML,
                 reply_markup=PREMIUM_UPGRADE_BUTTONS
