@@ -2,6 +2,7 @@ import os
 import time
 import logging
 import asyncio
+from pyrogram import enums
 from Theinertbotz.processing import ProgressManager, human_size  # keep if used elsewhere
 
 log = logging.getLogger("TeraBoxBot")
@@ -13,13 +14,13 @@ async def upload_file(client, message, filepath, bot_username: str):
     Uses asyncio.run_coroutine_threadsafe(...) for safe scheduling from Pyrogram's worker thread.
     """
 
-    # Create status message (use lowercase html parse mode)
+    # Create status message
     try:
-        status_msg = await message.reply("⏳ Preparing upload...", quote=True, parse_mode="html")
+        status_msg = await message.reply("⏳ Preparing upload...", quote=True, parse_mode=enums.ParseMode.HTML)
     except Exception:
         status_msg = await client.send_message(message.chat.id, "⏳ Preparing upload...")
 
-    async def edit_coro(text, parse_mode="html"):
+    async def edit_coro(text, parse_mode=enums.ParseMode.HTML):
         return await status_msg.edit_text(text, parse_mode=parse_mode)
 
     # Initialize ProgressManager for upload
@@ -69,7 +70,7 @@ async def upload_file(client, message, filepath, bot_username: str):
             chat_id=message.chat.id,
             video=filepath,
             caption=f"<b>Uploaded:</b> {filename}",
-            parse_mode="html",
+            parse_mode=enums.ParseMode.HTML,
             supports_streaming=True,
             progress=_progress_cb,
             progress_args=()
@@ -78,14 +79,14 @@ async def upload_file(client, message, filepath, bot_username: str):
     except Exception as e:
         log.exception("upload failed")
         try:
-            await status_msg.edit_text(f"❌ Upload failed:\n{str(e)}", parse_mode="html")
+            await status_msg.edit_text(f"❌ Upload failed:\n{str(e)}", parse_mode=enums.ParseMode.HTML)
         except Exception:
             pass
         raise
 
     # Final update (best-effort)
     try:
-        await status_msg.edit_text(f"<b>✅ Upload complete:</b>\n{filename}", parse_mode="html")
+        await status_msg.edit_text(f"<b>✅ Upload complete:</b>\n{filename}", parse_mode=enums.ParseMode.HTML)
     except Exception:
         pass
 

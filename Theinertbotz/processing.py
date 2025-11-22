@@ -3,12 +3,13 @@ import time
 import math
 import asyncio
 import logging
-from typing import Optional, Callable
+from typing import Optional, Callable, Union, Awaitable, Any
+from pyrogram import enums
 
 log = logging.getLogger("TeraBoxBot")
 
 # ---------- Helpers ----------
-def human_size(num: int) -> str:
+def human_size(num: Union[int, float, None]) -> str:
     """Return human-readable size (B, KB, MB, GB)."""
     if num is None:
         return "0 B"
@@ -59,14 +60,14 @@ class ProgressManager:
 
     Args:
         edit_coro: async function to call to edit the status message.
-                   Signature: await edit_coro(text, parse_mode="HTML")
+                   Signature: await edit_coro(text, parse_mode=enums.ParseMode.HTML)
         bot_username: string like "@inert_test_bot" to display in UI
         kind: "download" or "upload"
     """
 
     def __init__(
         self,
-        edit_coro: Callable[[str], asyncio.Future],
+        edit_coro: Callable[[str, Any], Awaitable[Any]],
         bot_username: str = "@bot",
         kind: str = "download",
         *,
@@ -164,7 +165,7 @@ class ProgressManager:
         Wrap edit_coro in try/except. Keep a fallback and small delay to avoid rate limits.
         """
         try:
-            coro = self.edit_coro(text, parse_mode="html")
+            coro = self.edit_coro(text, parse_mode=enums.ParseMode.HTML)
             if asyncio.iscoroutine(coro):
                 await coro
             else:

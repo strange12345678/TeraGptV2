@@ -6,13 +6,17 @@ TeraBox Telegram Bot is a Python-based Telegram bot that downloads and processes
 **Current State**: Successfully configured and running in Replit environment.
 
 ## Recent Changes
-- **2025-11-22**: Initial setup in Replit environment
+- **2025-11-22**: Initial setup and bug fixes
   - Installed Python 3.11 and all required dependencies
   - Removed hardcoded credentials from config.py for security
   - Configured environment variables and secrets
   - Set up workflow to run the bot with health check server on port 8000
   - Created .gitignore for Python project
-  - Bot is now running and connected to Telegram successfully
+  - **Bug Fixes**:
+    - Fixed parse_mode errors: Changed all instances from string "html" to proper Pyrogram enum `enums.ParseMode.HTML`
+    - Fixed type hints in processing.py (human_size function now accepts int, float, or None)
+    - Fixed edit_coro signature in uploader.py to use proper parse_mode enum
+  - Bot is now running successfully and error-free
 
 ## Project Architecture
 
