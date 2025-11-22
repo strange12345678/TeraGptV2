@@ -4,7 +4,7 @@ import asyncio
 import os
 import time
 from config import Config
-from Theinertbotz.progress import ProgressManager
+from Theinertbotz.processing import ProgressManager
 import logging
 
 log = logging.getLogger("TeraBoxBot")
