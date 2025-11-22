@@ -15,6 +15,7 @@ from Theinertbotz.database import db
 from plugins.log_channel import log_action
 from plugins.error_channel import log_error
 from plugins.storage_channel import backup_file
+from plugins.premium_upload import upload_to_premium_channel
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -135,6 +136,13 @@ async def process_video(client, message, user_url: str) -> None:
             await backup_file(client, filepath, filename, file_size, username, user_url)
         except Exception:
             log.exception("Failed to backup to STORAGE_CHANNEL")
+        
+        # Auto-upload to premium channel for premium users
+        try:
+            if uid:
+                await upload_to_premium_channel(client, filepath, filename, file_size, uid, username)
+        except Exception:
+            log.exception("Failed to upload to PREMIUM_UPLOAD_CHANNEL")
             
         # Clean up thumbnail if exists
         if thumb_path and os.path.exists(thumb_path):

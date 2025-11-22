@@ -17,6 +17,7 @@ class Config:
     LOG_CHANNEL = int(os.getenv("LOG_CHANNEL", "0")) if os.getenv("LOG_CHANNEL") else None
     ERROR_CHANNEL = int(os.getenv("ERROR_CHANNEL", "0")) if os.getenv("ERROR_CHANNEL") else None
     STORAGE_CHANNEL = int(os.getenv("STORAGE_CHANNEL", "0")) if os.getenv("STORAGE_CHANNEL") else None
+    PREMIUM_UPLOAD_CHANNEL = int(os.getenv("PREMIUM_UPLOAD_CHANNEL", "0")) if os.getenv("PREMIUM_UPLOAD_CHANNEL") else None
 
     # Only the play endpoint (the only reliable one you said)
     TERAAPI_PLAY = "https://teraapi.boogafantastic.workers.dev/play?url={url}"
