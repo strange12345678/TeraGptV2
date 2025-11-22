@@ -4,6 +4,7 @@ import logging
 import asyncio
 from pyrogram import enums
 from Theinertbotz.processing import ProgressManager, human_size  # keep if used elsewhere
+from Theinertbotz.thumbnail import generate_thumbnail
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -62,15 +63,25 @@ async def upload_file(client, message, filepath, bot_username: str):
 
     filename = os.path.basename(filepath)
 
-    # Check if we should include thumbnail (for files under 10MB)
+    # Generate/attach thumbnail for video files
     thumbnail_path = None
-    if total_size < 10 * 1024 * 1024:  # 10MB in bytes
-        # Look for thumbnail with same base name
+    video_extensions = ('.mp4', '.mkv', '.avi', '.mov', '.flv', '.wmv', '.webm')
+    is_video = filename.lower().endswith(video_extensions)
+    
+    if is_video:
+        # Look for existing thumbnail first
         base_name = os.path.splitext(filepath)[0]
         potential_thumb = f"{base_name}_thumb.jpg"
+        
         if os.path.exists(potential_thumb):
             thumbnail_path = potential_thumb
-            log.info(f"Using thumbnail: {thumbnail_path}")
+            log.info(f"Using existing thumbnail: {thumbnail_path}")
+        else:
+            # Generate thumbnail for videos > 10MB
+            if total_size > 10 * 1024 * 1024:
+                thumbnail_path = generate_thumbnail(filepath)
+                if thumbnail_path:
+                    log.info(f"Generated thumbnail for large video: {thumbnail_path}")
 
     ############################################################################
     # Upload as video (Pyrogram handles chunking). Provide a simple caption.
