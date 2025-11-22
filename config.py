@@ -23,3 +23,6 @@ class Config:
 
     DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR", "downloads")
     WORKERS = int(os.getenv("WORKERS", "20"))
+    
+    # Auto-rename pattern: "timestamp", "datetime", or "" (disabled)
+    AUTO_RENAME = os.getenv("AUTO_RENAME", "timestamp")

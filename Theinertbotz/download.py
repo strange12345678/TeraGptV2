@@ -7,6 +7,7 @@ import logging
 from pyrogram import enums
 from config import Config
 from Theinertbotz.processing import ProgressManager
+from Theinertbotz.rename import auto_rename_file
 log = logging.getLogger("TeraBoxBot")
 
 os.makedirs(getattr(Config, "DOWNLOAD_DIR", "downloads"), exist_ok=True)
@@ -60,6 +61,12 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
     safe_fn = "".join(c for c in filename if c.isalnum() or c in " .-_()[]{}%").strip()
     if not safe_fn:
         safe_fn = f"{int(time.time())}.bin"
+    
+    # Apply auto-rename if enabled
+    rename_pattern = getattr(Config, "AUTO_RENAME", "")
+    if rename_pattern:
+        safe_fn = auto_rename_file(safe_fn, rename_pattern)
+    
     filepath = os.path.join(getattr(Config, "DOWNLOAD_DIR", "downloads"), safe_fn)
 
     CHUNK = 64 * 1024
