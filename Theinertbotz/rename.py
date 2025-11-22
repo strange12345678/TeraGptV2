@@ -5,13 +5,14 @@ import logging
 
 log = logging.getLogger("TeraBoxBot")
 
-def auto_rename_file(filename: str, pattern: str = "timestamp") -> str:
+def auto_rename_file(filename: str, pattern: str = "timestamp", variables: dict = None) -> str:
     """
     Auto-rename a file based on the specified pattern.
     
     Args:
         filename: Original filename
-        pattern: Rename pattern - "timestamp" (default) or "counter"
+        pattern: Rename pattern - "timestamp", "datetime", or custom pattern with variables
+        variables: Dict of variables for custom patterns (e.g., {file_name}, {file_size}, {username})
     
     Returns:
         New filename with pattern applied
@@ -20,21 +21,57 @@ def auto_rename_file(filename: str, pattern: str = "timestamp") -> str:
         name, ext = os.path.splitext(filename)
         
         if pattern == "timestamp":
-            # Format: original_name_YYYYMMDD_HHMMSS.ext
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             new_name = f"{name}_{timestamp}{ext}"
             log.info(f"Auto-renamed: {filename} -> {new_name}")
             return new_name
         
         elif pattern == "datetime":
-            # Format: original_name_YYYY-MM-DD_HH-MM-SS.ext
             timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             new_name = f"{name}_{timestamp}{ext}"
             log.info(f"Auto-renamed: {filename} -> {new_name}")
             return new_name
         
+        elif pattern and "{" in pattern:
+            # Custom pattern with variables
+            if not variables:
+                variables = {}
+            
+            # Set default variables
+            now = datetime.now()
+            defaults = {
+                "file_name": name,
+                "original_name": filename,
+                "ext": ext,
+                "file_size": variables.get("file_size", "unknown"),
+                "username": variables.get("username", "unknown"),
+                "user_id": variables.get("user_id", "unknown"),
+                "date": now.strftime("%Y-%m-%d"),
+                "time": now.strftime("%H-%M-%S"),
+                "timestamp": now.strftime("%Y%m%d_%H%M%S"),
+                "hour": now.strftime("%H"),
+                "minute": now.strftime("%M"),
+                "second": now.strftime("%S"),
+            }
+            defaults.update(variables)
+            
+            try:
+                # Replace variables in pattern
+                new_name_without_ext = pattern.format(**defaults)
+                new_name = f"{new_name_without_ext}{ext}"
+                
+                # Sanitize filename
+                new_name = "".join(c for c in new_name if c.isalnum() or c in " .-_()[]{}@")
+                if not new_name:
+                    new_name = f"{int(time.time())}{ext}"
+                
+                log.info(f"Auto-renamed: {filename} -> {new_name}")
+                return new_name
+            except KeyError as e:
+                log.warning(f"Invalid variable in pattern: {e}, using original filename")
+                return filename
+        
         else:
-            # Default: return original filename
             return filename
             
     except Exception as e:

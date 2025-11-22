@@ -37,8 +37,20 @@ class Database:
         return "timestamp"
     
     def set_user_rename_setting(self, user_id, pattern):
-        """Set user's auto-rename pattern. pattern: 'timestamp', 'datetime', or '' (disabled)."""
+        """Set user's auto-rename pattern. pattern: 'timestamp', 'datetime', custom, or '' (disabled)."""
         self.users.update_one({"_id": user_id}, {"$set": {"auto_rename": pattern}}, upsert=True)
+        return True
+    
+    def get_custom_rename_pattern(self, user_id):
+        """Get user's custom rename pattern if set."""
+        user = self.users.find_one({"_id": user_id})
+        if user:
+            return user.get("custom_rename_pattern", None)
+        return None
+    
+    def set_custom_rename_pattern(self, user_id, pattern):
+        """Set custom rename pattern with variables."""
+        self.users.update_one({"_id": user_id}, {"$set": {"custom_rename_pattern": pattern, "auto_rename": pattern}}, upsert=True)
         return True
 
 db = Database()

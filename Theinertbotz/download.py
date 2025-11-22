@@ -65,13 +65,21 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
     
     # Apply auto-rename if enabled (check user preference first, then global config)
     user_id = getattr(message.from_user, "id", None) if hasattr(message, "from_user") else None
+    username = getattr(message.from_user, "username", "unknown") if hasattr(message, "from_user") else "unknown"
+    
     if user_id:
         rename_pattern = db.get_user_rename_setting(user_id)
     else:
         rename_pattern = getattr(Config, "AUTO_RENAME", "")
     
     if rename_pattern:
-        safe_fn = auto_rename_file(safe_fn, rename_pattern)
+        # Prepare variables for custom rename pattern
+        variables = {
+            "file_size": "unknown",  # Will be updated after download
+            "username": username or str(user_id),
+            "user_id": str(user_id) if user_id else "unknown"
+        }
+        safe_fn = auto_rename_file(safe_fn, rename_pattern, variables)
     
     filepath = os.path.join(getattr(Config, "DOWNLOAD_DIR", "downloads"), safe_fn)
 
