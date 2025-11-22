@@ -1,12 +1,21 @@
-from threading import Thread
+# main.py
+import logging
+import threading
 from bot import app
-from health import start_server
-from config import logger
+from health import create_health_app
 
-def run_flask():
-    start_server()
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
+log = logging.getLogger("TeraBoxBot")
+
+# Start the Pyrogram client in the main thread (app.run) is blocking.
+def run_bot():
+    log.info("🔥 Pyrogram client initialized & handlers loaded!")
+    app.run()  # This starts the client and dispatcher
 
 if __name__ == "__main__":
-    Thread(target=run_flask, daemon=True).start()
-    logger.info("Health server started on port 8000")
-    app.run()
+    # Start health server (Flask) in background thread
+    health_app = create_health_app()
+    t = threading.Thread(target=lambda: health_app.run(host="0.0.0.0", port=8000), daemon=True)
+    t.start()
+
+    run_bot()
