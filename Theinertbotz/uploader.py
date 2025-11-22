@@ -1,59 +1,61 @@
-import asyncio
+# Theinertbotz/uploader.py
 import os
-from pyrogram.errors import FloodWait, RPCError
-from config import logger
-from typing import Optional
+import math
+import time
+import logging
+from Theinertbotz.progress import ProgressManager, human_size
+log = logging.getLogger("TeraBoxBot")
 
-async def _edit_progress(message, text):
-    try:
-        await message.edit(text)
-    except Exception:
-        pass
+async def upload_file(client, message, filepath, bot_username):
+    # Send a placeholder message
+    status_msg = await message.reply("⏳ Preparing upload...", parse_mode="html")
 
-def _make_progress_cb(loop, message, prefix=""):
-    def cb(current, total):
+    async def edit_coro(text, parse_mode="html"):
+        return await status_msg.edit_text(text, parse_mode=parse_mode)
+
+    pm = ProgressManager(edit_coro, bot_username=bot_username, kind="upload")
+
+    total = os.path.getsize(filepath)
+    start = time.time()
+    state = {"last_bytes": 0, "last_time": start}
+
+    # Pyrogram progress callback signature: (current, total)
+    def _progress_cb(current, total_bytes):
+        # schedule coroutine update safely
+        now = time.time()
+        elapsed = now - state["last_time"]
+        if elapsed <= 0:
+            elapsed = 0.0001
+        speed = (current - state["last_bytes"]) / elapsed
+        state["last_time"] = now
+        state["last_bytes"] = current
+
+        # create coroutine to update progress manager
+        coro = pm.update(current, total_bytes, speed)
+        # schedule on loop properly
         try:
-            percent = (current/total)*100 if total else 0.0
-            bar = "▓" * int(percent/10) + "░" * (10 - int(percent/10))
-            text = f"{prefix}{percent:.1f}%\n[{bar}]"
-            loop.call_soon_threadsafe(asyncio.create_task, message.edit(text))
+            import asyncio
+            asyncio.create_task(coro)
         except Exception:
-            pass
-    return cb
+            # If scheduling fails, ignore; the main flow will continue
+            log.exception("Failed to schedule progress coroutine")
 
-async def send_with_fallback(client, chat_id, path, thumb, caption, width=None, height=None, duration=None, status_msg=None):
-    loop = asyncio.get_running_loop()
-    progress_cb = _make_progress_cb(loop, status_msg, prefix="📤 Uploading: ")
-    ext = os.path.splitext(path)[1].lower()
+    # Send as video (Pyrogram will use its own media methods)
     try:
-        if ext == ".mp4":
-            return await client.send_video(
-                chat_id=chat_id,
-                video=path,
-                thumb=thumb,
-                caption=caption,
-                width=width,
-                height=height,
-                duration=int(duration) if duration else None,
-                supports_streaming=True,
-                progress=progress_cb,
-                progress_args=()
-            )
-        else:
-            return await client.send_document(
-                chat_id=chat_id,
-                document=path,
-                caption=caption,
-                progress=progress_cb,
-                progress_args=()
-            )
-    except FloodWait as fw:
-        logger.info(f"FloodWait {fw.x}s; sleeping")
-        await asyncio.sleep(fw.x)
-        return await send_with_fallback(client, chat_id, path, thumb, caption, width, height, duration, status_msg)
-    except RPCError as re:
-        logger.warning(f"RPCError during upload: {re}; falling back to document")
-        return await client.send_document(chat_id=chat_id, document=path, caption=caption, progress=progress_cb, progress_args=())
-    except Exception:
-        # fallback to document
-        return await client.send_document(chat_id=chat_id, document=path, caption=caption, progress=progress_cb, progress_args=())
+        await client.send_video(
+            chat_id=message.chat.id,
+            video=filepath,
+            caption=f"Uploaded: {os.path.basename(filepath)}",
+            progress=_progress_cb,
+            progress_args=()
+        )
+    except Exception as e:
+        log.exception("upload failed")
+        raise
+    finally:
+        try:
+            await status_msg.edit_text(f"<b>✅ Upload complete:</b>\n{os.path.basename(filepath)}", parse_mode="html")
+        except:
+            pass
+
+    log.info(f"Uploaded file {filepath}")
