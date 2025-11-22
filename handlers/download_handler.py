@@ -1,28 +1,39 @@
+# handlers/download_handler.py
+import re
+import asyncio
+import logging
 from pyrogram import filters
 from pyrogram.types import Message
-from config import Config, logger
-from Theinertbotz.utils import extract_links_from_message
+from config import Config
 from Theinertbotz.engine import process_video
-import asyncio
-import time
+from Theinertbotz.database import db
+
+log = logging.getLogger("TeraBoxBot")
+
+TERABOX_RE = re.compile(r"(https?://[^\s]+(?:terabox|1024terabox|terasharefile)[^\s]*)", re.IGNORECASE)
+
+def extract_links(text: str):
+    if not text:
+        return []
+    return TERABOX_RE.findall(text)
 
 def register_handlers(app):
-    @app.on_message(filters.private & (filters.text | filters.caption))
-    async def pm_handler(client, msg: Message):
-        # ignore old messages (convert datetime to timestamp)
+    @app.on_message(filters.private & ~filters.command("start"))
+    async def main_handler(client, message: Message):
         try:
-            msg_ts = msg.date.timestamp()
-            if msg_ts < (time.time() - Config.IGNORE_MESSAGE_AGE):
-                logger.debug("Ignoring old message (too old)")
+            text = message.text or message.caption or ""
+            links = extract_links(text)
+            if not links:
+                await message.reply("No TeraBox link found. Send a valid link.")
                 return
-        except Exception:
-            pass
 
-        links = extract_links_from_message(msg)
-        if not links:
-            return
-
-        for link in links:
-            logger.info(f"Processing link: {link} from user {msg.from_user.id}")
-            await process_video(client, msg, link)
-            await asyncio.sleep(1)  # small delay between links
+            # Process one by one (Option A)
+            for link in links:
+                log.info(f"Processing link: {link} from user {message.from_user.id}")
+                await process_video(client, message, link.strip())
+        except Exception as e:
+            log.exception("main_handler error")
+            try:
+                await message.reply("Internal error while processing. Check logs.")
+            except:
+                pass
