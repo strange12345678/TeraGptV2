@@ -82,14 +82,16 @@ def is_plausible_direct(url: str) -> bool:
         return False
 
 async def process_video(client, message, user_url: str) -> None:
-    uid = getattr(message.from_user, "id", None)
-    username = getattr(message.from_user, "username", "Unknown") or "Unknown"
-    filename = None
-    filepath = None
+    from typing import Optional
+    uid: Optional[int] = getattr(message.from_user, "id", None)
+    username: str = getattr(message.from_user, "username", "Unknown") or "Unknown"
+    filename: Optional[str] = None
+    filepath: Optional[str] = None
     
     try:
         # Log user action
-        await log_action(client, uid, f"Requested download: {user_url}")
+        req_text = f"📥 Requested: {user_url[:50]}..." if len(user_url) > 50 else f"📥 Requested: {user_url}"
+        await log_action(client, uid, req_text)
         
         play_api_url = Config.TERAAPI_PLAY.format(url=user_url) if hasattr(Config, "TERAAPI_PLAY") else user_url
         log.info(f"Processing link: {user_url} from user {uid}")
