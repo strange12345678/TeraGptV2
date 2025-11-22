@@ -8,6 +8,7 @@ from pyrogram import enums
 from config import Config
 from Theinertbotz.processing import ProgressManager
 from Theinertbotz.rename import auto_rename_file
+from Theinertbotz.database import db
 log = logging.getLogger("TeraBoxBot")
 
 os.makedirs(getattr(Config, "DOWNLOAD_DIR", "downloads"), exist_ok=True)
@@ -62,8 +63,13 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
     if not safe_fn:
         safe_fn = f"{int(time.time())}.bin"
     
-    # Apply auto-rename if enabled
-    rename_pattern = getattr(Config, "AUTO_RENAME", "")
+    # Apply auto-rename if enabled (check user preference first, then global config)
+    user_id = getattr(message.from_user, "id", None) if hasattr(message, "from_user") else None
+    if user_id:
+        rename_pattern = db.get_user_rename_setting(user_id)
+    else:
+        rename_pattern = getattr(Config, "AUTO_RENAME", "")
+    
     if rename_pattern:
         safe_fn = auto_rename_file(safe_fn, rename_pattern)
     
