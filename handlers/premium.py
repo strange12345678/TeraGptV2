@@ -1,6 +1,8 @@
 # handlers/premium.py
 from pyrogram import filters, enums
+from pyrogram.types import InputMediaPhoto
 import logging
+from config import Config
 from Theinertbotz.database import db
 from script import Script
 from plugins.premium import PremiumManager
@@ -39,7 +41,16 @@ def register_handlers(app):
     async def premium_upgrade_callback(client, callback_query):
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text(Script.UPGRADE_TEXT, reply_markup=PREMIUM_UPGRADE_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.edit_media(
+                media=InputMediaPhoto(Config.QR_CODE),
+                reply_markup=PREMIUM_UPGRADE_BUTTONS
+            )
+            # Edit caption with premium info
+            await callback_query.message.edit_caption(
+                caption=Script.UPGRADE_TEXT,
+                parse_mode=enums.ParseMode.HTML,
+                reply_markup=PREMIUM_UPGRADE_BUTTONS
+            )
         except Exception:
             log.exception("premium_upgrade_callback error")
 
