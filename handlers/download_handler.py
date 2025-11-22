@@ -2,7 +2,7 @@
 import re
 import asyncio
 import logging
-from pyrogram import filters
+from pyrogram import filters, enums
 from pyrogram.types import Message
 from config import Config
 from Theinertbotz.engine import process_video
@@ -29,7 +29,7 @@ def register_handlers(app):
                     "Please send a valid TeraBox link:\n"
                     "<code>https://1024terabox.com/s/...</code>\n\n"
                     "Type <code>/help</code> for more info.",
-                    parse_mode="html"
+                    parse_mode=enums.ParseMode.HTML
                 )
                 return
 
@@ -44,7 +44,7 @@ def register_handlers(app):
                 except Exception as e:
                     log.exception(f"Error processing link: {link}")
                     try:
-                        await message.reply(f"⚠️ <b>Failed to process link {idx+1}</b>\n\n{str(e)[:100]}", parse_mode="html")
+                        await message.reply(f"⚠️ <b>Failed to process link {idx+1}</b>\n\n{str(e)[:100]}", parse_mode=enums.ParseMode.HTML)
                     except:
                         pass
             
@@ -60,7 +60,7 @@ def register_handlers(app):
                 await message.reply(
                     "❌ <b>An unexpected error occurred</b>\n\n"
                     "Please try again or contact support.",
-                    parse_mode="html"
+                    parse_mode=enums.ParseMode.HTML
                 )
             except:
                 pass
