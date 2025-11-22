@@ -5,3 +5,10 @@ dnspython
 pymongo
 flask
 aiohttp
+aiohttp
+dnspython
+flask
+pymongo
+pyrogram
+requests
+tgcrypto
