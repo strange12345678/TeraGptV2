@@ -1,6 +1,6 @@
 import asyncio
-from pyrogram.errors import FloodWait, RPCError
 import os
+from pyrogram.errors import FloodWait, RPCError
 from config import logger
 from typing import Optional
 
@@ -10,20 +10,20 @@ async def _edit_progress(message, text):
     except Exception:
         pass
 
-def _make_progress_cb(message, prefix=""):
+def _make_progress_cb(loop, message, prefix=""):
     def cb(current, total):
         try:
             percent = (current/total)*100 if total else 0.0
             bar = "▓" * int(percent/10) + "░" * (10 - int(percent/10))
             text = f"{prefix}{percent:.1f}%\n[{bar}]"
-            asyncio.get_event_loop().create_task(_edit_progress(message, text))
+            loop.call_soon_threadsafe(asyncio.create_task, message.edit(text))
         except Exception:
             pass
     return cb
 
-async def send_with_fallback(client, chat_id, path, thumb, caption, width=None, height=None, duration=None, progress_message=None):
-    progress_cb = _make_progress_cb(progress_message, prefix="📤 Uploading: ")
-    # decide whether to send as video (mp4) or document
+async def send_with_fallback(client, chat_id, path, thumb, caption, width=None, height=None, duration=None, status_msg=None):
+    loop = asyncio.get_running_loop()
+    progress_cb = _make_progress_cb(loop, status_msg, prefix="📤 Uploading: ")
     ext = os.path.splitext(path)[1].lower()
     try:
         if ext == ".mp4":
@@ -50,16 +50,10 @@ async def send_with_fallback(client, chat_id, path, thumb, caption, width=None, 
     except FloodWait as fw:
         logger.info(f"FloodWait {fw.x}s; sleeping")
         await asyncio.sleep(fw.x)
-        return await send_with_fallback(client, chat_id, path, thumb, caption, width, height, duration, progress_message)
+        return await send_with_fallback(client, chat_id, path, thumb, caption, width, height, duration, status_msg)
     except RPCError as re:
         logger.warning(f"RPCError during upload: {re}; falling back to document")
-        try:
-            return await client.send_document(chat_id=chat_id, document=path, caption=caption, progress=progress_cb, progress_args=())
-        except Exception:
-            raise
+        return await client.send_document(chat_id=chat_id, document=path, caption=caption, progress=progress_cb, progress_args=())
     except Exception:
         # fallback to document
-        try:
-            return await client.send_document(chat_id=chat_id, document=path, caption=caption, progress=progress_cb, progress_args=())
-        except Exception:
-            raise
+        return await client.send_document(chat_id=chat_id, document=path, caption=caption, progress=progress_cb, progress_args=())
