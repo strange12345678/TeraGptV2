@@ -89,10 +89,6 @@ async def process_video(client, message, user_url: str) -> None:
     filepath: Optional[str] = None
     
     try:
-        # Log user action
-        req_text = f"📥 Requested: {user_url[:50]}..." if len(user_url) > 50 else f"📥 Requested: {user_url}"
-        await log_action(client, uid, req_text)
-        
         play_api_url = Config.TERAAPI_PLAY.format(url=user_url) if hasattr(Config, "TERAAPI_PLAY") else user_url
         log.info(f"Processing link: {user_url} from user {uid}")
         loop = asyncio.get_running_loop()
@@ -139,12 +135,6 @@ async def process_video(client, message, user_url: str) -> None:
             await backup_file(client, filepath, filename, file_size, username, user_url)
         except Exception:
             log.exception("Failed to backup to STORAGE_CHANNEL")
-
-        # Send success log
-        try:
-            await log_action(client, uid, f"✅ Downloaded: {filename} ({file_size})")
-        except Exception:
-            log.exception("Failed to send to LOG_CHANNEL")
             
         # Clean up thumbnail if exists
         if thumb_path and os.path.exists(thumb_path):
@@ -157,7 +147,8 @@ async def process_video(client, message, user_url: str) -> None:
         log.exception("Processing error")
         error_text = f"ERROR: {str(e)}\nLink: {user_url}\nUser: {uid}"
         try:
-            await message.reply("❌ Processing error: " + str(e))
+            # Show clean error to user without API URL
+            await message.reply(f"❌ Processing Error: {str(e)}\n\n🔗 Link: {user_url}")
         except:
             pass
         try:

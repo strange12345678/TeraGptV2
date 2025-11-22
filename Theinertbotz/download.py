@@ -64,51 +64,75 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
 
     CHUNK = 64 * 1024
     timeout = aiohttp.ClientTimeout(total=0, sock_read=120)
-    async with aiohttp.ClientSession(timeout=timeout) as session:
-        async with session.get(url) as resp:
-            resp.raise_for_status()
-            total = int(resp.headers.get("Content-Length") or 0)
-            processed = 0
-            start = time.time()
-            last_t = start
-            last_bytes = 0
-
-            # write streaming
-            with open(filepath, "wb") as f:
-                async for chunk in resp.content.iter_chunked(CHUNK):
-                    if not chunk:
-                        continue
-                    f.write(chunk)
-                    processed += len(chunk)
-
-                    # compute speed & update every ~0.5s (ProgressManager will throttle)
-                    now = time.time()
-                    elapsed = now - last_t
-                    if elapsed >= 0.5:
-                        speed = (processed - last_bytes) / elapsed if (elapsed > 0) else None
-                        try:
-                            await pm.update(processed, total, speed)
-                        except Exception:
-                            log.exception("pm.update failed during download")
-                        last_t = now
-                        last_bytes = processed
-
-            # final update
-            total_time = time.time() - start
-            avg_speed = processed / total_time if total_time > 0 else 0
-            try:
-                await pm.update(processed, total, avg_speed)
-            except Exception:
-                log.exception("pm.update final failed")
-
-    # final message update to indicate finished
-    try:
-        await status_msg.edit_text(f"<b>✅ Download complete:</b>\n{safe_fn}", parse_mode=enums.ParseMode.HTML)
-    except Exception:
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+    max_retries = 2
+    for attempt in range(max_retries):
         try:
-            await client.send_message(message.chat.id, f"✅ Download complete: {safe_fn}")
-        except Exception:
-            pass
+            async with aiohttp.ClientSession(headers=headers, timeout=timeout) as session:
+                async with session.get(url) as resp:
+                    resp.raise_for_status()
+                    total = int(resp.headers.get("Content-Length") or 0)
+                    processed = 0
+                    start = time.time()
+                    last_t = start
+                    last_bytes = 0
 
-    log.info(f"Downloaded file -> {filepath}")
-    return filepath, safe_fn
+                    # write streaming
+                    with open(filepath, "wb") as f:
+                        async for chunk in resp.content.iter_chunked(CHUNK):
+                            if not chunk:
+                                continue
+                            f.write(chunk)
+                            processed += len(chunk)
+
+                            # compute speed & update every ~0.5s (ProgressManager will throttle)
+                            now = time.time()
+                            elapsed = now - last_t
+                            if elapsed >= 0.5:
+                                speed = (processed - last_bytes) / elapsed if (elapsed > 0) else None
+                                try:
+                                    await pm.update(processed, total, speed)
+                                except Exception:
+                                    log.exception("pm.update failed during download")
+                                last_t = now
+                                last_bytes = processed
+
+                    # final update
+                    total_time = time.time() - start
+                    avg_speed = processed / total_time if total_time > 0 else 0
+                    try:
+                        await pm.update(processed, total, avg_speed)
+                    except Exception:
+                        log.exception("pm.update final failed")
+
+            # final message update to indicate finished
+            try:
+                await status_msg.edit_text(f"<b>✅ Download complete:</b>\n{safe_fn}", parse_mode=enums.ParseMode.HTML)
+            except Exception:
+                try:
+                    await client.send_message(message.chat.id, f"✅ Download complete: {safe_fn}")
+                except Exception:
+                    pass
+
+            log.info(f"Downloaded file -> {filepath}")
+            return filepath, safe_fn
+        except aiohttp.ClientPayloadError as e:
+            if attempt < max_retries - 1:
+                log.warning(f"Download attempt {attempt + 1} failed, retrying...")
+                await asyncio.sleep(2)
+                continue
+            else:
+                log.exception(f"Download failed after {max_retries} attempts")
+                try:
+                    await status_msg.edit_text(f"❌ Download failed: Server connection error\nPlease try again", parse_mode=enums.ParseMode.HTML)
+                except Exception:
+                    pass
+                raise Exception("Server connection interrupted. Please try again.")
+        except Exception as e:
+            log.exception(f"Download failed for {url}")
+            try:
+                await status_msg.edit_text(f"❌ Processing Error : {str(e)} \n\n{url}", parse_mode=enums.ParseMode.HTML)
+            except Exception:
+                pass
+            raise
+        break  # Success, exit retry loop
