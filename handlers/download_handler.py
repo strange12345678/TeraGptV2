@@ -35,15 +35,13 @@ def register_handlers(app):
 
             user_id = message.from_user.id
 
-            # Show processing status
-            status_msg = await message.reply(f"⏳ Processing {len(links)} link{'s' if len(links) > 1 else ''}...")
+            # Show processing status (only if multiple links)
+            status_msg = None
+            if len(links) > 1:
+                status_msg = await message.reply(f"⏳ Processing {len(links)} links...")
             
             # Process links sequentially with proper delays
             for idx, link in enumerate(links):
-                # Add delay before processing each link (except the first) to prevent API overload
-                if idx > 0:
-                    await asyncio.sleep(3)
-                
                 # Check download limit for each link
                 can_download, limit_msg = PremiumManager.check_download_limit(user_id)
                 if not can_download:
@@ -52,6 +50,10 @@ def register_handlers(app):
                     except:
                         pass
                     continue
+                
+                # Add delay before processing each link (except the first) to prevent API overload
+                if idx > 0:
+                    await asyncio.sleep(1)
                 
                 # Use semaphore to limit concurrent downloads (1 at a time to avoid API errors)
                 async with download_semaphore:
@@ -67,10 +69,11 @@ def register_handlers(app):
                             pass
             
             # Clean up status message
-            try:
-                await status_msg.delete()
-            except:
-                pass
+            if status_msg:
+                try:
+                    await status_msg.delete()
+                except:
+                    pass
                 
         except Exception as e:
             log.exception("main_handler error")
