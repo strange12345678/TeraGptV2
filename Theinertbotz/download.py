@@ -63,7 +63,7 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
     if not safe_fn:
         safe_fn = f"{int(time.time())}.bin"
     
-    # Apply auto-rename if enabled (check user preference first, then global config)
+    # Get user info for later use in renaming
     user_id = getattr(message.from_user, "id", None) if hasattr(message, "from_user") else None
     username = getattr(message.from_user, "username", "unknown") if hasattr(message, "from_user") else "unknown"
     
@@ -71,15 +71,6 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
         rename_pattern = db.get_user_rename_setting(user_id)
     else:
         rename_pattern = getattr(Config, "AUTO_RENAME", "")
-    
-    if rename_pattern:
-        # Prepare variables for custom rename pattern
-        variables = {
-            "file_size": "unknown",  # Will be updated after download
-            "username": username or str(user_id),
-            "user_id": str(user_id) if user_id else "unknown"
-        }
-        safe_fn = auto_rename_file(safe_fn, rename_pattern, variables)
     
     filepath = os.path.join(getattr(Config, "DOWNLOAD_DIR", "downloads"), safe_fn)
 
@@ -126,6 +117,35 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
                     except Exception:
                         log.exception("pm.update final failed")
 
+            # Apply rename AFTER download if needed, now we have the file size
+            if rename_pattern and os.path.exists(filepath):
+                file_size_bytes = os.path.getsize(filepath)
+                # Convert bytes to human readable format
+                for unit in ['B', 'KB', 'MB', 'GB']:
+                    if file_size_bytes < 1024:
+                        file_size_str = f"{file_size_bytes:.1f}{unit}"
+                        break
+                    file_size_bytes /= 1024
+                else:
+                    file_size_str = f"{file_size_bytes:.1f}TB"
+                
+                # Prepare variables with actual file size
+                variables = {
+                    "file_size": file_size_str,
+                    "username": username or str(user_id),
+                    "user_id": str(user_id) if user_id else "unknown"
+                }
+                new_fn = auto_rename_file(safe_fn, rename_pattern, variables)
+                if new_fn != safe_fn:
+                    new_filepath = os.path.join(getattr(Config, "DOWNLOAD_DIR", "downloads"), new_fn)
+                    try:
+                        os.rename(filepath, new_filepath)
+                        filepath = new_filepath
+                        safe_fn = new_fn
+                        log.info(f"Renamed file: {safe_fn}")
+                    except Exception as e:
+                        log.warning(f"Failed to rename file: {e}")
+            
             # final message update to indicate finished
             try:
                 await status_msg.edit_text(f"<b>✅ Download complete:</b>\n{safe_fn}", parse_mode=enums.ParseMode.HTML)
