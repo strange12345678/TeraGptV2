@@ -28,20 +28,35 @@ Simply send a <code>TeraBox</code> link and I'll:
 
     # ===== Help & Commands =====
     COMMANDS_TEXT = """
-<b>📋 Available Commands:</b>
+<b>📋 All Available Commands:</b>
 
+<b>🎯 User Commands:</b>
 <b>/start</b> - Show welcome message
-<b>/help</b> - Show this message
-<b>/rename</b> - View rename settings
-<b>/set_rename &lt;pattern&gt;</b> - Set custom naming
+<b>/help</b> - Show all commands
+<b>/premium</b> - Premium info & upgrade options
+<b>/rename</b> - View/manage rename settings
+<b>/set_rename &lt;pattern&gt;</b> - Set custom file naming
+
+<b>💎 Premium Commands:</b>
+<b>/set_upload_channel &lt;channel_id&gt;</b> - Auto-upload to channel
+<b>/remove_upload_channel</b> - Remove auto-upload channel
+<b>/toggle_autodelete</b> - Toggle auto-delete feature
 
 <b>📌 Rename Variables:</b>
 • {file_name} • {file_size}
 • {username} • {user_id}
 • {date} • {time} • {timestamp}
 
-<b>💡 Example:</b>
+<b>💡 Example Patterns:</b>
 <code>/set_rename @Theinertbotz_{file_name}_{file_size}</code>
+<code>/set_rename {{username}}_{{date}}_{{file_name}}</code>
+
+<b>📊 How It Works:</b>
+Simply send TeraBox links and the bot will download & send them with:
+✅ Auto-generated video thumbnails
+✅ Real-time progress tracking
+✅ Custom file naming
+✅ Multi-file support
 """
 
     # ===== About =====

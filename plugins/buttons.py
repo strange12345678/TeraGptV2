@@ -18,6 +18,7 @@ START_BUTTONS = InlineKeyboardMarkup([
 
 # Help command buttons (with back to start)
 HELP_BUTTONS = InlineKeyboardMarkup([
+    [InlineKeyboardButton("❓️ How to Use", url="https://t.me/TheInertBotz")],
     [InlineKeyboardButton("🔄 Rename Help", callback_data="rename_help")],
     [InlineKeyboardButton("💎 Premium", callback_data="premium")],
     [InlineKeyboardButton("← Back to Menu", callback_data="start")]
