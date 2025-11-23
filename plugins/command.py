@@ -50,27 +50,15 @@ def register_commands(app):
             # Show typing indicator for smooth transition
             await client.send_chat_action(callback_query.message.chat.id, enums.ChatAction.TYPING)
             
-            # Check if current message is a photo (from upgrade page)
-            if callback_query.message.photo:
-                # Delete the photo and send new one
-                await callback_query.message.delete()
-                await client.send_photo(
-                    chat_id=callback_query.message.chat.id,
-                    photo=Config.START_IMG,
-                    caption=Script.START_TEXT,
-                    reply_markup=MAIN_MENU,
-                    parse_mode=enums.ParseMode.HTML
-                )
-            else:
-                # If it's a text message, edit it to show photo
-                await callback_query.message.delete()
-                await client.send_photo(
-                    chat_id=callback_query.message.chat.id,
-                    photo=Config.START_IMG,
-                    caption=Script.START_TEXT,
-                    reply_markup=MAIN_MENU,
-                    parse_mode=enums.ParseMode.HTML
-                )
+            # Send new message first, then delete old one for smooth transition
+            await client.send_photo(
+                chat_id=callback_query.message.chat.id,
+                photo=Config.START_IMG,
+                caption=Script.START_TEXT,
+                reply_markup=MAIN_MENU,
+                parse_mode=enums.ParseMode.HTML
+            )
+            await callback_query.message.delete()
         except Exception:
             log.exception("start_callback error")
     

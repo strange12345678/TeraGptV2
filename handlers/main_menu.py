@@ -119,15 +119,15 @@ def register_handlers(app):
             await callback_query.answer()
             # Show typing indicator for smooth transition
             await client.send_chat_action(callback_query.message.chat.id, ChatAction.TYPING)
-            # Delete the current message and send a new one with the main menu image
-            await callback_query.message.delete()
-            await client.send_photo(
+            # Send new message first, then delete old one for smooth transition
+            new_msg = await client.send_photo(
                 chat_id=callback_query.message.chat.id,
                 photo=Config.START_IMG,
                 caption=Script.START_TEXT,
                 reply_markup=MAIN_MENU,
                 parse_mode=enums.ParseMode.HTML
             )
+            await callback_query.message.delete()
         except Exception:
             log.exception("back_to_menu_callback error")
 

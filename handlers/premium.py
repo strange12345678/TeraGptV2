@@ -31,14 +31,14 @@ def register_handlers(app):
             
             # Check if current message is a photo (from upgrade page)
             if callback_query.message.photo:
-                # Delete the photo message and send new text message
-                await callback_query.message.delete()
+                # Send new text message first, then delete old photo for smooth transition
                 await client.send_message(
                     chat_id=callback_query.message.chat.id,
                     text=text,
                     reply_markup=PREMIUM_STATUS_BUTTONS,
                     parse_mode=enums.ParseMode.HTML
                 )
+                await callback_query.message.delete()
             else:
                 # If it's a text message, just edit it
                 await callback_query.message.edit_text(text, reply_markup=PREMIUM_STATUS_BUTTONS, parse_mode=enums.ParseMode.HTML)
@@ -49,8 +49,9 @@ def register_handlers(app):
     async def premium_upgrade_callback(client, callback_query):
         try:
             await callback_query.answer()
-            # Delete old message and send new photo
-            await callback_query.message.delete()
+            # Send typing indicator for smooth transition
+            await client.send_chat_action(callback_query.message.chat.id, enums.ChatAction.TYPING)
+            # Send new photo first, then delete old message for smooth transition
             await client.send_photo(
                 chat_id=callback_query.message.chat.id,
                 photo=Config.QR_CODE,
@@ -58,6 +59,7 @@ def register_handlers(app):
                 parse_mode=enums.ParseMode.HTML,
                 reply_markup=PREMIUM_UPGRADE_BUTTONS
             )
+            await callback_query.message.delete()
         except Exception:
             log.exception("premium_upgrade_callback error")
 
