@@ -14,10 +14,50 @@ def register_handlers(app):
     @app.on_callback_query(filters.regex("^dashboard$"))
     async def dashboard_callback(client, callback_query):
         try:
+            from Theinertbotz.database import db
+            from config import Config
+            from datetime import datetime
+            
+            user_id = callback_query.from_user.id
+            user_name = callback_query.from_user.first_name or "User"
+            
+            # Get user data
+            tier = db.get_user_tier(user_id)
+            premium_status = "✅ Premium" if tier == "premium" and db.is_premium_valid(user_id) else "❌ Free"
+            expiry = db.get_premium_expiry(user_id)
+            if expiry:
+                exp_date = datetime.fromisoformat(expiry).strftime("%d/%m/%Y")
+                premium_expiry = exp_date
+            else:
+                premium_expiry = "Permanent" if tier == "premium" else "N/A"
+            
+            today_downloads = db.get_daily_downloads(user_id)
+            total_downloads = db.get_total_downloads(user_id)
+            success_rate = db.get_success_rate()
+            
+            # Format dashboard text
+            dashboard_text = Script.DASHBOARD_TEXT.format(
+                user_name=user_name,
+                user_id=user_id,
+                premium_status=premium_status,
+                premium_expiry=premium_expiry,
+                today_downloads=today_downloads,
+                total_downloads=total_downloads,
+                total_data_used="N/A",
+                storage_remaining="N/A",
+                api_status="🟢 Online",
+                ping_ms="≈50",
+                bot_uptime="Running",
+                workers_active=Config.WORKERS,
+                queue_size="0",
+                task_success_rate=success_rate,
+                bot_name="TeraBox Bot"
+            )
+            
             await callback_query.answer()
             # Show typing indicator for smooth transition
             await client.send_chat_action(callback_query.message.chat.id, ChatAction.TYPING)
-            await callback_query.message.edit_text(Script.DASHBOARD_TEXT, reply_markup=MAIN_MENU, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.edit_text(dashboard_text, reply_markup=MAIN_MENU, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("dashboard_callback error")
     

@@ -165,5 +165,18 @@ class Database:
         if doc:
             return doc.get("enabled", True)  # Default to True
         return True
+    
+    def get_total_downloads(self, user_id):
+        """Get total number of files downloaded by user (all time)."""
+        total = self.logs.count_documents({"user_id": user_id})
+        return total
+    
+    def get_success_rate(self):
+        """Get overall success rate (percentage of successful operations)."""
+        total_logs = self.logs.count_documents({})
+        if total_logs == 0:
+            return 100
+        success_logs = self.logs.count_documents({"status": "success"})
+        return int((success_logs / total_logs) * 100)
 
 db = Database()

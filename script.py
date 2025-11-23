@@ -69,20 +69,40 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 """
 
     # ===== Dashboard =====
-    DASHBOARD_TEXT = """
-<b>📊 Dashboard</b>
+    DASHBOARD_TEXT = """<b>📊 ᴅᴀsʜʙᴏᴀʀᴅ ᴏᴠᴇʀᴠɪᴇᴡ</b>
 
-<b>📈 Your Statistics:</b>
-• Account Status: Active
-• Downloads Today: Loading...
-• Premium Status: Checking...
-• Upload Directory: Ready
+👤 <b>User:</b> {user_name}  
+🆔 <b>User ID:</b> <code>{user_id}</code>  
+💠 <b>Premium:</b> {premium_status}  
+⏳ <b>Expiry:</b> {premium_expiry}
 
-<b>⚙️ Quick Actions:</b>
-Type <code>/help</code> to see all commands
-Use <code>/rename</code> to manage file naming
-Check <code>/premium</code> for upgrade info
-"""
+━━━━━━━━━━━━━━━━━━
+
+📁 <b>Your Usage</b>  
+🔹 ᴛᴏᴅᴀʏ's ᴅᴏᴡɴʟᴏᴀᴅs: <b>{today_downloads}</b>  
+🔹 ᴛᴏᴛᴀʟ ꜰɪʟᴇs ᴘʀᴏᴄᴇssᴇᴅ: <b>{total_downloads}</b>  
+🔹 ᴅᴀᴛᴀ ᴜsᴇᴅ: <b>{total_data_used}</b>  
+🔹 ꜱᴛᴏʀᴀɢᴇ ʟᴇꜰᴛ: <b>{storage_remaining}</b>
+
+━━━━━━━━━━━━━━━━━━
+
+⚙️ <b>Bot Status</b>  
+🟢 ᴀᴘɪ sᴛᴀᴛᴜs: <b>{api_status}</b>  
+📡 ᴘɪɴɢ: <b>{ping_ms} ms</b>  
+⏱️ ᴜᴘᴛɪᴍᴇ: <b>{bot_uptime}</b>  
+🧵 ᴀᴄᴛɪᴠᴇ ᴡᴏʀᴋᴇʀs: <b>{workers_active}</b>  
+📥 ǫᴜᴇᴜᴇ sɪᴢᴇ: <b>{queue_size}</b>
+
+━━━━━━━━━━━━━━━━━━
+
+🧾 <b>Logs</b>  
+  
+📊 sᴜᴄᴄᴇss ʀᴀᴛᴇ: <b>{task_success_rate}%</b>
+
+━━━━━━━━━━━━━━━━━━
+
+<b>✨ ᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴜsɪɴɢ {bot_name}!</b>
+<blockquote><u><b>𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗕𝘆 :</b></u> The Inert Botz (https://t.me/theinertbotz) </blockquote>"""
 
     # ===== Settings =====
     SETTINGS_TEXT = """
