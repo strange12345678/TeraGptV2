@@ -3,7 +3,7 @@ from pyrogram import filters, enums
 from pyrogram.enums import ChatAction
 import logging
 from script import Script
-from plugins.buttons import MAIN_MENU, PREMIUM_BUTTONS, HELP_BUTTONS
+from plugins.buttons import MAIN_MENU, PREMIUM_BUTTONS, HELP_BUTTONS, DASHBOARD_BACK_BUTTON
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -57,7 +57,7 @@ def register_handlers(app):
             await callback_query.answer()
             # Show typing indicator for smooth transition
             await client.send_chat_action(callback_query.message.chat.id, ChatAction.TYPING)
-            await callback_query.message.edit_text(dashboard_text, reply_markup=MAIN_MENU, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.edit_text(dashboard_text, reply_markup=DASHBOARD_BACK_BUTTON, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("dashboard_callback error")
     
