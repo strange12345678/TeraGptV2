@@ -1,24 +1,13 @@
 # plugins/buttons.py
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-# Main menu (Reply Keyboard - persistent at bottom)
-MAIN_MENU = ReplyKeyboardMarkup(
-    keyboard=[
-        [
-            KeyboardButton("📊 ᴅᴀꜱʜʙᴏᴀʀᴅ")
-        ],
-        [
-            KeyboardButton("💬 ꜱᴜᴘᴘᴏʀᴛ 💬"), KeyboardButton("🔄 ᴜᴘᴅᴀᴛᴇ 🔄")
-        ],
-        [
-            KeyboardButton("💎 ᴘʀᴇᴍɪᴜᴍ 💎"), KeyboardButton("❓ ʜᴇʟᴘ")
-        ],
-        [
-            KeyboardButton("⚙️ sᴇᴛᴛɪɴɢs ⚙️"), KeyboardButton("ℹ️ ᴀʙᴏᴜᴛ ℹ️")
-        ]
-    ],
-    resize_keyboard=True
-)
+# Main menu (Inline Keyboard)
+MAIN_MENU = InlineKeyboardMarkup([
+    [InlineKeyboardButton("📊 ᴅᴀꜱʜʙᴏᴀʀᴅ", callback_data="dashboard")],
+    [InlineKeyboardButton("💬 ꜱᴜᴘᴘᴏʀᴛ 💬", url="https://t.me/TheInertBotzchat"), InlineKeyboardButton("🔄 ᴜᴘᴅᴀᴛᴇ 🔄", url="https://t.me/theinertbotz")],
+    [InlineKeyboardButton("💎 ᴘʀᴇᴍɪᴜᴍ 💎", callback_data="premium"), InlineKeyboardButton("❓ ʜᴇʟᴘ", callback_data="help")],
+    [InlineKeyboardButton("⚙️ sᴇᴛᴛɪɴɢs ⚙️", callback_data="settings"), InlineKeyboardButton("ℹ️ ᴀʙᴏᴜᴛ ℹ️", callback_data="about")]
+])
 
 # Start command buttons (inline)
 START_BUTTONS = InlineKeyboardMarkup([
