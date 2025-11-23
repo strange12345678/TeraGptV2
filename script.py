@@ -380,3 +380,19 @@ Use buttons below to manage users.
     AUTO_DELETE_DISABLED = "⏹️ <b>ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴅɪsᴀʙʟᴇᴅ</b>\n\n⏱️ Video messages will <b>NOT</b> auto-delete.\n\n⚠️ <i>Remember to manage your storage manually</i>"
     
     AUTO_DELETE_NOTIFY = "⏰ <b>ᴀᴜᴛᴏ ᴅᴇʟᴇᴛᴇ ɪɴ 5 sᴇᴄᴏɴᴅs</b> 🗑️\n\n💡 <i>This helps prevent copyright issues on Telegram</i>"
+    
+    SET_AUTO_DELETE_USAGE = """<b>⏱️ Set Auto-Delete Time</b>
+
+<b>Usage:</b> <code>/set_auto_delete &lt;time&gt;</code>
+
+<b>Format:</b>
+• <code>s</code> = seconds
+• <code>m</code> = minutes
+• <code>h</code> = hours
+
+<b>Examples:</b>
+<code>/set_auto_delete 30s</code> - Delete in 30 seconds
+<code>/set_auto_delete 5m</code> - Delete in 5 minutes
+<code>/set_auto_delete 1h</code> - Delete in 1 hour
+
+<code>/remove_auto_delete</code> - Disable auto-delete"""

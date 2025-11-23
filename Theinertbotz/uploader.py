@@ -150,13 +150,19 @@ async def upload_file(client, message, filepath, bot_username: str):
         
         user_id = message.from_user.id if message.from_user else None
         should_auto_delete = True
+        delete_time = 5  # Default to 5 seconds
+        
         if user_id:
             should_auto_delete = db.get_user_auto_delete(user_id)
+            # Get custom delete time from global settings
+            custom_time = db.get_auto_delete_time()
+            if custom_time:
+                delete_time = custom_time
         
         if should_auto_delete:
             # Send the auto-delete notification
             notify_msg = await message.reply(Script.AUTO_DELETE_NOTIFY, parse_mode=enums.ParseMode.HTML)
-            await asyncio.sleep(5)
+            await asyncio.sleep(delete_time)
             try:
                 await notify_msg.delete()
             except:
