@@ -56,8 +56,6 @@ def register_handlers(app):
             )
             
             await callback_query.answer()
-            # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, ChatAction.TYPING)
             await callback_query.message.edit_text(dashboard_text, reply_markup=DASHBOARD_BACK_BUTTON, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("dashboard_callback error")
@@ -67,8 +65,6 @@ def register_handlers(app):
     async def premium_callback(client, callback_query):
         try:
             await callback_query.answer()
-            # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, ChatAction.TYPING)
             await callback_query.message.edit_text(Script.PREMIUM_INFO, reply_markup=PREMIUM_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("premium_callback error")
@@ -78,8 +74,6 @@ def register_handlers(app):
     async def help_callback(client, callback_query):
         try:
             await callback_query.answer()
-            # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, ChatAction.TYPING)
             await callback_query.message.edit_text(Script.COMMANDS_TEXT, reply_markup=HELP_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("help_callback error")
@@ -90,8 +84,6 @@ def register_handlers(app):
         try:
             from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
             await callback_query.answer()
-            # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, ChatAction.TYPING)
             await callback_query.message.edit_text(Script.SETTINGS_TEXT, reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton("← Back to Menu", callback_data="back_to_menu")]
             ]), parse_mode=enums.ParseMode.HTML)
@@ -104,8 +96,6 @@ def register_handlers(app):
         try:
             from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
             await callback_query.answer()
-            # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, ChatAction.TYPING)
             await callback_query.message.edit_text(Script.ABOUT_TEXT, reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton("← Back to Menu", callback_data="back_to_menu")]
             ]), parse_mode=enums.ParseMode.HTML)
@@ -117,8 +107,6 @@ def register_handlers(app):
     async def back_to_menu_callback(client, callback_query):
         try:
             await callback_query.answer()
-            # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, ChatAction.TYPING)
             # Send new message first, then delete old one for smooth transition
             new_msg = await client.send_photo(
                 chat_id=callback_query.message.chat.id,

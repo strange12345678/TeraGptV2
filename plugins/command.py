@@ -47,9 +47,6 @@ def register_commands(app):
         from config import Config
         try:
             await callback_query.answer()
-            # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, enums.ChatAction.TYPING)
-            
             # Send new message first, then delete old one for smooth transition
             await client.send_photo(
                 chat_id=callback_query.message.chat.id,
@@ -81,8 +78,6 @@ def register_commands(app):
             
             text = Script.RENAME_HELP_TEXT.format(status=status)
             await callback_query.answer()
-            # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, enums.ChatAction.TYPING)
             await callback_query.message.edit_text(text, reply_markup=RENAME_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("rename_help_callback error")

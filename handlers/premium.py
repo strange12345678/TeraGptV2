@@ -26,8 +26,6 @@ def register_handlers(app):
             status = PremiumManager.get_user_status(user_id)
             text = Script.PREMIUM_STATUS.format(status=status)
             await callback_query.answer()
-            # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, enums.ChatAction.TYPING)
             
             # Check if current message is a photo (from upgrade page)
             if callback_query.message.photo:
@@ -49,8 +47,6 @@ def register_handlers(app):
     async def premium_upgrade_callback(client, callback_query):
         try:
             await callback_query.answer()
-            # Send typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, enums.ChatAction.TYPING)
             # Send new photo first, then delete old message for smooth transition
             await client.send_photo(
                 chat_id=callback_query.message.chat.id,
