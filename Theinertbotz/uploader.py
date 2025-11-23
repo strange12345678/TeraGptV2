@@ -2,11 +2,32 @@ import os
 import time
 import logging
 import asyncio
+import subprocess
 from pyrogram import enums
 from Theinertbotz.processing import ProgressManager, human_size  # keep if used elsewhere
 from Theinertbotz.thumbnail import generate_thumbnail
 
 log = logging.getLogger("TeraBoxBot")
+
+def get_video_duration(filepath: str) -> int:
+    """
+    Extract video duration in seconds using ffprobe.
+    Returns duration in seconds, or 0 if extraction fails.
+    """
+    try:
+        cmd = [
+            "ffprobe", "-v", "error",
+            "-show_entries", "format=duration",
+            "-of", "default=noprint_wrappers=1:nokey=1",
+            filepath
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        if result.returncode == 0:
+            duration = int(float(result.stdout.strip()))
+            return duration
+    except Exception as e:
+        log.warning(f"Failed to extract video duration: {e}")
+    return 0
 
 
 async def upload_file(client, message, filepath, bot_username: str):
@@ -87,11 +108,19 @@ async def upload_file(client, message, filepath, bot_username: str):
     # Upload as video (Pyrogram handles chunking). Provide a simple caption.
     ############################################################################
     try:
+        # Get video duration if it's a video file
+        duration = 0
+        if is_video:
+            duration = get_video_duration(filepath)
+            if duration > 0:
+                log.info(f"Video duration: {duration} seconds")
+        
         await client.send_video(
             chat_id=message.chat.id,
             video=filepath,
             caption=f"<b>Uploaded:</b> {filename}",
             thumb=thumbnail_path,
+            duration=duration if is_video else None,
             parse_mode=enums.ParseMode.HTML,
             supports_streaming=True,
             progress=_progress_cb,
