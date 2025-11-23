@@ -1,6 +1,7 @@
 # Theinertbotz/api.py
 import requests
 import logging
+from urllib.parse import quote
 from config import Config
 
 log = logging.getLogger("TeraBoxBot")
@@ -11,9 +12,12 @@ def fetch_play_html(url: str, timeout=20):
     Tries primary API first, then falls back to secondary API if primary fails.
     Caller should handle exceptions (HTTPError, Timeout, etc).
     """
+    # URL-encode the parameters properly
+    encoded_url = quote(url, safe=':/?=&')
+    
     apis = [
-        ("Primary (TeraAPI)", Config.TERAAPI_PLAY.format(url=url)),
-        ("Secondary (iTeraPlay)", Config.ITERAPLAY_API.format(url=url))
+        ("Primary (TeraAPI)", Config.TERAAPI_PLAY.format(url=encoded_url)),
+        ("Secondary (iTeraPlay)", Config.ITERAPLAY_API.format(url=encoded_url))
     ]
     
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -21,10 +25,10 @@ def fetch_play_html(url: str, timeout=20):
     
     for api_name, api_url in apis:
         try:
-            log.info(f"Trying {api_name}: {api_url[:50]}...")
+            log.info(f"Trying {api_name}: {api_url[:60]}...")
             r = requests.get(api_url, timeout=timeout, headers=headers)
             r.raise_for_status()
-            log.info(f"✅ {api_name} succeeded")
+            log.info(f"✅ {api_name} succeeded (response: {len(r.text)} bytes)")
             return r.text
         except requests.exceptions.Timeout:
             last_error = f"{api_name} - Timeout"
