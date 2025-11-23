@@ -48,7 +48,8 @@ async def upload_file(client, message, filepath, bot_username: str):
             status_msg = None
 
     async def edit_coro(text, parse_mode=enums.ParseMode.HTML):
-        return await status_msg.edit_text(text, parse_mode=parse_mode)
+        if status_msg:
+            return await status_msg.edit_text(text, parse_mode=parse_mode)
 
     # Initialize ProgressManager for upload
     pm = ProgressManager(edit_coro, bot_username=bot_username, kind="upload")
