@@ -51,9 +51,9 @@ def register_handlers(app):
                         pass
                     continue
                 
-                # Add delay before processing each link (except the first) to prevent API overload
+                # Add delay before processing each link (except the first) to prevent Telegram rate limiting
                 if idx > 0:
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(5)
                 
                 # Use semaphore to limit concurrent downloads (1 at a time to avoid API errors)
                 async with download_semaphore:

@@ -27,9 +27,14 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
     # Create a status message
     try:
         status_msg = await message.reply("⏳ Fetching download...", quote=True)
+        await asyncio.sleep(2)  # Delay to prevent Telegram rate limiting
     except Exception:
         # fallback: send_message
-        status_msg = await client.send_message(message.chat.id, "⏳ Fetching download...")
+        try:
+            status_msg = await client.send_message(message.chat.id, "⏳ Fetching download...")
+            await asyncio.sleep(2)
+        except Exception:
+            status_msg = None
 
     async def edit_coro(text, parse_mode=enums.ParseMode.HTML):
         return await status_msg.edit_text(text, parse_mode=parse_mode)

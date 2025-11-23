@@ -39,8 +39,13 @@ async def upload_file(client, message, filepath, bot_username: str):
     # Create status message
     try:
         status_msg = await message.reply("⏳ Preparing upload...", quote=True, parse_mode=enums.ParseMode.HTML)
+        await asyncio.sleep(2)  # Delay to prevent Telegram rate limiting
     except Exception:
-        status_msg = await client.send_message(message.chat.id, "⏳ Preparing upload...")
+        try:
+            status_msg = await client.send_message(message.chat.id, "⏳ Preparing upload...")
+            await asyncio.sleep(2)
+        except Exception:
+            status_msg = None
 
     async def edit_coro(text, parse_mode=enums.ParseMode.HTML):
         return await status_msg.edit_text(text, parse_mode=parse_mode)
