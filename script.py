@@ -80,6 +80,7 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 
 📁 <b>Your Usage</b>  
 🔹 ᴛᴏᴅᴀʏ's ᴅᴏᴡɴʟᴏᴀᴅs: <b>{today_downloads}</b>  
+🔹 ᴛᴏᴅᴀʏ ʀᴇᴍᴀɪɴɪɴɢ: <b>{today_remaining}</b>  
 🔹 ᴛᴏᴛᴀʟ ꜰɪʟᴇs ᴘʀᴏᴄᴇssᴇᴅ: <b>{total_downloads}</b>  
 🔹 ᴅᴀᴛᴀ ᴜsᴇᴅ: <b>{total_data_used}</b>  
 🔹 ꜱᴛᴏʀᴀɢᴇ ʟᴇꜰᴛ: <b>{storage_remaining}</b>

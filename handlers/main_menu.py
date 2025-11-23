@@ -33,6 +33,9 @@ def register_handlers(app):
                 premium_expiry = "Permanent" if tier == "premium" else "N/A"
             
             today_downloads = db.get_daily_downloads(user_id)
+            today_remaining = db.get_remaining_downloads(user_id)
+            if today_remaining == float('inf'):
+                today_remaining = "∞"
             total_downloads = db.get_total_downloads(user_id)
             success_rate = db.get_success_rate()
             
@@ -43,6 +46,7 @@ def register_handlers(app):
                 premium_status=premium_status,
                 premium_expiry=premium_expiry,
                 today_downloads=today_downloads,
+                today_remaining=today_remaining,
                 total_downloads=total_downloads,
                 total_data_used="N/A",
                 storage_remaining="N/A",

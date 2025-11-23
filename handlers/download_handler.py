@@ -30,18 +30,21 @@ def register_handlers(app):
                 return
 
             user_id = message.from_user.id
-            
-            # Check download limit for each link
-            can_download, status_msg = PremiumManager.check_download_limit(user_id)
-            if not can_download:
-                await message.reply(status_msg, parse_mode=enums.ParseMode.HTML)
-                return
 
             # Show processing status
             status_msg = await message.reply(f"⏳ Processing {len(links)} link{'s' if len(links) > 1 else ''}...")
             
             # Process one by one
             for idx, link in enumerate(links):
+                # Check download limit for each link
+                can_download, limit_msg = PremiumManager.check_download_limit(user_id)
+                if not can_download:
+                    try:
+                        await message.reply(f"⏹️ <b>Link {idx+1} skipped:</b> {limit_msg}", parse_mode=enums.ParseMode.HTML)
+                    except:
+                        pass
+                    continue
+                
                 log.info(f"Processing link {idx+1}/{len(links)}: {link} from user {user_id}")
                 try:
                     await process_video(client, message, link.strip())
