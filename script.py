@@ -68,6 +68,57 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 @Theinertbotz
 """
 
+    # ===== Dashboard =====
+    DASHBOARD_TEXT = """
+<b>📊 Dashboard</b>
+
+<b>📈 Your Statistics:</b>
+• Account Status: Active
+• Downloads Today: Loading...
+• Premium Status: Checking...
+• Upload Directory: Ready
+
+<b>⚙️ Quick Actions:</b>
+Type <code>/help</code> to see all commands
+Use <code>/rename</code> to manage file naming
+Check <code>/premium</code> for upgrade info
+"""
+
+    # ===== Settings =====
+    SETTINGS_TEXT = """
+<b>⚙️ Settings</b>
+
+<b>🎛️ Available Settings:</b>
+• <code>/rename</code> - File naming preferences
+• <code>/set_rename &lt;pattern&gt;</code> - Custom patterns
+• Premium settings in <code>/premium</code>
+
+<b>💡 Tip:</b>
+All your settings are automatically saved and synced across devices.
+"""
+
+    # ===== Premium Info =====
+    PREMIUM_INFO = """
+<b>💎 Premium Membership</b>
+
+<b>🎯 Unlock Premium Features:</b>
+• ✅ Unlimited downloads (no daily limits)
+• ✅ Priority support & faster responses
+• ✅ Advanced file naming options
+• ✅ Custom branding
+• ✅ No ads or watermarks
+
+<b>📊 Current Plan:</b>
+• Free: 5 downloads per day
+• Premium: Unlimited downloads
+
+<b>💰 Upgrade Options:</b>
+• Monthly: $4.99/month
+• Yearly: $39.99/year (Save 33%)
+
+Click the button below to upgrade now!
+"""
+
     # ===== Rename Settings =====
     RENAME_HELP_TEXT = """
 <b>🔄 Auto-Rename Settings</b>

@@ -22,7 +22,7 @@ def register_commands(app):
                 username = message.from_user.username or message.from_user.first_name or "Unknown"
                 await log_action(client, user_id, f"🆕 New User: @{username}")
 
-            await message.reply(Script.START_TEXT, reply_markup=START_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await message.reply(Script.START_TEXT, reply_markup=MAIN_MENU, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("start_cmd error")
     
