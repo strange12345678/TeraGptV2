@@ -190,5 +190,17 @@ class Database:
             return 100
         success_logs = self.logs.count_documents({"status": "success"})
         return int((success_logs / total_logs) * 100)
+    
+    def get_user_auto_delete(self, user_id):
+        """Get user's auto-delete preference. Returns True by default."""
+        user = self.users.find_one({"_id": user_id})
+        if user:
+            return user.get("auto_delete_msgs", True)
+        return True
+    
+    def set_user_auto_delete(self, user_id, enabled):
+        """Set user's auto-delete preference for video messages."""
+        self.users.update_one({"_id": user_id}, {"$set": {"auto_delete_msgs": enabled}}, upsert=True)
+        return True
 
 db = Database()

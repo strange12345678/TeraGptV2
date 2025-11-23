@@ -142,11 +142,29 @@ async def upload_file(client, message, filepath, bot_username: str):
             pass
         raise
 
-    # Final update with auto-delete after 5 seconds
+    # Final update with auto-delete notification
     try:
+        # Send auto-delete warning message
+        from plugins.script import Script
+        from Theinertbotz.database import db
+        
+        user_id = message.from_user.id if message.from_user else None
+        should_auto_delete = True
+        if user_id:
+            should_auto_delete = db.get_user_auto_delete(user_id)
+        
+        if should_auto_delete:
+            # Send the auto-delete notification
+            notify_msg = await message.reply(Script.AUTO_DELETE_NOTIFY, parse_mode=enums.ParseMode.HTML)
+            await asyncio.sleep(5)
+            try:
+                await notify_msg.delete()
+            except:
+                pass
+        
+        # Update status message
         await status_msg.edit_text(f"<b>✅ Upload complete:</b>\n{filename}", parse_mode=enums.ParseMode.HTML)
-        # Auto-delete after 5 seconds
-        await asyncio.sleep(5)
+        await asyncio.sleep(2)
         await status_msg.delete()
     except Exception:
         pass

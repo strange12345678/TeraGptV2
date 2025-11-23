@@ -7,7 +7,7 @@ from pyrogram.types import Message
 from config import Config
 from Theinertbotz.engine import process_video
 from Theinertbotz.database import db
-from script import Script
+from plugins.script import Script
 from plugins.buttons import LIMIT_REACHED_BUTTONS
 
 log = logging.getLogger("TeraBoxBot")
