@@ -39,3 +39,6 @@ class Config:
     
     # Premium QR Code image URL
     QR_CODE = "https://i.ibb.co/hFjZ6CWD/photo-2025-08-10-02-24-51-7536777335068950548.jpg"
+    
+    # Start page image
+    START_IMG = "https://i.ibb.co/TBH7WZGs/photo-2025-11-23-03-01-55-7575750765961019396.jpg"

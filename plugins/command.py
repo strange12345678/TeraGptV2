@@ -14,6 +14,7 @@ def register_commands(app):
     @app.on_message(filters.command("start") & filters.private)
     async def start_cmd(client, message):
         from plugins.log_channel import log_action
+        from config import Config
         try:
             user_id = message.from_user.id
             is_new = db.add_user(user_id)
@@ -22,7 +23,13 @@ def register_commands(app):
                 username = message.from_user.username or message.from_user.first_name or "Unknown"
                 await log_action(client, user_id, f"🆕 New User: @{username}")
 
-            await message.reply(Script.START_TEXT, reply_markup=MAIN_MENU, parse_mode=enums.ParseMode.HTML)
+            await client.send_photo(
+                chat_id=message.chat.id,
+                photo=Config.START_IMG,
+                caption=Script.START_TEXT,
+                reply_markup=MAIN_MENU,
+                parse_mode=enums.ParseMode.HTML
+            )
         except Exception:
             log.exception("start_cmd error")
     
@@ -37,11 +44,33 @@ def register_commands(app):
     # ===== Start Button Callback =====
     @app.on_callback_query(filters.regex("^start$"))
     async def start_callback(client, callback_query):
+        from config import Config
         try:
             await callback_query.answer()
             # Show typing indicator for smooth transition
             await client.send_chat_action(callback_query.message.chat.id, enums.ChatAction.TYPING)
-            await callback_query.message.edit_text(Script.START_TEXT, reply_markup=MAIN_MENU, parse_mode=enums.ParseMode.HTML)
+            
+            # Check if current message is a photo (from upgrade page)
+            if callback_query.message.photo:
+                # Delete the photo and send new one
+                await callback_query.message.delete()
+                await client.send_photo(
+                    chat_id=callback_query.message.chat.id,
+                    photo=Config.START_IMG,
+                    caption=Script.START_TEXT,
+                    reply_markup=MAIN_MENU,
+                    parse_mode=enums.ParseMode.HTML
+                )
+            else:
+                # If it's a text message, edit it to show photo
+                await callback_query.message.delete()
+                await client.send_photo(
+                    chat_id=callback_query.message.chat.id,
+                    photo=Config.START_IMG,
+                    caption=Script.START_TEXT,
+                    reply_markup=MAIN_MENU,
+                    parse_mode=enums.ParseMode.HTML
+                )
         except Exception:
             log.exception("start_callback error")
     
