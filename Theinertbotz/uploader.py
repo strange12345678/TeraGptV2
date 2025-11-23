@@ -106,9 +106,12 @@ async def upload_file(client, message, filepath, bot_username: str):
             pass
         raise
 
-    # Final update (best-effort)
+    # Final update with auto-delete after 5 seconds
     try:
         await status_msg.edit_text(f"<b>✅ Upload complete:</b>\n{filename}", parse_mode=enums.ParseMode.HTML)
+        # Auto-delete after 5 seconds
+        await asyncio.sleep(5)
+        await status_msg.delete()
     except Exception:
         pass
 
