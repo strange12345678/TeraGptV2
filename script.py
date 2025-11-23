@@ -239,7 +239,7 @@ Example: <code>/set_rename @Bot_{{file_name}}_{{file_size}}</code>"""
     # ===== Premium System =====
     LIMIT_REACHED = """❌ <b>Daily Limit Reached</b>
 
-📊 Free users can download <b>5 videos per day</b>
+📊 Free users can download <b>{daily_limit} videos per day</b>
 
 💎 <b>Upgrade to Premium for:</b>
 • Unlimited downloads

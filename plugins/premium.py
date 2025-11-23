@@ -1,12 +1,13 @@
 # plugins/premium.py
 from Theinertbotz.database import db
 from script import Script
+from config import Config
 from pyrogram import enums
 
 class PremiumManager:
     """Manage premium features and limits."""
     
-    DAILY_LIMIT_FREE = 5
+    DAILY_LIMIT_FREE = Config.DAILY_LIMIT
     DAILY_LIMIT_PREMIUM = float('inf')
     
     @staticmethod
@@ -22,9 +23,9 @@ class PremiumManager:
         
         remaining = db.get_remaining_downloads(user_id)
         if remaining > 0:
-            return True, f"📊 Downloads today: {db.get_daily_downloads(user_id)}/5"
+            return True, f"📊 Downloads today: {db.get_daily_downloads(user_id)}/{Config.DAILY_LIMIT}"
         
-        return False, Script.LIMIT_REACHED
+        return False, Script.LIMIT_REACHED.format(daily_limit=Config.DAILY_LIMIT)
     
     @staticmethod
     def get_user_status(user_id) -> str:
@@ -44,7 +45,7 @@ class PremiumManager:
         return f"""🎯 <b>Free Member</b>
 
 📊 <b>Daily Limit:</b>
-{daily_downloads}/5 downloads used
+{daily_downloads}/{Config.DAILY_LIMIT} downloads used
 {remaining} remaining
 
 💎 <b>Upgrade to Premium:</b>

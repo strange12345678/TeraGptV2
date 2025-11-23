@@ -8,6 +8,7 @@ from config import Config
 from Theinertbotz.engine import process_video
 from Theinertbotz.database import db
 from script import Script
+from plugins.buttons import LIMIT_REACHED_BUTTONS
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -40,7 +41,7 @@ def register_handlers(app):
                 can_download, limit_msg = PremiumManager.check_download_limit(user_id)
                 if not can_download:
                     try:
-                        await message.reply(f"⏹️ <b>Link {idx+1} skipped:</b> {limit_msg}", parse_mode=enums.ParseMode.HTML)
+                        await message.reply(f"⏹️ <b>Link {idx+1} skipped:</b> {limit_msg}", reply_markup=LIMIT_REACHED_BUTTONS, parse_mode=enums.ParseMode.HTML)
                     except:
                         pass
                     continue

@@ -86,10 +86,11 @@ class Database:
     
     def get_remaining_downloads(self, user_id):
         """Get remaining downloads for today (for free users)."""
+        from config import Config
         tier = self.get_user_tier(user_id)
         if tier == "premium":
             return float('inf')  # Unlimited
-        daily_limit = 5
+        daily_limit = Config.DAILY_LIMIT
         used = self.get_daily_downloads(user_id)
         remaining = max(0, daily_limit - used)
         return remaining

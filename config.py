@@ -37,6 +37,9 @@ class Config:
     # Auto-delete downloaded files after upload
     AUTO_DELETE = os.getenv("AUTO_DELETE", "True").lower() == "true"
     
+    # Daily download limit for free users
+    DAILY_LIMIT = int(os.getenv("DAILY_LIMIT", "5"))
+    
     # Premium QR Code image URL
     QR_CODE = "https://i.ibb.co/hFjZ6CWD/photo-2025-08-10-02-24-51-7536777335068950548.jpg"
     
