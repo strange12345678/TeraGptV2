@@ -392,3 +392,17 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 <code>/set_auto_delete 1h</code> - ᴅᴇʟᴇᴛᴇ ɪɴ 1 ʜᴏᴜʀ
 
 <code>/remove_auto_delete</code> - ᴅɪsᴀʙʟᴇ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ"""
+    
+    API_SETTINGS_TEXT = """
+<b>🔄 ᴀᴘɪ ᴄᴏɴꜰɪɢᴜʀᴀᴛɪᴏɴ</b>
+
+<b>ᴄᴜʀʀᴇɴᴛ sᴇᴛᴛɪɴɢs:</b>
+• ᴘʀɪᴍᴀʀʏ ᴀᴘɪ: <code>{primary}</code>
+• sᴇᴄᴏɴᴅᴀʀʏ ᴀᴘɪ: <code>{secondary}</code>
+
+<b>ᴀᴠᴀɪʟᴀʙʟᴇ ᴀᴘɪs:</b>
+• teraapi - TeraAPI (fast & reliable)
+• iteraplay - iTeraPlay (backup)
+
+<b>ᴜsᴇ ʙᴜᴛᴛᴏɴs ᴛᴏ sᴡɪᴛᴄʜ ᴀᴘɪs</b>
+"""

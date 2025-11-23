@@ -12,12 +12,24 @@ def fetch_play_html(url: str, timeout=20):
     Tries primary API first, then falls back to secondary API if primary fails.
     Caller should handle exceptions (HTTPError, Timeout, etc).
     """
+    from Theinertbotz.database import db
+    
     # URL-encode the parameters properly
     encoded_url = quote(url, safe=':/?=&')
     
+    # Get primary and secondary APIs from database
+    primary_api = db.get_primary_api()
+    secondary_api = db.get_secondary_api()
+    
+    # Build API URLs based on settings
+    api_map = {
+        "teraapi": ("TeraAPI", Config.TERAAPI_PLAY.format(url=encoded_url)),
+        "iteraplay": ("iTeraPlay", Config.ITERAPLAY_API.format(url=encoded_url))
+    }
+    
     apis = [
-        ("Primary (TeraAPI)", Config.TERAAPI_PLAY.format(url=encoded_url)),
-        ("Secondary (iTeraPlay)", Config.ITERAPLAY_API.format(url=encoded_url))
+        (f"Primary ({api_map[primary_api][0]})", api_map[primary_api][1]),
+        (f"Secondary ({api_map[secondary_api][0]})", api_map[secondary_api][1])
     ]
     
     headers = {"User-Agent": "Mozilla/5.0"}

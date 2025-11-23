@@ -64,6 +64,8 @@ ADMIN_MANAGE_BUTTONS = InlineKeyboardMarkup([
 # Admin settings buttons
 ADMIN_SETTINGS_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("♻️ Auto-Delete", callback_data="admin_auto_delete")],
+    [InlineKeyboardButton("🔄 Set Primary API", callback_data="admin_set_primary")],
+    [InlineKeyboardButton("🔄 Set Secondary API", callback_data="admin_set_secondary")],
     [InlineKeyboardButton("← Back", callback_data="admin_panel")]
 ])
 
