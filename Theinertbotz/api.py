@@ -9,6 +9,7 @@ log = logging.getLogger("TeraBoxBot")
 def fetch_play_html(url: str, timeout=20):
     """
     Fetch the HTML returned by TeraBox API with failover support.
+    Returns tuple: (html_content, api_source) where api_source is 'teraapi' or 'iteraplay'
     Tries primary API first, then falls back to secondary API if primary fails.
     Caller should handle exceptions (HTTPError, Timeout, etc).
     """
@@ -28,20 +29,20 @@ def fetch_play_html(url: str, timeout=20):
     }
     
     apis = [
-        (f"Primary ({api_map[primary_api][0]})", api_map[primary_api][1]),
-        (f"Secondary ({api_map[secondary_api][0]})", api_map[secondary_api][1])
+        (primary_api, f"Primary ({api_map[primary_api][0]})", api_map[primary_api][1]),
+        (secondary_api, f"Secondary ({api_map[secondary_api][0]})", api_map[secondary_api][1])
     ]
     
     headers = {"User-Agent": "Mozilla/5.0"}
     last_error = None
     
-    for api_name, api_url in apis:
+    for api_type, api_name, api_url in apis:
         try:
             log.info(f"Trying {api_name}: {api_url[:60]}...")
             r = requests.get(api_url, timeout=timeout, headers=headers)
             r.raise_for_status()
             log.info(f"✅ {api_name} succeeded (response: {len(r.text)} bytes)")
-            return r.text
+            return r.text, api_type  # Return both content and API type
         except requests.exceptions.Timeout:
             last_error = f"{api_name} - Timeout"
             log.warning(f"❌ {api_name} timeout, trying next API...")
