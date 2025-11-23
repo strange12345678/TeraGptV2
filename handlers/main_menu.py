@@ -27,7 +27,7 @@ def register_handlers(app):
         except Exception:
             log.exception("premium_callback error")
     
-    # ===== Help Callback =====
+    # ===== Help Callback (from Help button in main menu) =====
     @app.on_callback_query(filters.regex("^help$"))
     async def help_callback(client, callback_query):
         try:
@@ -65,7 +65,14 @@ def register_handlers(app):
     async def back_to_menu_callback(client, callback_query):
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text(Script.START_TEXT, reply_markup=MAIN_MENU, parse_mode=enums.ParseMode.HTML)
+            # Delete the current message and send a new one with the main menu
+            await callback_query.message.delete()
+            await client.send_message(
+                chat_id=callback_query.message.chat.id,
+                text=Script.START_TEXT,
+                reply_markup=MAIN_MENU,
+                parse_mode=enums.ParseMode.HTML
+            )
         except Exception:
             log.exception("back_to_menu_callback error")
 

@@ -39,18 +39,9 @@ def register_commands(app):
     async def start_callback(client, callback_query):
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text(Script.START_TEXT, reply_markup=START_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.edit_text(Script.START_TEXT, reply_markup=MAIN_MENU, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("start_callback error")
-    
-    # ===== Help Button Callback =====
-    @app.on_callback_query(filters.regex("^help$"))
-    async def help_callback(client, callback_query):
-        try:
-            await callback_query.answer()
-            await callback_query.message.edit_text(Script.COMMANDS_TEXT, reply_markup=HELP_BUTTONS, parse_mode=enums.ParseMode.HTML)
-        except Exception:
-            log.exception("help_callback error")
     
     # ===== Rename Help Button Callback =====
     @app.on_callback_query(filters.regex("^rename_help$"))
@@ -74,14 +65,5 @@ def register_commands(app):
             await callback_query.message.edit_text(text, reply_markup=RENAME_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("rename_help_callback error")
-    
-    # ===== About Button Callback =====
-    @app.on_callback_query(filters.regex("^about$"))
-    async def about_callback(client, callback_query):
-        try:
-            await callback_query.answer()
-            await callback_query.message.edit_text(Script.ABOUT_TEXT, reply_markup=HELP_BUTTONS, parse_mode=enums.ParseMode.HTML)
-        except Exception:
-            log.exception("about_callback error")
 
 __all__ = ["register_commands"]

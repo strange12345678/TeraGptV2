@@ -18,13 +18,6 @@ def register_handlers(app):
         except Exception:
             log.exception("premium_cmd error")
     
-    @app.on_callback_query(filters.regex("^premium$"))
-    async def premium_callback(client, callback_query):
-        try:
-            await callback_query.answer()
-            await callback_query.message.edit_text(Script.PREMIUM_TEXT, reply_markup=PREMIUM_BUTTONS, parse_mode=enums.ParseMode.HTML)
-        except Exception:
-            log.exception("premium_callback error")
     
     @app.on_callback_query(filters.regex("^premium_status$"))
     async def premium_status_callback(client, callback_query):
