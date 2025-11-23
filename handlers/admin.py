@@ -159,8 +159,11 @@ def register_handlers(app):
     @app.on_message(filters.command("set_upload_channel") & filters.private)
     async def set_upload_channel_cmd(client, message):
         """Set premium upload channel. Usage: /set_upload_channel <channel_id>"""
-        if not is_admin(message.from_user.id):
-            await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
+        user_id = message.from_user.id
+        
+        # Allow admins and premium users
+        if not (is_admin(user_id) or db.is_premium_valid(user_id)):
+            await message.reply(Script.UPLOAD_CHANNEL_RESTRICTED, parse_mode=enums.ParseMode.HTML)
             return
         
         try:
@@ -191,8 +194,11 @@ def register_handlers(app):
     @app.on_message(filters.command("remove_upload_channel") & filters.private)
     async def remove_upload_channel_cmd(client, message):
         """Remove premium upload channel."""
-        if not is_admin(message.from_user.id):
-            await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
+        user_id = message.from_user.id
+        
+        # Allow admins and premium users
+        if not (is_admin(user_id) or db.is_premium_valid(user_id)):
+            await message.reply(Script.UPLOAD_CHANNEL_RESTRICTED, parse_mode=enums.ParseMode.HTML)
             return
         
         try:

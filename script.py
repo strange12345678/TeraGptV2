@@ -267,6 +267,18 @@ This feature is only available for:
 
 💡 Other features are still available for all users!"""
 
+    UPLOAD_CHANNEL_RESTRICTED = """❌ <b>Auto-Upload Feature Restricted</b>
+
+This feature is only available for:
+👑 Premium Members
+🔐 Admins
+
+<b>To unlock this feature:</b>
+• <code>/premium</code> - Upgrade to premium
+• Contact admin for more details
+
+💡 Your downloads are still processed normally!"""
+
     # ===== Premium System =====
     LIMIT_REACHED = """❌ <b>Daily Limit Reached</b>
 
