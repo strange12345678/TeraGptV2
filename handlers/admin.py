@@ -176,6 +176,18 @@ def register_handlers(app):
             
             channel_id = int(args[1])
             
+            # Check if a channel is already configured
+            current = db.get_premium_upload_channel()
+            if current and current != channel_id:
+                try:
+                    current_chat = await client.get_chat(current)
+                    current_name = current_chat.title
+                except:
+                    current_name = f"Channel {current}"
+                
+                await message.reply(Script.UPLOAD_CHANNEL_ALREADY_SET.format(current_channel=current_name, channel_id=current), parse_mode=enums.ParseMode.HTML)
+                return
+            
             # Verify bot has access to channel
             try:
                 chat = await client.get_chat(channel_id)

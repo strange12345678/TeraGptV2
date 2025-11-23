@@ -279,6 +279,17 @@ This feature is only available for:
 
 💡 Your downloads are still processed normally!"""
 
+    UPLOAD_CHANNEL_ALREADY_SET = """⚠️ <b>Upload Channel Already Configured</b>
+
+📍 <b>Current Channel:</b> {current_channel}
+🔗 <b>Channel ID:</b> <code>{channel_id}</code>
+
+<b>✅ To replace it:</b>
+<code>/set_upload_channel &lt;new_channel_id&gt;</code>
+
+<b>❌ To remove it:</b>
+<code>/remove_upload_channel</code>"""
+
     # ===== Premium System =====
     LIMIT_REACHED = """❌ <b>Daily Limit Reached</b>
 
