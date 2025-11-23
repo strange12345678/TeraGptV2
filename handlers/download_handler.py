@@ -12,6 +12,9 @@ from plugins.buttons import LIMIT_REACHED_BUTTONS
 
 log = logging.getLogger("TeraBoxBot")
 
+# Global semaphore to limit concurrent downloads (max 2 simultaneous)
+download_semaphore = asyncio.Semaphore(2)
+
 TERABOX_RE = re.compile(r"(https?://(?:www\.)?[^\s]*(?:terabox|1024terabox|terasharefile|tera\.co|terabox\.co|mirrobox|nephobox|freeterabox|4funbox|terabox\.app|terabox\.fun|momerybox|teraboxapp|tibibox)[^\s]*)", re.IGNORECASE)
 
 def extract_links(text: str):
@@ -35,7 +38,7 @@ def register_handlers(app):
             # Show processing status
             status_msg = await message.reply(f"⏳ Processing {len(links)} link{'s' if len(links) > 1 else ''}...")
             
-            # Process one by one
+            # Process links with concurrency limit (max 2 simultaneous)
             for idx, link in enumerate(links):
                 # Check download limit for each link
                 can_download, limit_msg = PremiumManager.check_download_limit(user_id)
@@ -46,16 +49,20 @@ def register_handlers(app):
                         pass
                     continue
                 
-                log.info(f"Processing link {idx+1}/{len(links)}: {link} from user {user_id}")
-                try:
-                    await process_video(client, message, link.strip())
-                    db.increment_daily_downloads(user_id)
-                except Exception as e:
-                    log.exception(f"Error processing link: {link}")
+                # Use semaphore to limit concurrent downloads
+                async with download_semaphore:
+                    log.info(f"Processing link {idx+1}/{len(links)}: {link} from user {user_id}")
                     try:
-                        await message.reply(f"⚠️ <b>Failed to process link {idx+1}</b>\n\n{str(e)[:100]}", parse_mode=enums.ParseMode.HTML)
-                    except:
-                        pass
+                        await process_video(client, message, link.strip())
+                        db.increment_daily_downloads(user_id)
+                        # Small delay between links to avoid overwhelming the system
+                        await asyncio.sleep(1)
+                    except Exception as e:
+                        log.exception(f"Error processing link: {link}")
+                        try:
+                            await message.reply(f"⚠️ <b>Failed to process link {idx+1}</b>\n\n{str(e)[:100]}", parse_mode=enums.ParseMode.HTML)
+                        except:
+                            pass
             
             # Clean up status message
             try:
