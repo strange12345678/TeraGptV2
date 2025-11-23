@@ -19,8 +19,11 @@ class Config:
     STORAGE_CHANNEL = int(os.getenv("STORAGE_CHANNEL", "0")) if os.getenv("STORAGE_CHANNEL") else None
     PREMIUM_UPLOAD_CHANNEL = int(os.getenv("PREMIUM_UPLOAD_CHANNEL", "0")) if os.getenv("PREMIUM_UPLOAD_CHANNEL") else None
 
-    # Only the play endpoint (the only reliable one you said)
+    # Primary API
     TERAAPI_PLAY = "https://teraapi.boogafantastic.workers.dev/play?url={url}"
+    
+    # Secondary API (failover & multi-tasking)
+    ITERAPLAY_API = "https://iteraplay.com/api/play.php?url={url}&key=iTeraPlay2025"
 
     DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR", "downloads")
     WORKERS = int(os.getenv("WORKERS", "20"))
