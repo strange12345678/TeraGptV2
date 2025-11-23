@@ -111,15 +111,24 @@ def register_handlers(app):
     async def back_to_menu_callback(client, callback_query):
         try:
             await callback_query.answer()
-            # Send new message first, then delete old one for smooth transition
-            new_msg = await client.send_photo(
-                chat_id=callback_query.message.chat.id,
-                photo=Config.START_IMG,
-                caption=Script.START_TEXT,
-                reply_markup=MAIN_MENU,
-                parse_mode=enums.ParseMode.HTML
-            )
-            await callback_query.message.delete()
+            # Try to edit the message in place if it has media, otherwise delete and send
+            if callback_query.message.photo:
+                # Edit photo in place
+                from pyrogram.types import InputMediaPhoto
+                await callback_query.message.edit_media(
+                    media=InputMediaPhoto(media=Config.START_IMG, caption=Script.START_TEXT, parse_mode=enums.ParseMode.HTML),
+                    reply_markup=MAIN_MENU
+                )
+            else:
+                # If it's text, we need to delete and send new photo
+                await callback_query.message.delete()
+                await client.send_photo(
+                    chat_id=callback_query.message.chat.id,
+                    photo=Config.START_IMG,
+                    caption=Script.START_TEXT,
+                    reply_markup=MAIN_MENU,
+                    parse_mode=enums.ParseMode.HTML
+                )
         except Exception:
             log.exception("back_to_menu_callback error")
 
