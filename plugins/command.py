@@ -40,7 +40,7 @@ def register_commands(app):
         try:
             await callback_query.answer()
             # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, "typing")
+            await client.send_chat_action(callback_query.message.chat.id, enums.ChatAction.TYPING)
             await callback_query.message.edit_text(Script.START_TEXT, reply_markup=MAIN_MENU, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("start_callback error")
@@ -65,7 +65,7 @@ def register_commands(app):
             text = Script.RENAME_HELP_TEXT.format(status=status)
             await callback_query.answer()
             # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, "typing")
+            await client.send_chat_action(callback_query.message.chat.id, enums.ChatAction.TYPING)
             await callback_query.message.edit_text(text, reply_markup=RENAME_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("rename_help_callback error")

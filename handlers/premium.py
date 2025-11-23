@@ -27,7 +27,7 @@ def register_handlers(app):
             text = Script.PREMIUM_STATUS.format(status=status)
             await callback_query.answer()
             # Show typing indicator for smooth transition
-            await client.send_chat_action(callback_query.message.chat.id, "typing")
+            await client.send_chat_action(callback_query.message.chat.id, enums.ChatAction.TYPING)
             await callback_query.message.edit_text(text, reply_markup=PREMIUM_STATUS_BUTTONS, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("premium_status_callback error")
