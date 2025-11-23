@@ -3,7 +3,7 @@ from pyrogram import filters, enums
 import logging
 from Theinertbotz.database import db
 from script import Script
-from plugins.buttons import START_BUTTONS, HELP_BUTTONS, RENAME_BUTTONS
+from plugins.buttons import START_BUTTONS, HELP_BUTTONS, RENAME_BUTTONS, MAIN_MENU
 
 log = logging.getLogger("TeraBoxBot")
 

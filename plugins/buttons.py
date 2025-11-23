@@ -1,19 +1,36 @@
 # plugins/buttons.py
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 
-# Start command buttons
+# Main menu (Reply Keyboard - persistent at bottom)
+MAIN_MENU = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton("📊 ᴅᴀꜱʜʙᴏᴀʀᴅ")
+        ],
+        [
+            KeyboardButton("💬 ꜱᴜᴘᴘᴏʀᴛ 💬"), KeyboardButton("🔄 ᴜᴘᴅᴀᴛᴇ 🔄")
+        ],
+        [
+            KeyboardButton("💎 ᴘʀᴇᴍɪᴜᴍ 💎"), KeyboardButton("❓ ʜᴇʟᴘ")
+        ],
+        [
+            KeyboardButton("⚙️ sᴇᴛᴛɪɴɢs ⚙️"), KeyboardButton("ℹ️ ᴀʙᴏᴜᴛ ℹ️")
+        ]
+    ],
+    resize_keyboard=True
+)
+
+# Start command buttons (inline)
 START_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("📚 Commands", callback_data="help")],
     [InlineKeyboardButton("🔄 Rename Settings", callback_data="rename_help")],
-    [InlineKeyboardButton("💎 Premium", callback_data="premium")],
-    [InlineKeyboardButton("📸 Send Screenshot to Admin", url="https://t.me/darkworld008")]
+    [InlineKeyboardButton("💎 Premium", callback_data="premium")]
 ])
 
 # Help command buttons (with back to start)
 HELP_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("🔄 Rename Help", callback_data="rename_help")],
     [InlineKeyboardButton("💎 Premium", callback_data="premium")],
-    [InlineKeyboardButton("📸 Send Screenshot to Admin", url="https://t.me/darkworld008")],
     [InlineKeyboardButton("← Back to Menu", callback_data="start")]
 ])
 
@@ -60,4 +77,4 @@ ADMIN_SETTINGS_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("← Back", callback_data="admin_panel")]
 ])
 
-__all__ = ["START_BUTTONS", "HELP_BUTTONS", "RENAME_BUTTONS", "PREMIUM_BUTTONS", "PREMIUM_STATUS_BUTTONS", "PREMIUM_UPGRADE_BUTTONS", "ADMIN_PANEL_BUTTONS", "ADMIN_MANAGE_BUTTONS", "ADMIN_SETTINGS_BUTTONS"]
+__all__ = ["MAIN_MENU", "START_BUTTONS", "HELP_BUTTONS", "RENAME_BUTTONS", "PREMIUM_BUTTONS", "PREMIUM_STATUS_BUTTONS", "PREMIUM_UPGRADE_BUTTONS", "ADMIN_PANEL_BUTTONS", "ADMIN_MANAGE_BUTTONS", "ADMIN_SETTINGS_BUTTONS"]
