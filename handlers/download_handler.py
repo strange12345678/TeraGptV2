@@ -38,8 +38,12 @@ def register_handlers(app):
             # Show processing status
             status_msg = await message.reply(f"⏳ Processing {len(links)} link{'s' if len(links) > 1 else ''}...")
             
-            # Process links with concurrency limit (max 2 simultaneous)
+            # Process links sequentially with proper delays
             for idx, link in enumerate(links):
+                # Add delay before processing each link (except the first) to prevent API overload
+                if idx > 0:
+                    await asyncio.sleep(3)
+                
                 # Check download limit for each link
                 can_download, limit_msg = PremiumManager.check_download_limit(user_id)
                 if not can_download:
@@ -55,8 +59,6 @@ def register_handlers(app):
                     try:
                         await process_video(client, message, link.strip())
                         db.increment_daily_downloads(user_id)
-                        # Delay between links to allow API to recover and prevent rate limiting
-                        await asyncio.sleep(1)
                     except Exception as e:
                         log.exception(f"Error processing link: {link}")
                         try:
