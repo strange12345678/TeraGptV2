@@ -60,8 +60,10 @@ def auto_rename_file(filename: str, pattern: str = "timestamp", variables: dict 
                 new_name_without_ext = pattern.format(**defaults)
                 new_name = f"{new_name_without_ext}{ext}"
                 
-                # Sanitize filename
-                new_name = "".join(c for c in new_name if c.isalnum() or c in " .-_()[]{}@")
+                # Sanitize filename - keep alphanumeric, spaces, common punctuation and underscores
+                new_name = "".join(c for c in new_name if c.isalnum() or c in " ._-@()")
+                # Remove leading/trailing spaces and dots
+                new_name = new_name.strip(". ")
                 if not new_name:
                     new_name = f"{int(time.time())}{ext}"
                 

@@ -59,6 +59,9 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
     if not filename:
         filename = f"{int(time.time())}.bin"
 
+    # Store original filename for rename purposes
+    original_filename = filename
+    
     safe_fn = "".join(c for c in filename if c.isalnum() or c in " .-_()[]{}%").strip()
     if not safe_fn:
         safe_fn = f"{int(time.time())}.bin"
@@ -129,13 +132,14 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
                 else:
                     file_size_str = f"{file_size_bytes:.1f}TB"
                 
-                # Prepare variables with actual file size
+                # Prepare variables with actual file size - use ORIGINAL filename
                 variables = {
                     "file_size": file_size_str,
                     "username": username or str(user_id),
                     "user_id": str(user_id) if user_id else "unknown"
                 }
-                new_fn = auto_rename_file(safe_fn, rename_pattern, variables)
+                # Pass original_filename to preserve variable replacement
+                new_fn = auto_rename_file(original_filename, rename_pattern, variables)
                 if new_fn != safe_fn:
                     new_filepath = os.path.join(getattr(Config, "DOWNLOAD_DIR", "downloads"), new_fn)
                     try:
