@@ -4,7 +4,7 @@ A powerful and feature-rich Telegram bot for downloading files from TeraBox link
 
 **Bot Username:** @Theinertbotz  
 **Developer:** [The Inert Botz](https://t.me/TheInertBotz)  
-**Support Channel:** [@Desipremier](https://t.me/Desipremier)
+**Support & Contact:** [@Theinertbotz](https://t.me/Theinertbotz)
 
 ---
 
@@ -354,23 +354,19 @@ This bot is provided as-is for educational and personal use. Please respect Tera
 ### Developer
 **The Inert Botz** - [@Theinertbotz](https://t.me/Theinertbotz)
 
-### Support Channel
-**Desipremier** - [@Desipremier](https://t.me/Desipremier)
+### Support & Contact
+All support, bug reports, feature requests, and premium inquiries - DM [@Theinertbotz](https://t.me/Theinertbotz)
 
 ### Premium Upgrade
-**Pricing & Payment** - DM [@Theinertbotz](https://t.me/Theinertbotz)
-
-### Report Issues
-- Bug reports: [@Theinertbotz](https://t.me/Theinertbotz)
-- Feature requests: Contact support channel
+**Pricing & Payment** - DM [@Theinertbotz](https://t.me/Theinertbotz) with details
 
 ---
 
 ## 📞 Contact
 
+- **Developer & Support**: [@Theinertbotz](https://t.me/Theinertbotz)
 - **Bot Telegram**: [@Theinertbotz](https://t.me/Theinertbotz)
-- **Support**: [@Desipremier](https://t.me/Desipremier)
-- **Premium Inquiries**: DM developer
+- **Premium & All Inquiries**: DM [@Theinertbotz](https://t.me/Theinertbotz)
 
 ---
 
@@ -379,7 +375,7 @@ This bot is provided as-is for educational and personal use. Please respect Tera
 **Made with ❤️ by The Inert Botz**
 
 [![Telegram](https://img.shields.io/badge/Telegram-@Theinertbotz-blue?style=flat&logo=telegram)](https://t.me/Theinertbotz)
-[![Support](https://img.shields.io/badge/Support-@Desipremier-blue?style=flat&logo=telegram)](https://t.me/Desipremier)
+[![Support](https://img.shields.io/badge/Support-@Theinertbotz-blue?style=flat&logo=telegram)](https://t.me/Theinertbotz)
 
 *This bot helps download files from TeraBox with ease and security.*
 
