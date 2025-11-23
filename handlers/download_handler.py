@@ -12,7 +12,7 @@ from plugins.buttons import LIMIT_REACHED_BUTTONS
 
 log = logging.getLogger("TeraBoxBot")
 
-TERABOX_RE = re.compile(r"(https?://[^\s]*(?:terabox|1024terabox|terasharefile|tera\.co|terabox\.co)[^\s]*)", re.IGNORECASE)
+TERABOX_RE = re.compile(r"(https?://(?:www\.)?[^\s]*(?:terabox|1024terabox|terasharefile|tera\.co|terabox\.co|mirrobox|nephobox|freeterabox|4funbox|terabox\.app|terabox\.fun|momerybox|teraboxapp|tibibox)[^\s]*)", re.IGNORECASE)
 
 def extract_links(text: str):
     if not text:

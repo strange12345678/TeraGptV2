@@ -74,7 +74,7 @@ def is_plausible_direct(url: str) -> bool:
         if not u.startswith("http"):
             return False
         # Check for TeraBox-related domains
-        if any(d in u for d in ("d.1024tera.com", "data.1024tera.com", "1024tera.com", "terabox", "terasharefile", "tera.co", "d.tera", "data.")):
+        if any(d in u for d in ("d.1024tera.com", "data.1024tera.com", "1024tera.com", "terabox", "terasharefile", "tera.co", "d.tera", "data.", "mirrobox", "nephobox", "freeterabox", "4funbox", "terabox.app", "terabox.fun", "momerybox", "teraboxapp", "tibibox")):
             if any(k in u for k in ("fid=", "/file/", "fin=", "fn=")) or re.search(r"\.(mp4|mkv|mov|webm|mp3)(?:\?|$)", u, re.IGNORECASE):
                 return True
         if "file" in u and ("sign=" in u or "expires=" in u or "fid=" in u):
