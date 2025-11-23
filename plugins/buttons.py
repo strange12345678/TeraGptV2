@@ -36,6 +36,7 @@ PREMIUM_STATUS_BUTTONS = InlineKeyboardMarkup([
 
 # Upgrade buttons
 PREMIUM_UPGRADE_BUTTONS = InlineKeyboardMarkup([
+    [InlineKeyboardButton("📸 Send Screenshot to Admin", url="https://t.me/darkworld008")],
     [InlineKeyboardButton("← Back", callback_data="premium_status")]
 ])
 

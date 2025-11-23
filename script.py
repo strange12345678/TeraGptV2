@@ -220,7 +220,7 @@ Click button below to upgrade!
 • Yearly: $39.99/year (Save 33%)
 
 <b>Contact:</b>
-DM @Theinertbotz for details</code>
+DM @Theinertbotz for details
 """
 
     # ===== Admin Panel =====
