@@ -1,6 +1,7 @@
 
 # handlers/admin.py
 from pyrogram import filters, enums
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from config import Config
 from Theinertbotz.database import db
 from script import Script
@@ -135,7 +136,8 @@ def register_handlers(app):
         
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text("➕ <b>Add Premium User</b>\n\nReply with: <code>/addpremium &lt;user_id&gt; [days]</code>", reply_markup=ADMIN_MANAGE_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await client.send_message(callback_query.message.chat.id, "➕ <b>Add Premium User</b>\n\nReply with: <code>/addpremium &lt;user_id&gt; [days]</code>", reply_markup=ADMIN_MANAGE_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.delete()
         except Exception:
             log.exception("admin_add_premium_callback error")
     
@@ -148,7 +150,8 @@ def register_handlers(app):
         
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text("➖ <b>Remove Premium User</b>\n\nReply with: <code>/removepremium &lt;user_id&gt;</code>", reply_markup=ADMIN_MANAGE_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await client.send_message(callback_query.message.chat.id, "➖ <b>Remove Premium User</b>\n\nReply with: <code>/removepremium &lt;user_id&gt;</code>", reply_markup=ADMIN_MANAGE_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.delete()
         except Exception:
             log.exception("admin_remove_premium_callback error")
     
@@ -213,7 +216,8 @@ def register_handlers(app):
         
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text("⚙️ <b>Admin Settings</b>", reply_markup=ADMIN_SETTINGS_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await client.send_message(callback_query.message.chat.id, "⚙️ <b>Admin Settings</b>", reply_markup=ADMIN_SETTINGS_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.delete()
         except Exception:
             log.exception("admin_settings_callback error")
     
