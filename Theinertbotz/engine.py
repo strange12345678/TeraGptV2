@@ -36,15 +36,19 @@ URL_ANY_RE = re.compile(r"https?://[^\s'\"<>]+")
 JSON_URL_RE = re.compile(r'"(?:url|downloadUrl|playUrl|directUrl|fileUrl|file_url)"\s*:\s*"(https?://[^"]+)"', re.IGNORECASE)
 
 async def find_direct_link_from_html(html: str):
+    log.debug(f"Searching for download link in HTML (length: {len(html)})")
+    
     # 1) JS variable directUrl (primary & secondary API formats)
     for m in JS_QUOTE_RE.findall(html):
         url = m
         if url and is_plausible_direct(url):
+            log.info(f"Found via JS_QUOTE_RE: {url[:80]}")
             return url
 
     # 2) JSON format (iTeraPlay)
     for m in JSON_URL_RE.findall(html):
         if m and is_plausible_direct(m):
+            log.info(f"Found via JSON_URL_RE: {m[:80]}")
             return m
 
     # 3) Candidate patterns with /file/ or /file-
@@ -52,6 +56,7 @@ async def find_direct_link_from_html(html: str):
     if cand:
         for c in cand:
             if is_plausible_direct(c):
+                log.info(f"Found via CANDIDATE_RE: {c[:80]}")
                 return c
 
     # 4) Generic TeraBox URL patterns
@@ -59,24 +64,29 @@ async def find_direct_link_from_html(html: str):
     if cand2:
         for c in cand2:
             if is_plausible_direct(c):
+                log.info(f"Found via GENERIC_URL_RE: {c[:80]}")
                 return c
 
     # 5) href attributes
     for m in HREF_RE.findall(html):
         if is_plausible_direct(m):
+            log.info(f"Found via HREF_RE: {m[:80]}")
             return m
 
     # 6) Any URL with download indicators
     for u in URL_ANY_RE.findall(html):
         if any(x in u for x in ("d.1024", "data.1024", "fid=", "/file/")) and is_plausible_direct(u):
+            log.info(f"Found via URL_ANY_RE: {u[:80]}")
             return u
 
     # 7) Decode URL entities and try again
     decoded = unquote(html)
     for u in URL_ANY_RE.findall(decoded):
         if any(x in u for x in ("d.1024", "data.1024", "fid=", "/file/")) and is_plausible_direct(u):
+            log.info(f"Found via decoded URL_ANY_RE: {u[:80]}")
             return u
 
+    log.warning(f"No download link found. HTML snippet: {html[:500]}")
     return None
 
 def is_plausible_direct(url: str) -> bool:
