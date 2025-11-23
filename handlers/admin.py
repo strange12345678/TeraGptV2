@@ -178,7 +178,7 @@ def register_handlers(app):
             
             # Check if a channel is already configured
             current = db.get_premium_upload_channel()
-            if current and current != channel_id:
+            if current:
                 try:
                     current_chat = await client.get_chat(current)
                     current_name = current_chat.title
