@@ -56,7 +56,7 @@ def register_handlers(app):
                         await process_video(client, message, link.strip())
                         db.increment_daily_downloads(user_id)
                         # Delay between links to allow API to recover and prevent rate limiting
-                        await asyncio.sleep(3)
+                        await asyncio.sleep(1)
                     except Exception as e:
                         log.exception(f"Error processing link: {link}")
                         try:
