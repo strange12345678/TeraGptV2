@@ -1,113 +1,113 @@
-class Script:
-    # ===== Welcome & Start =====
-    START_TEXT = """
-<b>🎬 TeraBox Downloader Bot</b>
+ᴄʟᴀss sᴄʀɪᴘᴛ:
+    # ===== ᴡᴇʟᴄᴏᴍᴇ & sᴛᴀʀᴛ =====
+    sᴛᴀʀᴛ_ᴛᴇxᴛ = """
+<b>🎬 ᴛᴇʀᴀʙᴏx ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ʙᴏᴛ</b>
 
-<b>⚡ Ultra-Fast File Downloads</b>
+<b>⚡ ᴜʟᴛʀᴀ-ꜰᴀsᴛ ꜰɪʟᴇ ᴅᴏᴡɴʟᴏᴀᴅs</b>
 
-Simply send a <code>TeraBox</code> link and I'll:
-✅ Download the file instantly
-✅ Send it directly to your chat
-✅ Generate thumbnails for videos
-✅ Track download progress
-✅ Support all file types
+sɪᴍᴘʟʏ sᴇɴᴅ ᴀ <code>ᴛᴇʀᴀʙᴏx</code> ʟɪɴᴋ ᴀɴᴅ ɪ'ʟʟ:
+✅ ᴅᴏᴡɴʟᴏᴀᴅ ᴛʜᴇ ꜰɪʟᴇ ɪɴsᴛᴀɴᴛʟʏ
+✅ sᴇɴᴅ ɪᴛ ᴅɪʀᴇᴄᴛʟʏ ᴛᴏ ʏᴏᴜʀ ᴄʜᴀᴛ
+✅ ɢᴇɴᴇʀᴀᴛᴇ ᴛʜᴜᴍʙɴᴀɪʟs ꜰᴏʀ ᴠɪᴅᴇᴏs
+✅ ᴛʀᴀᴄᴋ ᴅᴏᴡɴʟᴏᴀᴅ ᴘʀᴏɢʀᴇss
+✅ sᴜᴘᴘᴏʀᴛ ᴀʟʟ ꜰɪʟᴇ ᴛʏᴘᴇs
 
-<b>📝 Quick Start:</b>
-<code>https://1024terabox.com/s/1abc123def456ghi</code>
+<b>📝 qᴜɪᴄᴋ sᴛᴀʀᴛ:</b>
+<code>ʜᴛᴛᴘs://1024ᴛᴇʀᴀʙᴏx.ᴄᴏᴍ/s/1ᴀʙᴄ123ᴅᴇꜰ456ɢʜɪ</code>
 
-<b>🎛️ Advanced Features:</b>
-• <code>/rename</code> - Customize file naming
-• <code>/set_rename &lt;pattern&gt;</code> - Custom patterns
-• <code>/help</code> - View all commands
+<b>🎛️ ᴀᴅᴠᴀɴᴄᴇᴅ ꜰᴇᴀᴛᴜʀᴇs:</b>
+• <code>/ʀᴇɴᴀᴍᴇ</code> - ᴄᴜsᴛᴏᴍɪᴢᴇ ꜰɪʟᴇ ɴᴀᴍɪɴɢ
+• <code>/sᴇᴛ_ʀᴇɴᴀᴍᴇ &ʟᴛ;ᴘᴀᴛᴛᴇʀɴ&ɢᴛ;</code> - ᴄᴜsᴛᴏᴍ ᴘᴀᴛᴛᴇʀɴs
+• <code>/ʜᴇʟᴘ</code> - ᴠɪᴇᴡ ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs
 
-<b>💡 Pro Tips:</b>
-💬 Send multiple links at once
-🎬 Videos get automatic thumbnails
-⚡ Progress tracked in real-time
+<b>💡 ᴘʀᴏ ᴛɪᴘs:</b>
+💬 sᴇɴᴅ ᴍᴜʟᴛɪᴘʟᴇ ʟɪɴᴋs ᴀᴛ ᴏɴᴄᴇ
+🎬 ᴠɪᴅᴇᴏs ɢᴇᴛ ᴀᴜᴛᴏᴍᴀᴛɪᴄ ᴛʜᴜᴍʙɴᴀɪʟs
+⚡ ᴘʀᴏɢʀᴇss ᴛʀᴀᴄᴋᴇᴅ ɪɴ ʀᴇᴀʟ-ᴛɪᴍᴇ
 """
 
-    # ===== Help & Commands =====
-    COMMANDS_TEXT = """
-<b>📋 All Available Commands:</b>
+    # ===== ʜᴇʟᴘ & ᴄᴏᴍᴍᴀɴᴅs =====
+    ᴄᴏᴍᴍᴀɴᴅs_ᴛᴇxᴛ = """
+<b>📋 ᴀʟʟ ᴀᴠᴀɪʟᴀʙʟᴇ ᴄᴏᴍᴍᴀɴᴅs:</b>
 
-<b>🎯 User Commands:</b>
-<b>/start</b> - Show welcome message
-<b>/help</b> - Show all commands
-<b>/premium</b> - Premium info & upgrade options
-<b>/rename</b> - View/manage rename settings
-<b>/set_rename &lt;pattern&gt;</b> - Set custom file naming
+<b>🎯 ᴜsᴇʀ ᴄᴏᴍᴍᴀɴᴅs:</b>
+<b>/sᴛᴀʀᴛ</b> - sʜᴏᴡ ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ
+<b>/ʜᴇʟᴘ</b> - sʜᴏᴡ ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs
+<b>/ᴘʀᴇᴍɪᴜᴍ</b> - ᴘʀᴇᴍɪᴜᴍ ɪɴꜰᴏ & ᴜᴘɢʀᴀᴅᴇ ᴏᴘᴛɪᴏɴs
+<b>/ʀᴇɴᴀᴍᴇ</b> - ᴠɪᴇᴡ/ᴍᴀɴᴀɢᴇ ʀᴇɴᴀᴍᴇ sᴇᴛᴛɪɴɢs
+<b>/sᴇᴛ_ʀᴇɴᴀᴍᴇ &ʟᴛ;ᴘᴀᴛᴛᴇʀɴ&ɢᴛ;</b> - sᴇᴛ ᴄᴜsᴛᴏᴍ ꜰɪʟᴇ ɴᴀᴍɪɴɢ
 
-<b>💎 Premium Commands:</b>
-<b>/set_upload_channel &lt;channel_id&gt;</b> - Auto-upload to channel
-<b>/remove_upload_channel</b> - Remove auto-upload channel
+<b>💎 ᴘʀᴇᴍɪᴜᴍ ᴄᴏᴍᴍᴀɴᴅs:</b>
+<b>/sᴇᴛ_ᴜᴘʟᴏᴀᴅ_ᴄʜᴀɴɴᴇʟ &ʟᴛ;ᴄʜᴀɴɴᴇʟ_ɪᴅ&ɢᴛ;</b> - ᴀᴜᴛᴏ-ᴜᴘʟᴏᴀᴅ ᴛᴏ ᴄʜᴀɴɴᴇʟ
+<b>/ʀᴇᴍᴏᴠᴇ_ᴜᴘʟᴏᴀᴅ_ᴄʜᴀɴɴᴇʟ</b> - ʀᴇᴍᴏᴠᴇ ᴀᴜᴛᴏ-ᴜᴘʟᴏᴀᴅ ᴄʜᴀɴɴᴇʟ
 
-<b>🗑️ Auto-Delete Commands:</b>
-<b>/auto_delete</b> - Show auto-delete status
-<b>/auto_delete on</b> - Enable auto-delete messages
-<b>/auto_delete off</b> - Disable auto-delete messages
-<b>/set_auto_delete &lt;time&gt;</b> - Set delete time (30s, 5m, 1h)
-<b>/remove_auto_delete</b> - Disable auto-delete
+<b>🗑️ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴄᴏᴍᴍᴀɴᴅs:</b>
+<b>/ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ</b> - sʜᴏᴡ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ sᴛᴀᴛᴜs
+<b>/ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ ᴏɴ</b> - ᴇɴᴀʙʟᴇ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴍᴇssᴀɢᴇs
+<b>/ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ ᴏꜰꜰ</b> - ᴅɪsᴀʙʟᴇ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴍᴇssᴀɢᴇs
+<b>/sᴇᴛ_ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ &ʟᴛ;ᴛɪᴍᴇ&ɢᴛ;</b> - sᴇᴛ ᴅᴇʟᴇᴛᴇ ᴛɪᴍᴇ (30s, 5ᴍ, 1ʜ)
+<b>/ʀᴇᴍᴏᴠᴇ_ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ</b> - ᴅɪsᴀʙʟᴇ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ
 
-<b>🛠️ Admin Commands:</b>
-<b>/admin</b> - Open admin control panel
-<b>/addpremium &lt;user_id&gt; [days]</b> - Add premium user
-<b>/removepremium &lt;user_id&gt;</b> - Remove premium status
-<b>/checkuser &lt;user_id&gt;</b> - Check user tier & stats
-<b>/toggle_autodelete</b> - Toggle auto-delete setting
-<b>/checkchannels</b> - Verify channel access
+<b>🛠️ ᴀᴅᴍɪɴ ᴄᴏᴍᴍᴀɴᴅs:</b>
+<b>/ᴀᴅᴍɪɴ</b> - ᴏᴘᴇɴ ᴀᴅᴍɪɴ ᴄᴏɴᴛʀᴏʟ ᴘᴀɴᴇʟ
+<b>/ᴀᴅᴅᴘʀᴇᴍɪᴜᴍ &ʟᴛ;ᴜsᴇʀ_ɪᴅ&ɢᴛ; [ᴅᴀʏs]</b> - ᴀᴅᴅ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀ
+<b>/ʀᴇᴍᴏᴠᴇᴘʀᴇᴍɪᴜᴍ &ʟᴛ;ᴜsᴇʀ_ɪᴅ&ɢᴛ;</b> - ʀᴇᴍᴏᴠᴇ ᴘʀᴇᴍɪᴜᴍ sᴛᴀᴛᴜs
+<b>/ᴄʜᴇᴄᴋᴜsᴇʀ &ʟᴛ;ᴜsᴇʀ_ɪᴅ&ɢᴛ;</b> - ᴄʜᴇᴄᴋ ᴜsᴇʀ ᴛɪᴇʀ & sᴛᴀᴛs
+<b>/ᴛᴏɢɢʟᴇ_ᴀᴜᴛᴏᴅᴇʟᴇᴛᴇ</b> - ᴛᴏɢɢʟᴇ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ sᴇᴛᴛɪɴɢ
+<b>/ᴄʜᴇᴄᴋᴄʜᴀɴɴᴇʟs</b> - ᴠᴇʀɪꜰʏ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇss
 
-<b>📌 Rename Variables:</b>
+<b>📌 ʀᴇɴᴀᴍᴇ ᴠᴀʀɪᴀʙʟᴇs:</b>
 • {file_name} • {file_size}
 • {original_name} • {ext}
 
-<b>💡 Example Patterns:</b>
-<code>/set_rename @Bot_{file_name}_{file_size}</code>
-<code>/set_rename Download_{original_name}</code>
+<b>💡 ᴇxᴀᴍᴘʟᴇ ᴘᴀᴛᴛᴇʀɴs:</b>
+<code>/sᴇᴛ_ʀᴇɴᴀᴍᴇ @Bot_{file_name}_{file_size}</code>
+<code>/sᴇᴛ_ʀᴇɴᴀᴍᴇ ᴅᴏᴡɴʟᴏᴀᴅ_{original_name}</code>
 
-<b>📊 How It Works:</b>
-Simply send TeraBox links and the bot will download & send them with:
-✅ Auto-generated video thumbnails
-✅ Real-time progress tracking
-✅ Custom file naming
-✅ Multi-file support
-✅ Auto-delete for copyright protection
+<b>📊 ʜᴏᴡ ɪᴛ ᴡᴏʀᴋs:</b>
+sɪᴍᴘʟʏ sᴇɴᴅ ᴛᴇʀᴀʙᴏx ʟɪɴᴋs ᴀɴᴅ ᴛʜᴇ ʙᴏᴛ ᴡɪʟʟ ᴅᴏᴡɴʟᴏᴀᴅ & sᴇɴᴅ ᴛʜᴇᴍ ᴡɪᴛʜ:
+✅ ᴀᴜᴛᴏ-ɢᴇɴᴇʀᴀᴛᴇᴅ ᴠɪᴅᴇᴏ ᴛʜᴜᴍʙɴᴀɪʟs
+✅ ʀᴇᴀʟ-ᴛɪᴍᴇ ᴘʀᴏɢʀᴇss ᴛʀᴀᴄᴋɪɴɢ
+✅ ᴄᴜsᴛᴏᴍ ꜰɪʟᴇ ɴᴀᴍɪɴɢ
+✅ ᴍᴜʟᴛɪ-ꜰɪʟᴇ sᴜᴘᴘᴏʀᴛ
+✅ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ꜰᴏʀ ᴄᴏᴘʏʀɪɢʜᴛ ᴘʀᴏᴛᴇᴄᴛɪᴏɴ
 """
 
-    # ===== About =====
-    ABOUT_TEXT = """
-<b>ℹ️ About TeraBox Bot</b>
+    # ===== ᴀʙᴏᴜᴛ =====
+    ᴀʙᴏᴜᴛ_ᴛᴇxᴛ = """
+<b>ℹ️ ᴀʙᴏᴜᴛ ᴛᴇʀᴀʙᴏx ʙᴏᴛ</b>
 
-A powerful Telegram bot for downloading files from TeraBox with advanced features:
+ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ᴛᴇʟᴇɢʀᴀᴍ ʙᴏᴛ ꜰᴏʀ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ꜰɪʟᴇs ꜰʀᴏᴍ ᴛᴇʀᴀʙᴏx ᴡɪᴛʜ ᴀᴅᴠᴀɴᴄᴇᴅ ꜰᴇᴀᴛᴜʀᴇs:
 
-<b>✨ Features:</b>
-• Lightning-fast downloads
-• Automatic video thumbnails
-• Custom file naming with variables
-• Real-time progress tracking
-• Multi-file support
-• Secure API integration
+<b>✨ ꜰᴇᴀᴛᴜʀᴇs:</b>
+• ʟɪɢʜᴛɴɪɴɢ-ꜰᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅs
+• ᴀᴜᴛᴏᴍᴀᴛɪᴄ ᴠɪᴅᴇᴏ ᴛʜᴜᴍʙɴᴀɪʟs
+• ᴄᴜsᴛᴏᴍ ꜰɪʟᴇ ɴᴀᴍɪɴɢ ᴡɪᴛʜ ᴠᴀʀɪᴀʙʟᴇs
+• ʀᴇᴀʟ-ᴛɪᴍᴇ ᴘʀᴏɢʀᴇss ᴛʀᴀᴄᴋɪɴɢ
+• ᴍᴜʟᴛɪ-ꜰɪʟᴇ sᴜᴘᴘᴏʀᴛ
+• sᴇᴄᴜʀᴇ ᴀᴘɪ ɪɴᴛᴇɢʀᴀᴛɪᴏɴ
 
-<b>🛠️ Built with:</b>
-Pyrogram 2.0.106 • Python 3.11 • MongoDB
+<b>🛠️ ʙᴜɪʟᴛ ᴡɪᴛʜ:</b>
+ᴘʏʀᴏɢʀᴀᴍ 2.0.106 • ᴘʏᴛʜᴏɴ 3.11 • ᴍᴏɴɢᴏᴅʙ
 
-<b>📊 Status:</b>
-✅ All systems operational
+<b>📊 sᴛᴀᴛᴜs:</b>
+✅ ᴀʟʟ sʏsᴛᴇᴍs ᴏᴘᴇʀᴀᴛɪᴏɴᴀʟ
 
-<b>👨‍💻 Developer:</b>
+<b>👨‍💻 ᴅᴇᴠᴇʟᴏᴘᴇʀ:</b>
 @Theinertbotz
 """
 
-    # ===== Dashboard =====
-    DASHBOARD_TEXT = """<b>📊 ᴅᴀsʜʙᴏᴀʀᴅ ᴏᴠᴇʀᴠɪᴇᴡ</b>
+    # ===== ᴅᴀsʜʙᴏᴀʀᴅ =====
+    ᴅᴀsʜʙᴏᴀʀᴅ_ᴛᴇxᴛ = """<b>📊 ᴅᴀsʜʙᴏᴀʀᴅ ᴏᴠᴇʀᴠɪᴇᴡ</b>
 
-👤 <b>User:</b> {user_name}  
-🆔 <b>User ID:</b> <code>{user_id}</code>  
-💠 <b>Premium:</b> {premium_status}  
-⏳ <b>Expiry:</b> {premium_expiry}
+👤 <b>ᴜsᴇʀ:</b> {user_name}  
+🆔 <b>ᴜsᴇʀ ɪᴅ:</b> <code>{user_id}</code>  
+💠 <b>ᴘʀᴇᴍɪᴜᴍ:</b> {premium_status}  
+⏳ <b>ᴇxᴘɪʀʏ:</b> {premium_expiry}
 
 ━━━━━━━━━━━━━━━━━━
 
-📁 <b>Your Usage</b>  
+📁 <b>ʏᴏᴜʀ ᴜsᴀɢᴇ</b>  
 🔹 ᴛᴏᴅᴀʏ's ᴅᴏᴡɴʟᴏᴀᴅs: <b>{today_downloads}</b>  
 🔹 ᴛᴏᴅᴀʏ ʀᴇᴍᴀɪɴɪɴɢ: <b>{today_remaining}</b>  
 🔹 ᴛᴏᴛᴀʟ ꜰɪʟᴇs ᴘʀᴏᴄᴇssᴇᴅ: <b>{total_downloads}</b>  
@@ -116,16 +116,16 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 
 ━━━━━━━━━━━━━━━━━━
 
-⚙️ <b>Bot Status</b>  
+⚙️ <b>ʙᴏᴛ sᴛᴀᴛᴜs</b>  
 🔆 ᴀᴘɪ sᴛᴀᴛᴜs: <b>{api_status}</b>  
-📡 ᴘɪɴɢ: <b>{ping_ms} ms</b>  
+📡 ᴘɪɴɢ: <b>{ping_ms} ᴍs</b>  
 ⏱️ ᴜᴘᴛɪᴍᴇ: <b>{bot_uptime}</b>  
 🧵 ᴀᴄᴛɪᴠᴇ ᴡᴏʀᴋᴇʀs: <b>{workers_active}</b>  
 📥 ǫᴜᴇᴜᴇ sɪᴢᴇ: <b>{queue_size}</b>
 
 ━━━━━━━━━━━━━━━━━━
 
-🧾 <b>Logs</b>  
+🧾 <b>ʟᴏɢs</b>  
   
 📊 sᴜᴄᴄᴇss ʀᴀᴛᴇ: <b>{task_success_rate}%</b>
 
@@ -134,276 +134,276 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 <b>✨ ᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴜsɪɴɢ {bot_name}!</b>
 
 <code>━━━━━━━━━━━━━━━━━━━━━━</code>
-<u><b>𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗕𝘆 :</b></u> <a href="https://t.me/TheInertBotz">The Inert Botz</a>
+<u><b>𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗕𝘆 :</b></u> <a href="https://t.me/TheInertBotz">ᴛʜᴇ ɪɴᴇʀᴛ ʙᴏᴛᴢ</a>
 <code>━━━━━━━━━━━━━━━━━━━━━━</code>"""
 
-    # ===== Settings =====
-    SETTINGS_TEXT = """
-<b>⚙️ Settings</b>
+    # ===== sᴇᴛᴛɪɴɢs =====
+    sᴇᴛᴛɪɴɢs_ᴛᴇxᴛ = """
+<b>⚙️ sᴇᴛᴛɪɴɢs</b>
 
-<b>🎛️ Available Settings:</b>
-• <code>/rename</code> - File naming preferences
-• <code>/set_rename &lt;pattern&gt;</code> - Custom patterns
-• Premium settings in <code>/premium</code>
+<b>🎛️ ᴀᴠᴀɪʟᴀʙʟᴇ sᴇᴛᴛɪɴɢs:</b>
+• <code>/ʀᴇɴᴀᴍᴇ</code> - ꜰɪʟᴇ ɴᴀᴍɪɴɢ ᴘʀᴇꜰᴇʀᴇɴᴄᴇs
+• <code>/sᴇᴛ_ʀᴇɴᴀᴍᴇ &ʟᴛ;ᴘᴀᴛᴛᴇʀɴ&ɢᴛ;</code> - ᴄᴜsᴛᴏᴍ ᴘᴀᴛᴛᴇʀɴs
+• ᴘʀᴇᴍɪᴜᴍ sᴇᴛᴛɪɴɢs ɪɴ <code>/ᴘʀᴇᴍɪᴜᴍ</code>
 
-<b>💡 Tip:</b>
-All your settings are automatically saved and synced across devices.
+<b>💡 ᴛɪᴘ:</b>
+ᴀʟʟ ʏᴏᴜʀ sᴇᴛᴛɪɴɢs ᴀʀᴇ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ sᴀᴠᴇᴅ ᴀɴᴅ sʏɴᴄᴇᴅ ᴀᴄʀᴏss ᴅᴇᴠɪᴄᴇs.
 """
 
-    # ===== Premium Info =====
-    PREMIUM_INFO = """
-<b>💎 Premium Membership</b>
+    # ===== ᴘʀᴇᴍɪᴜᴍ ɪɴꜰᴏ =====
+    ᴘʀᴇᴍɪᴜᴍ_ɪɴꜰᴏ = """
+<b>💎 ᴘʀᴇᴍɪᴜᴍ ᴍᴇᴍʙᴇʀsʜɪᴘ</b>
 
-<b>🎯 Unlock Premium Features:</b>
-• ✅ Unlimited downloads (no daily limits)
-• ✅ Priority support & faster responses
-• ✅ Advanced file naming options
-• ✅ Custom branding
-• ✅ No ads or watermarks
+<b>🎯 ᴜɴʟᴏᴄᴋ ᴘʀᴇᴍɪᴜᴍ ꜰᴇᴀᴛᴜʀᴇs:</b>
+• ✅ ᴜɴʟɪᴍɪᴛᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅs (ɴᴏ ᴅᴀɪʟʏ ʟɪᴍɪᴛs)
+• ✅ ᴘʀɪᴏʀɪᴛʏ sᴜᴘᴘᴏʀᴛ & ꜰᴀsᴛᴇʀ ʀᴇsᴘᴏɴsᴇs
+• ✅ ᴀᴅᴠᴀɴᴄᴇᴅ ꜰɪʟᴇ ɴᴀᴍɪɴɢ ᴏᴘᴛɪᴏɴs
+• ✅ ᴄᴜsᴛᴏᴍ ʙʀᴀɴᴅɪɴɢ
+• ✅ ɴᴏ ᴀᴅs ᴏʀ ᴡᴀᴛᴇʀᴍᴀʀᴋs
 
-<b>📊 Current Plan:</b>
-• Free: 5 downloads per day
-• Premium: Unlimited downloads
+<b>📊 ᴄᴜʀʀᴇɴᴛ ᴘʟᴀɴ:</b>
+• ꜰʀᴇᴇ: 5 ᴅᴏᴡɴʟᴏᴀᴅs ᴘᴇʀ ᴅᴀʏ
+• ᴘʀᴇᴍɪᴜᴍ: ᴜɴʟɪᴍɪᴛᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅs
 
-<b>💰 Upgrade Options:</b>
-• Monthly: $4.99/month
-• Yearly: $39.99/year (Save 33%)
+<b>💰 ᴜᴘɢʀᴀᴅᴇ ᴏᴘᴛɪᴏɴs:</b>
+• ᴍᴏɴᴛʜʟʏ: $4.99/ᴍᴏɴᴛʜ
+• ʏᴇᴀʀʟʏ: $39.99/ʏᴇᴀʀ (sᴀᴠᴇ 33%)
 
-Click the button below to upgrade now!
+ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ᴜᴘɢʀᴀᴅᴇ ɴᴏᴡ!
 """
 
-    # ===== Rename Settings =====
-    RENAME_HELP_TEXT = """
-<b>🔄 Auto-Rename Settings</b>
+    # ===== ʀᴇɴᴀᴍᴇ sᴇᴛᴛɪɴɢs =====
+    ʀᴇɴᴀᴍᴇ_ʜᴇʟᴘ_ᴛᴇxᴛ = """
+<b>🔄 ᴀᴜᴛᴏ-ʀᴇɴᴀᴍᴇ sᴇᴛᴛɪɴɢs</b>
 
-<b>Current Status:</b> {status}
+<b>ᴄᴜʀʀᴇɴᴛ sᴛᴀᴛᴜs:</b> {status}
 
 ━━━━━━━━━━━━━━━━━━━━
 
-<b>⚡ Quick Options:</b>
-<code>/rename on</code> - Timestamp (YYYYMMDD_HHMMSS)
-<code>/rename datetime</code> - DateTime (YYYY-MM-DD_HH-MM-SS)
-<code>/rename off</code> - Disable renaming
+<b>⚡ qᴜɪᴄᴋ ᴏᴘᴛɪᴏɴs:</b>
+<code>/ʀᴇɴᴀᴍᴇ ᴏɴ</code> - ᴛɪᴍᴇsᴛᴀᴍᴘ (ʏʏʏʏᴍᴍᴅᴅ_ʜʜᴍᴍss)
+<code>/ʀᴇɴᴀᴍᴇ ᴅᴀᴛᴇᴛɪᴍᴇ</code> - ᴅᴀᴛᴇᴛɪᴍᴇ (ʏʏʏʏ-ᴍᴍ-ᴅᴅ_ʜʜ-ᴍᴍ-ss)
+<code>/ʀᴇɴᴀᴍᴇ ᴏꜰꜰ</code> - ᴅɪsᴀʙʟᴇ ʀᴇɴᴀᴍɪɴɢ
 
-<b>✨ Custom Naming:</b>
-<code>/set_rename &lt;your_pattern&gt;</code>
+<b>✨ ᴄᴜsᴛᴏᴍ ɴᴀᴍɪɴɢ:</b>
+<code>/sᴇᴛ_ʀᴇɴᴀᴍᴇ &ʟᴛ;ʏᴏᴜʀ_ᴘᴀᴛᴛᴇʀɴ&ɢᴛ;</code>
 
-<b>📝 Available Variables:</b>
+<b>📝 ᴀᴠᴀɪʟᴀʙʟᴇ ᴠᴀʀɪᴀʙʟᴇs:</b>
 {{file_name}} • {{file_size}} • {{original_name}} • {{ext}}
 
-<b>💡 Pattern Examples:</b>
-<code>@Bot_{{file_name}}_{{file_size}}</code>
-→ @Bot_video_42MB.mp4
+<b>💡 ᴘᴀᴛᴛᴇʀɴ ᴇxᴀᴍᴘʟᴇs:</b>
+<code>@ʙᴏᴛ_{{file_name}}_{{file_size}}</code>
+→ @Bot_video_42MB.ᴍᴘ4
 
-<code>Download_{{original_name}}</code>
-→ Download_video.mp4
+<code>ᴅᴏᴡɴʟᴏᴀᴅ_{{original_name}}</code>
+→ ᴅᴏᴡɴʟᴏᴀᴅ_ᴠɪᴅᴇᴏ.ᴍᴘ4
 
 ━━━━━━━━━━━━━━━━━━━━
 """
 
-    # ===== Status Messages =====
-    EXTRACTING = "🔎 Extracting direct link..."
-    DOWNLOADING = "📥 Downloading..."
-    UPLOADING = "📤 Uploading..."
-    PREPARING = "📤 Preparing thumbnail & metadata..."
-    COMPLETED = "✅ Completed."
-    ERROR = "❌ Something went wrong. Check logs or contact admin."
-    NO_LINK = """❌ <b>No TeraBox link detected</b>
+    # ===== sᴛᴀᴛᴜs ᴍᴇssᴀɢᴇs =====
+    ᴇxᴛʀᴀᴄᴛɪɴɢ = "🔎 ᴇxᴛʀᴀᴄᴛɪɴɢ ᴅɪʀᴇᴄᴛ ʟɪɴᴋ..."
+    ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ = "📥 ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ..."
+    ᴜᴘʟᴏᴀᴅɪɴɢ = "📤 ᴜᴘʟᴏᴀᴅɪɴɢ..."
+    ᴘʀᴇᴘᴀʀɪɴɢ = "📤 ᴘʀᴇᴘᴀʀɪɴɢ ᴛʜᴜᴍʙɴᴀɪʟ & ᴍᴇᴛᴀᴅᴀᴛᴀ..."
+    ᴄᴏᴍᴘʟᴇᴛᴇᴅ = "✅ ᴄᴏᴍᴘʟᴇᴛᴇᴅ."
+    ᴇʀʀᴏʀ = "❌ sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ. ᴄʜᴇᴄᴋ ʟᴏɢs ᴏʀ ᴄᴏɴᴛᴀᴄᴛ ᴀᴅᴍɪɴ."
+    ɴᴏ_ʟɪɴᴋ = """❌ <b>ɴᴏ ᴛᴇʀᴀʙᴏx ʟɪɴᴋ ᴅᴇᴛᴇᴄᴛᴇᴅ</b>
 
-Please send a valid TeraBox link:
-<code>https://1024terabox.com/s/...</code>
+ᴘʟᴇᴀsᴇ sᴇɴᴅ ᴀ ᴠᴀʟɪᴅ ᴛᴇʀᴀʙᴏx ʟɪɴᴋ:
+<code>ʜᴛᴛᴘs://1024ᴛᴇʀᴀʙᴏx.ᴄᴏᴍ/s/...</code>
 
-Type <code>/help</code> for more info."""
+ᴛʏᴘᴇ <code>/ʜᴇʟᴘ</code> ꜰᴏʀ ᴍᴏʀᴇ ɪɴꜰᴏ."""
 
-    UNEXPECTED_ERROR = """❌ <b>An unexpected error occurred</b>
+    ᴜɴᴇxᴘᴇᴄᴛᴇᴅ_ᴇʀʀᴏʀ = """❌ <b>ᴀɴ ᴜɴᴇxᴘᴇᴄᴛᴇᴅ ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ</b>
 
-Please try again or contact support."""
+ᴘʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ ᴏʀ ᴄᴏɴᴛᴀᴄᴛ sᴜᴘᴘᴏʀᴛ."""
 
-    # ===== Rename Confirmations =====
-    RENAME_ON = """✅ <b>Auto-rename Enabled</b>
+    # ===== ʀᴇɴᴀᴍᴇ ᴄᴏɴꜰɪʀᴍᴀᴛɪᴏɴs =====
+    ʀᴇɴᴀᴍᴇ_ᴏɴ = """✅ <b>ᴀᴜᴛᴏ-ʀᴇɴᴀᴍᴇ ᴇɴᴀʙʟᴇᴅ</b>
 
-📌 Format: <code>filename_YYYYMMDD_HHMMSS.ext</code>
-💾 Applied to all downloads
-Type <code>/rename</code> to change"""
+📌 ꜰᴏʀᴍᴀᴛ: <code>ꜰɪʟᴇɴᴀᴍᴇ_ʏʏʏʏᴍᴍᴅᴅ_ʜʜᴍᴍss.ᴇxᴛ</code>
+💾 ᴀᴘᴘʟɪᴇᴅ ᴛᴏ ᴀʟʟ ᴅᴏᴡɴʟᴏᴀᴅs
+ᴛʏᴘᴇ <code>/ʀᴇɴᴀᴍᴇ</code> ᴛᴏ ᴄʜᴀɴɢᴇ"""
 
-    RENAME_DATETIME = """✅ <b>Auto-rename Enabled</b>
+    ʀᴇɴᴀᴍᴇ_ᴅᴀᴛᴇᴛɪᴍᴇ = """✅ <b>ᴀᴜᴛᴏ-ʀᴇɴᴀᴍᴇ ᴇɴᴀʙʟᴇᴅ</b>
 
-📌 Format: <code>filename_YYYY-MM-DD_HH-MM-SS.ext</code>
-💾 Applied to all downloads
-Type <code>/rename</code> to change"""
+📌 ꜰᴏʀᴍᴀᴛ: <code>ꜰɪʟᴇɴᴀᴍᴇ_ʏʏʏʏ-ᴍᴍ-ᴅᴅ_ʜʜ-ᴍᴍ-ss.ᴇxᴛ</code>
+💾 ᴀᴘᴘʟɪᴇᴅ ᴛᴏ ᴀʟʟ ᴅᴏᴡɴʟᴏᴀᴅs
+ᴛʏᴘᴇ <code>/ʀᴇɴᴀᴍᴇ</code> ᴛᴏ ᴄʜᴀɴɢᴇ"""
 
-    RENAME_OFF = """❌ <b>Auto-rename Disabled</b>
+    ʀᴇɴᴀᴍᴇ_ᴏꜰꜰ = """❌ <b>ᴀᴜᴛᴏ-ʀᴇɴᴀᴍᴇ ᴅɪsᴀʙʟᴇᴅ</b>
 
-📌 Files will keep original names
-Use <code>/rename on</code> to enable again"""
+📌 ꜰɪʟᴇs ᴡɪʟʟ ᴋᴇᴇᴘ ᴏʀɪɢɪɴᴀʟ ɴᴀᴍᴇs
+ᴜsᴇ <code>/ʀᴇɴᴀᴍᴇ ᴏɴ</code> ᴛᴏ ᴇɴᴀʙʟᴇ ᴀɢᴀɪɴ"""
 
-    INVALID_OPTION = """❓ <b>Unknown Option</b>
+    ɪɴᴠᴀʟɪᴅ_ᴏᴘᴛɪᴏɴ = """❓ <b>ᴜɴᴋɴᴏᴡɴ ᴏᴘᴛɪᴏɴ</b>
 
-Type <code>/rename</code> for help or examples."""
+ᴛʏᴘᴇ <code>/ʀᴇɴᴀᴍᴇ</code> ꜰᴏʀ ʜᴇʟᴘ ᴏʀ ᴇxᴀᴍᴘʟᴇs."""
 
-    CUSTOM_PATTERN_SAVED = """✅ <b>Custom Pattern Saved!</b>
+    ᴄᴜsᴛᴏᴍ_ᴘᴀᴛᴛᴇʀɴ_sᴀᴠᴇᴅ = """✅ <b>ᴄᴜsᴛᴏᴍ ᴘᴀᴛᴛᴇʀɴ sᴀᴠᴇᴅ!</b>
 
-📝 <b>Your Pattern:</b>
+📝 <b>ʏᴏᴜʀ ᴘᴀᴛᴛᴇʀɴ:</b>
 <code>{pattern}</code>
 
-💾 <b>Applied to:</b> All future downloads
+💾 <b>ᴀᴘᴘʟɪᴇᴅ ᴛᴏ:</b> ᴀʟʟ ꜰᴜᴛᴜʀᴇ ᴅᴏᴡɴʟᴏᴀᴅs
 
-📌 <b>Example:</b>
-<code>your_renamed_file.mp4</code>"""
+📌 <b>ᴇxᴀᴍᴘʟᴇ:</b>
+<code>ʏᴏᴜʀ_ʀᴇɴᴀᴍᴇᴅ_ꜰɪʟᴇ.ᴍᴘ4</code>"""
 
-    CUSTOM_PATTERN_USAGE = """❌ <b>Usage:</b> <code>/set_rename &lt;pattern&gt;</code>
+    ᴄᴜsᴛᴏᴍ_ᴘᴀᴛᴛᴇʀɴ_ᴜsᴀɢᴇ = """❌ <b>ᴜsᴀɢᴇ:</b> <code>/sᴇᴛ_ʀᴇɴᴀᴍᴇ &ʟᴛ;ᴘᴀᴛᴛᴇʀɴ&ɢᴛ;</code>
 
-Example: <code>/set_rename @Theinertbotz_{{file_name}}_{{file_size}}</code>
+ᴇxᴀᴍᴘʟᴇ: <code>/sᴇᴛ_ʀᴇɴᴀᴍᴇ @Theinertbotz_{{file_name}}_{{file_size}}</code>
 
-Type <code>/rename</code> for available variables."""
+ᴛʏᴘᴇ <code>/ʀᴇɴᴀᴍᴇ</code> ꜰᴏʀ ᴀᴠᴀɪʟᴀʙʟᴇ ᴠᴀʀɪᴀʙʟᴇs."""
 
-    CUSTOM_PATTERN_ERROR = """❌ Pattern must contain at least one variable.
-Example: <code>/set_rename @Bot_{{file_name}}_{{file_size}}</code>"""
+    ᴄᴜsᴛᴏᴍ_ᴘᴀᴛᴛᴇʀɴ_ᴇʀʀᴏʀ = """❌ ᴘᴀᴛᴛᴇʀɴ ᴍᴜsᴛ ᴄᴏɴᴛᴀɪɴ ᴀᴛ ʟᴇᴀsᴛ ᴏɴᴇ ᴠᴀʀɪᴀʙʟᴇ.
+ᴇxᴀᴍᴘʟᴇ: <code>/sᴇᴛ_ʀᴇɴᴀᴍᴇ @Bot_{{file_name}}_{{file_size}}</code>"""
 
-    RENAME_RESTRICTED = """❌ <b>Auto-Rename Feature Restricted</b>
+    ʀᴇɴᴀᴍᴇ_ʀᴇsᴛʀɪᴄᴛᴇᴅ = """❌ <b>ᴀᴜᴛᴏ-ʀᴇɴᴀᴍᴇ ꜰᴇᴀᴛᴜʀᴇ ʀᴇsᴛʀɪᴄᴛᴇᴅ</b>
 
-This feature is only available for:
-👑 Premium Members
-🔐 Admins
+ᴛʜɪs ꜰᴇᴀᴛᴜʀᴇ ɪs ᴏɴʟʏ ᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ:
+👑 ᴘʀᴇᴍɪᴜᴍ ᴍᴇᴍʙᴇʀs
+🔐 ᴀᴅᴍɪɴs
 
-<b>To unlock this feature:</b>
-• <code>/premium</code> - Upgrade to premium
-• Contact admin for more details
+<b>ᴛᴏ ᴜɴʟᴏᴄᴋ ᴛʜɪs ꜰᴇᴀᴛᴜʀᴇ:</b>
+• <code>/ᴘʀᴇᴍɪᴜᴍ</code> - ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ
+• ᴄᴏɴᴛᴀᴄᴛ ᴀᴅᴍɪɴ ꜰᴏʀ ᴍᴏʀᴇ ᴅᴇᴛᴀɪʟs
 
-💡 Other features are still available for all users!"""
+💡 ᴏᴛʜᴇʀ ꜰᴇᴀᴛᴜʀᴇs ᴀʀᴇ sᴛɪʟʟ ᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ ᴀʟʟ ᴜsᴇʀs!"""
 
-    UPLOAD_CHANNEL_RESTRICTED = """❌ <b>Auto-Upload Feature Restricted</b>
+    ᴜᴘʟᴏᴀᴅ_ᴄʜᴀɴɴᴇʟ_ʀᴇsᴛʀɪᴄᴛᴇᴅ = """❌ <b>ᴀᴜᴛᴏ-ᴜᴘʟᴏᴀᴅ ꜰᴇᴀᴛᴜʀᴇ ʀᴇsᴛʀɪᴄᴛᴇᴅ</b>
 
-This feature is only available for:
-👑 Premium Members
-🔐 Admins
+ᴛʜɪs ꜰᴇᴀᴛᴜʀᴇ ɪs ᴏɴʟʏ ᴀᴠᴀɪʟᴀʙʟᴇ ꜰᴏʀ:
+👑 ᴘʀᴇᴍɪᴜᴍ ᴍᴇᴍʙᴇʀs
+🔐 ᴀᴅᴍɪɴs
 
-<b>To unlock this feature:</b>
-• <code>/premium</code> - Upgrade to premium
-• Contact admin for more details
+<b>ᴛᴏ ᴜɴʟᴏᴄᴋ ᴛʜɪs ꜰᴇᴀᴛᴜʀᴇ:</b>
+• <code>/ᴘʀᴇᴍɪᴜᴍ</code> - ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ
+• ᴄᴏɴᴛᴀᴄᴛ ᴀᴅᴍɪɴ ꜰᴏʀ ᴍᴏʀᴇ ᴅᴇᴛᴀɪʟs
 
-💡 Your downloads are still processed normally!"""
+💡 ʏᴏᴜʀ ᴅᴏᴡɴʟᴏᴀᴅs ᴀʀᴇ sᴛɪʟʟ ᴘʀᴏᴄᴇssᴇᴅ ɴᴏʀᴍᴀʟʟʏ!"""
 
-    UPLOAD_CHANNEL_ALREADY_SET = """⚠️ <b>Upload Channel Already Configured</b>
+    ᴜᴘʟᴏᴀᴅ_ᴄʜᴀɴɴᴇʟ_ᴀʟʀᴇᴀᴅʏ_sᴇᴛ = """⚠️ <b>ᴜᴘʟᴏᴀᴅ ᴄʜᴀɴɴᴇʟ ᴀʟʀᴇᴀᴅʏ ᴄᴏɴꜰɪɢᴜʀᴇᴅ</b>
 
-📍 <b>Current Channel:</b> {current_channel}
-🔗 <b>Channel ID:</b> <code>{channel_id}</code>
+📍 <b>ᴄᴜʀʀᴇɴᴛ ᴄʜᴀɴɴᴇʟ:</b> {current_channel}
+🔗 <b>ᴄʜᴀɴɴᴇʟ ɪᴅ:</b> <code>{channel_id}</code>
 
-<b>✅ To replace it:</b>
-<code>/set_upload_channel &lt;new_channel_id&gt;</code>
+<b>✅ ᴛᴏ ʀᴇᴘʟᴀᴄᴇ ɪᴛ:</b>
+<code>/sᴇᴛ_ᴜᴘʟᴏᴀᴅ_ᴄʜᴀɴɴᴇʟ &ʟᴛ;ɴᴇᴡ_ᴄʜᴀɴɴᴇʟ_ɪᴅ&ɢᴛ;</code>
 
-<b>❌ To remove it:</b>
-<code>/remove_upload_channel</code>"""
+<b>❌ ᴛᴏ ʀᴇᴍᴏᴠᴇ ɪᴛ:</b>
+<code>/ʀᴇᴍᴏᴠᴇ_ᴜᴘʟᴏᴀᴅ_ᴄʜᴀɴɴᴇʟ</code>"""
 
-    # ===== Premium System =====
-    LIMIT_REACHED = """❌ <b>Daily Limit Reached</b>
+    # ===== ᴘʀᴇᴍɪᴜᴍ sʏsᴛᴇᴍ =====
+    ʟɪᴍɪᴛ_ʀᴇᴀᴄʜᴇᴅ = """❌ <b>ᴅᴀɪʟʏ ʟɪᴍɪᴛ ʀᴇᴀᴄʜᴇᴅ</b>
 
-📊 Free users can download <b>{daily_limit} videos per day</b>
+📊 ꜰʀᴇᴇ ᴜsᴇʀs ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ <b>{daily_limit} ᴠɪᴅᴇᴏs ᴘᴇʀ ᴅᴀʏ</b>
 
-💎 <b>Upgrade to Premium for:</b>
-• Unlimited downloads
-• Unlimited storage
-• Priority support
-• No daily limits
-• Special features
+💎 <b>ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ ꜰᴏʀ:</b>
+• ᴜɴʟɪᴍɪᴛᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅs
+• ᴜɴʟɪᴍɪᴛᴇᴅ sᴛᴏʀᴀɢᴇ
+• ᴘʀɪᴏʀɪᴛʏ sᴜᴘᴘᴏʀᴛ
+• ɴᴏ ᴅᴀɪʟʏ ʟɪᴍɪᴛs
+• sᴘᴇᴄɪᴀʟ ꜰᴇᴀᴛᴜʀᴇs
 
-Type <code>/premium</code> to upgrade!"""
+ᴛʏᴘᴇ <code>/ᴘʀᴇᴍɪᴜᴍ</code> ᴛᴏ ᴜᴘɢʀᴀᴅᴇ!"""
 
-    PREMIUM_TEXT = """
-<b>💎 Premium Features</b>
+    ᴘʀᴇᴍɪᴜᴍ_ᴛᴇxᴛ = """
+<b>💎 ᴘʀᴇᴍɪᴜᴍ ꜰᴇᴀᴛᴜʀᴇs</b>
 
-<b>✨ What's Included:</b>
-• ✅ Unlimited downloads
-• ✅ Unlimited video storage
-• ✅ Priority support
-• ✅ No daily limits
-• ✅ Custom branding
-• ✅ Advanced analytics
+<b>✨ ᴡʜᴀᴛ's ɪɴᴄʟᴜᴅᴇᴅ:</b>
+• ✅ ᴜɴʟɪᴍɪᴛᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅs
+• ✅ ᴜɴʟɪᴍɪᴛᴇᴅ ᴠɪᴅᴇᴏ sᴛᴏʀᴀɢᴇ
+• ✅ ᴘʀɪᴏʀɪᴛʏ sᴜᴘᴘᴏʀᴛ
+• ✅ ɴᴏ ᴅᴀɪʟʏ ʟɪᴍɪᴛs
+• ✅ ᴄᴜsᴛᴏᴍ ʙʀᴀɴᴅɪɴɢ
+• ✅ ᴀᴅᴠᴀɴᴄᴇᴅ ᴀɴᴀʟʏᴛɪᴄs
 
-<b>📊 Free Plan Limits:</b>
-• 5 downloads per day
-• Basic features
-• Standard support
+<b>📊 ꜰʀᴇᴇ ᴘʟᴀɴ ʟɪᴍɪᴛs:</b>
+• 5 ᴅᴏᴡɴʟᴏᴀᴅs ᴘᴇʀ ᴅᴀʏ
+• ʙᴀsɪᴄ ꜰᴇᴀᴛᴜʀᴇs
+• sᴛᴀɴᴅᴀʀᴅ sᴜᴘᴘᴏʀᴛ
 
-<b>💳 Pricing:</b>
-Coming soon...
+<b>💳 ᴘʀɪᴄɪɴɢ:</b>
+ᴄᴏᴍɪɴɢ sᴏᴏɴ...
 
-Click button below to upgrade!
+ᴄʟɪᴄᴋ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ᴜᴘɢʀᴀᴅᴇ!
 """
 
-    PREMIUM_STATUS = """
-<b>👤 Your Account Status</b>
+    ᴘʀᴇᴍɪᴜᴍ_sᴛᴀᴛᴜs = """
+<b>👤 ʏᴏᴜʀ ᴀᴄᴄᴏᴜɴᴛ sᴛᴀᴛᴜs</b>
 
 {status}
 
-<code>/premium</code> - Premium info
-<code>/rename</code> - Rename settings
+<code>/ᴘʀᴇᴍɪᴜᴍ</code> - ᴘʀᴇᴍɪᴜᴍ ɪɴꜰᴏ
+<code>/ʀᴇɴᴀᴍᴇ</code> - ʀᴇɴᴀᴍᴇ sᴇᴛᴛɪɴɢs
 """
 
-    UPGRADE_TEXT = """
-<b>💳 Premium Membership</b>
+    ᴜᴘɢʀᴀᴅᴇ_ᴛᴇxᴛ = """
+<b>💳 ᴘʀᴇᴍɪᴜᴍ ᴍᴇᴍʙᴇʀsʜɪᴘ</b>
 
-<b>🎯 Get Premium Access:</b>
-• Unlimited downloads
-• Priority support
-• Advanced features
-• Save time & effort
+<b>🎯 ɢᴇᴛ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss:</b>
+• ᴜɴʟɪᴍɪᴛᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅs
+• ᴘʀɪᴏʀɪᴛʏ sᴜᴘᴘᴏʀᴛ
+• ᴀᴅᴠᴀɴᴄᴇᴅ ꜰᴇᴀᴛᴜʀᴇs
+• sᴀᴠᴇ ᴛɪᴍᴇ & ᴇꜰꜰᴏʀᴛ
 
-<b>💰 Plans:</b>
-• Monthly: $4.99/month
-• Yearly: $39.99/year (Save 33%)
+<b>💰 ᴘʟᴀɴs:</b>
+• ᴍᴏɴᴛʜʟʏ: $4.99/ᴍᴏɴᴛʜ
+• ʏᴇᴀʀʟʏ: $39.99/ʏᴇᴀʀ (sᴀᴠᴇ 33%)
 
-<b>Contact:</b>
-DM @Theinertbotz for details
+<b>ᴄᴏɴᴛᴀᴄᴛ:</b>
+ᴅᴍ @Theinertbotz ꜰᴏʀ ᴅᴇᴛᴀɪʟs
 """
 
-    # ===== Admin Panel =====
-    ADMIN_PANEL_TEXT = """
-<b>🛠️ Admin Panel</b>
+    # ===== ᴀᴅᴍɪɴ ᴘᴀɴᴇʟ =====
+    ᴀᴅᴍɪɴ_ᴘᴀɴᴇʟ_ᴛᴇxᴛ = """
+<b>🛠️ ᴀᴅᴍɪɴ ᴘᴀɴᴇʟ</b>
 
-<b>⚙️ Options:</b>
-• 👥 Manage Premium Users
-• 🔍 Check User Status
-• 📊 View System Info
+<b>⚙️ ᴏᴘᴛɪᴏɴs:</b>
+• 👥 ᴍᴀɴᴀɢᴇ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀs
+• 🔍 ᴄʜᴇᴄᴋ ᴜsᴇʀ sᴛᴀᴛᴜs
+• 📊 ᴠɪᴇᴡ sʏsᴛᴇᴍ ɪɴꜰᴏ
 
-Use buttons below to manage users.
+ᴜsᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ᴍᴀɴᴀɢᴇ ᴜsᴇʀs.
 """
 
-    ADMIN_MANAGE_TEXT = """
-<b>👥 Premium User Management</b>
+    ᴀᴅᴍɪɴ_ᴍᴀɴᴀɢᴇ_ᴛᴇxᴛ = """
+<b>👥 ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀ ᴍᴀɴᴀɢᴇᴍᴇɴᴛ</b>
 
-<b>📋 Commands:</b>
-• <code>/addpremium &lt;user_id&gt; [days]</code> - Add premium
-• <code>/removepremium &lt;user_id&gt;</code> - Remove premium
-• <code>/checkuser &lt;user_id&gt;</code> - Check status
+<b>📋 ᴄᴏᴍᴍᴀɴᴅs:</b>
+• <code>/ᴀᴅᴅᴘʀᴇᴍɪᴜᴍ &ʟᴛ;ᴜsᴇʀ_ɪᴅ&ɢᴛ; [ᴅᴀʏs]</code> - ᴀᴅᴅ ᴘʀᴇᴍɪᴜᴍ
+• <code>/ʀᴇᴍᴏᴠᴇᴘʀᴇᴍɪᴜᴍ &ʟᴛ;ᴜsᴇʀ_ɪᴅ&ɢᴛ;</code> - ʀᴇᴍᴏᴠᴇ ᴘʀᴇᴍɪᴜᴍ
+• <code>/ᴄʜᴇᴄᴋᴜsᴇʀ &ʟᴛ;ᴜsᴇʀ_ɪᴅ&ɢᴛ;</code> - ᴄʜᴇᴄᴋ sᴛᴀᴛᴜs
 
-<b>Examples:</b>
-<code>/addpremium 123456789</code> - Permanent
-<code>/addpremium 123456789 30</code> - 30 days
+<b>ᴇxᴀᴍᴘʟᴇs:</b>
+<code>/ᴀᴅᴅᴘʀᴇᴍɪᴜᴍ 123456789</code> - ᴘᴇʀᴍᴀɴᴇɴᴛ
+<code>/ᴀᴅᴅᴘʀᴇᴍɪᴜᴍ 123456789 30</code> - 30 ᴅᴀʏs
 """
     
-    AUTO_DELETE_ON = "✅ Auto-delete <b>ENABLED</b>\n\nDownloaded files will be deleted after upload to save storage."
-    AUTO_DELETE_OFF = "❌ Auto-delete <b>DISABLED</b>\n\nDownloaded files will be kept after upload."
+    ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ_ᴏɴ = "✅ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ <b>ᴇɴᴀʙʟᴇᴅ</b>\ɴ\ɴᴅᴏᴡɴʟᴏᴀᴅᴇᴅ ꜰɪʟᴇs ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ᴀꜰᴛᴇʀ ᴜᴘʟᴏᴀᴅ ᴛᴏ sᴀᴠᴇ sᴛᴏʀᴀɢᴇ."
+    ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ_ᴏꜰꜰ = "❌ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ <b>ᴅɪsᴀʙʟᴇᴅ</b>\ɴ\ɴᴅᴏᴡɴʟᴏᴀᴅᴇᴅ ꜰɪʟᴇs ᴡɪʟʟ ʙᴇ ᴋᴇᴘᴛ ᴀꜰᴛᴇʀ ᴜᴘʟᴏᴀᴅ."
     
-    # ===== User Auto-Delete Messages =====
-    AUTO_DELETE_ENABLED = "✅ <b>ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴇɴᴀʙʟᴇᴅ</b>\n\n⏱️ Video messages will auto-delete in <b>5 seconds</b> to help prevent copyright issues.\n\n📌 <i>Premium & Free users: Both will have auto-delete enabled</i>"
+    # ===== ᴜsᴇʀ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴍᴇssᴀɢᴇs =====
+    ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ_ᴇɴᴀʙʟᴇᴅ = "✅ <b>ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴇɴᴀʙʟᴇᴅ</b>\ɴ\ɴ⏱️ ᴠɪᴅᴇᴏ ᴍᴇssᴀɢᴇs ᴡɪʟʟ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ɪɴ <b>5 sᴇᴄᴏɴᴅs</b> ᴛᴏ ʜᴇʟᴘ ᴘʀᴇᴠᴇɴᴛ ᴄᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs.\ɴ\ɴ📌 <i>ᴘʀᴇᴍɪᴜᴍ & ꜰʀᴇᴇ ᴜsᴇʀs: ʙᴏᴛʜ ᴡɪʟʟ ʜᴀᴠᴇ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴇɴᴀʙʟᴇᴅ</i>"
     
-    AUTO_DELETE_DISABLED = "⏹️ <b>ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴅɪsᴀʙʟᴇᴅ</b>\n\n⏱️ Video messages will <b>NOT</b> auto-delete.\n\n⚠️ <i>Remember to manage your storage manually</i>"
+    ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ_ᴅɪsᴀʙʟᴇᴅ = "⏹️ <b>ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴅɪsᴀʙʟᴇᴅ</b>\ɴ\ɴ⏱️ ᴠɪᴅᴇᴏ ᴍᴇssᴀɢᴇs ᴡɪʟʟ <b>ɴᴏᴛ</b> ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ.\ɴ\ɴ⚠️ <i>ʀᴇᴍᴇᴍʙᴇʀ ᴛᴏ ᴍᴀɴᴀɢᴇ ʏᴏᴜʀ sᴛᴏʀᴀɢᴇ ᴍᴀɴᴜᴀʟʟʏ</i>"
     
-    AUTO_DELETE_NOTIFY = "⏰ <b>ᴀᴜᴛᴏ ᴅᴇʟᴇᴛᴇ ɪɴ {time}</b> 🗑️\n\n💡 <i>This helps prevent copyright issues on Telegram</i>"
+    ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ_ɴᴏᴛɪꜰʏ = "⏰ <b>ᴀᴜᴛᴏ ᴅᴇʟᴇᴛᴇ ɪɴ {time}</b> 🗑️\ɴ\ɴ💡 <i>ᴛʜɪs ʜᴇʟᴘs ᴘʀᴇᴠᴇɴᴛ ᴄᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs ᴏɴ ᴛᴇʟᴇɢʀᴀᴍ</i>"
     
-    SET_AUTO_DELETE_USAGE = """<b>⏱️ Set Auto-Delete Time</b>
+    sᴇᴛ_ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ_ᴜsᴀɢᴇ = """<b>⏱️ sᴇᴛ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴛɪᴍᴇ</b>
 
-<b>Usage:</b> <code>/set_auto_delete &lt;time&gt;</code>
+<b>ᴜsᴀɢᴇ:</b> <code>/sᴇᴛ_ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ &ʟᴛ;ᴛɪᴍᴇ&ɢᴛ;</code>
 
-<b>Format:</b>
-• <code>s</code> = seconds
-• <code>m</code> = minutes
-• <code>h</code> = hours
+<b>ꜰᴏʀᴍᴀᴛ:</b>
+• <code>s</code> = sᴇᴄᴏɴᴅs
+• <code>ᴍ</code> = ᴍɪɴᴜᴛᴇs
+• <code>ʜ</code> = ʜᴏᴜʀs
 
-<b>Examples:</b>
-<code>/set_auto_delete 30s</code> - Delete in 30 seconds
-<code>/set_auto_delete 5m</code> - Delete in 5 minutes
-<code>/set_auto_delete 1h</code> - Delete in 1 hour
+<b>ᴇxᴀᴍᴘʟᴇs:</b>
+<code>/sᴇᴛ_ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ 30s</code> - ᴅᴇʟᴇᴛᴇ ɪɴ 30 sᴇᴄᴏɴᴅs
+<code>/sᴇᴛ_ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ 5ᴍ</code> - ᴅᴇʟᴇᴛᴇ ɪɴ 5 ᴍɪɴᴜᴛᴇs
+<code>/sᴇᴛ_ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ 1ʜ</code> - ᴅᴇʟᴇᴛᴇ ɪɴ 1 ʜᴏᴜʀ
 
-<code>/remove_auto_delete</code> - Disable auto-delete"""
+<code>/ʀᴇᴍᴏᴠᴇ_ᴀᴜᴛᴏ_ᴅᴇʟᴇᴛᴇ</code> - ᴅɪsᴀʙʟᴇ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ"""
