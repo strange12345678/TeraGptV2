@@ -142,7 +142,7 @@ async def upload_file(client, message, filepath, bot_username: str):
             pass
         raise
 
-    # Final update with auto-delete notification
+    # Final update with auto-delete notification and media deletion
     try:
         # Send auto-delete warning message
         from script import Script
@@ -159,19 +159,41 @@ async def upload_file(client, message, filepath, bot_username: str):
             if custom_time:
                 delete_time = custom_time
         
+        # Delete the previous link message
+        try:
+            await message.delete()
+        except:
+            pass
+        
         if should_auto_delete:
-            # Send the auto-delete notification
-            notify_msg = await message.reply(Script.AUTO_DELETE_NOTIFY, parse_mode=enums.ParseMode.HTML)
+            # Format time for display
+            def format_time_display(seconds):
+                if seconds < 60:
+                    return f"{seconds}s"
+                elif seconds < 3600:
+                    return f"{seconds // 60}m"
+                else:
+                    return f"{seconds // 3600}h"
+            
+            # Send the auto-delete notification with actual time
+            time_display = format_time_display(delete_time)
+            notify_text = Script.AUTO_DELETE_NOTIFY.format(time=time_display)
+            notify_msg = await message.reply(notify_text, parse_mode=enums.ParseMode.HTML)
+            
+            # Wait for the delete time, then delete notification
             await asyncio.sleep(delete_time)
             try:
                 await notify_msg.delete()
             except:
                 pass
         
-        # Update status message
-        await status_msg.edit_text(f"<b>✅ Upload complete:</b>\n{filename}", parse_mode=enums.ParseMode.HTML)
-        await asyncio.sleep(2)
-        await status_msg.delete()
+        # Update and delete status message
+        try:
+            await status_msg.edit_text(f"<b>✅ Upload complete:</b>\n{filename}", parse_mode=enums.ParseMode.HTML)
+            await asyncio.sleep(2)
+            await status_msg.delete()
+        except:
+            pass
     except Exception:
         pass
 
