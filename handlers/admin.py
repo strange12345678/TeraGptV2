@@ -240,24 +240,108 @@ def register_handlers(app):
         except Exception:
             log.exception("admin_auto_delete_callback error")
     
-    # ===== Toggle Auto-Delete Command =====
-    @app.on_message(filters.command("toggle_autodelete") & filters.private)
-    async def toggle_autodelete_cmd(client, message):
-        """Toggle auto-delete feature."""
+    # ===== Auto-Delete Info Command =====
+    @app.on_message(filters.command("auto_delete") & filters.private)
+    async def auto_delete_info_cmd(client, message):
+        """Show auto-delete info."""
         if not is_admin(message.from_user.id):
             await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
             return
         
         try:
-            current_status = db.is_auto_delete_enabled()
-            new_status = not current_status
-            db.set_auto_delete(new_status)
+            auto_delete_time = db.get_auto_delete_time()
+            if auto_delete_time is None:
+                status = "❌ <b>Disabled</b> - Files kept after upload"
+            else:
+                # Convert seconds to readable format
+                if auto_delete_time < 60:
+                    time_str = f"{auto_delete_time}s"
+                elif auto_delete_time < 3600:
+                    time_str = f"{auto_delete_time // 60}m"
+                else:
+                    time_str = f"{auto_delete_time // 3600}d"
+                status = f"✅ <b>Enabled</b> - Files deleted after {time_str}"
             
-            status_text = Script.AUTO_DELETE_ON if new_status else Script.AUTO_DELETE_OFF
-            await message.reply(status_text, parse_mode=enums.ParseMode.HTML)
-            log.info(f"Admin {message.from_user.id} toggled auto-delete to {new_status}")
+            info_text = f"""<b>⏰ Auto-Delete Settings</b>
+
+{status}
+
+<b>📝 Available Commands:</b>
+<code>/set_auto_delete &lt;time&gt;</code> - Set auto-delete time
+  Examples: <code>/set_auto_delete 30s</code>, <code>/set_auto_delete 5m</code>, <code>/set_auto_delete 1d</code>
+
+<code>/remove_auto_delete</code> - Disable auto-delete
+
+<b>⏱️ Time Format:</b>
+• s = seconds (30s = 30 seconds)
+• m = minutes (5m = 5 minutes)  
+• d = days (1d = 1 day)"""
+            await message.reply(info_text, parse_mode=enums.ParseMode.HTML)
         except Exception:
-            log.exception("toggle_autodelete_cmd error")
+            log.exception("auto_delete_info_cmd error")
+    
+    # ===== Set Auto-Delete Command =====
+    @app.on_message(filters.command("set_auto_delete") & filters.private)
+    async def set_auto_delete_cmd(client, message):
+        """Set auto-delete time. Usage: /set_auto_delete <time>"""
+        if not is_admin(message.from_user.id):
+            await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
+            return
+        
+        try:
+            args = message.text.split()
+            if len(args) < 2:
+                await message.reply("📝 Usage: <code>/set_auto_delete &lt;time&gt;</code>\n\n<b>Examples:</b>\n<code>/set_auto_delete 30s</code>\n<code>/set_auto_delete 5m</code>\n<code>/set_auto_delete 1d</code>", parse_mode=enums.ParseMode.HTML)
+                return
+            
+            time_str = args[1].strip()
+            
+            # Parse time string
+            if time_str.endswith('s'):
+                seconds = int(time_str[:-1])
+            elif time_str.endswith('m'):
+                seconds = int(time_str[:-1]) * 60
+            elif time_str.endswith('d'):
+                seconds = int(time_str[:-1]) * 86400
+            else:
+                await message.reply("❌ Invalid format. Use: 30s, 5m, or 1d", parse_mode=enums.ParseMode.HTML)
+                return
+            
+            if seconds <= 0:
+                await message.reply("❌ Time must be greater than 0", parse_mode=enums.ParseMode.HTML)
+                return
+            
+            db.set_auto_delete_time(seconds)
+            
+            # Convert back to readable format
+            if seconds < 60:
+                display_time = f"{seconds}s"
+            elif seconds < 3600:
+                display_time = f"{seconds // 60}m"
+            else:
+                display_time = f"{seconds // 3600}d"
+            
+            await message.reply(f"✅ Auto-delete set to: <b>{display_time}</b>\n\nFiles will be deleted {display_time} after successful upload.", parse_mode=enums.ParseMode.HTML)
+            log.info(f"Admin {message.from_user.id} set auto-delete time to {seconds}s")
+        except ValueError:
+            await message.reply("❌ Invalid time value. Use numbers: 30s, 5m, 1d", parse_mode=enums.ParseMode.HTML)
+        except Exception:
+            log.exception("set_auto_delete_cmd error")
+    
+    # ===== Remove Auto-Delete Command =====
+    @app.on_message(filters.command("remove_auto_delete") & filters.private)
+    async def remove_auto_delete_cmd(client, message):
+        """Remove/disable auto-delete."""
+        if not is_admin(message.from_user.id):
+            await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
+            return
+        
+        try:
+            db.set_auto_delete_time(None)
+            await message.reply("✅ Auto-delete <b>disabled</b>\n\nFiles will be kept after upload.", parse_mode=enums.ParseMode.HTML)
+            log.info(f"Admin {message.from_user.id} disabled auto-delete")
+        except Exception:
+            log.exception("remove_auto_delete_cmd error")
     
     # ===== Add Premium User =====
     @app.on_message(filters.command("addpremium") & filters.private)

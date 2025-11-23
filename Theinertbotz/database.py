@@ -155,17 +155,28 @@ class Database:
             return doc.get("channel_id")
         return None
     
-    def set_auto_delete(self, enabled):
-        """Set auto-delete status."""
-        self.settings.update_one({"_id": "auto_delete"}, {"$set": {"enabled": enabled}}, upsert=True)
-        return True
+    def get_auto_delete_time(self):
+        """Get auto-delete time in seconds. Returns None if disabled."""
+        settings = self.settings.find_one({"_id": "auto_delete"})
+        if settings:
+            return settings.get("time_seconds")  # None if not set (disabled)
+        return None
+    
+    def set_auto_delete_time(self, time_seconds):
+        """Set auto-delete time in seconds. Pass None to disable."""
+        self.settings.update_one({"_id": "auto_delete"}, {"$set": {"time_seconds": time_seconds}}, upsert=True)
     
     def is_auto_delete_enabled(self):
-        """Get auto-delete status."""
-        doc = self.settings.find_one({"_id": "auto_delete"})
-        if doc:
-            return doc.get("enabled", True)  # Default to True
-        return True
+        """Check if auto-delete is enabled (for backward compatibility)."""
+        return self.get_auto_delete_time() is not None
+    
+    def set_auto_delete(self, enabled):
+        """Enable or disable auto-delete (for backward compatibility)."""
+        if enabled:
+            # Default to 5 seconds if enabling
+            self.set_auto_delete_time(5)
+        else:
+            self.set_auto_delete_time(None)
     
     def get_total_downloads(self, user_id):
         """Get total number of files downloaded by user (all time)."""
