@@ -12,8 +12,8 @@ from plugins.buttons import LIMIT_REACHED_BUTTONS
 
 log = logging.getLogger("TeraBoxBot")
 
-# Global semaphore to limit concurrent downloads (max 2 simultaneous)
-download_semaphore = asyncio.Semaphore(2)
+# Global semaphore to limit concurrent downloads (max 1 simultaneous - process one link at a time)
+download_semaphore = asyncio.Semaphore(1)
 
 TERABOX_RE = re.compile(r"(https?://(?:www\.)?[^\s]*(?:terabox|1024terabox|terasharefile|tera\.co|terabox\.co|mirrobox|nephobox|freeterabox|4funbox|terabox\.app|terabox\.fun|momerybox|teraboxapp|tibibox)[^\s]*)", re.IGNORECASE)
 
@@ -49,14 +49,14 @@ def register_handlers(app):
                         pass
                     continue
                 
-                # Use semaphore to limit concurrent downloads
+                # Use semaphore to limit concurrent downloads (1 at a time to avoid API errors)
                 async with download_semaphore:
                     log.info(f"Processing link {idx+1}/{len(links)}: {link} from user {user_id}")
                     try:
                         await process_video(client, message, link.strip())
                         db.increment_daily_downloads(user_id)
-                        # Small delay between links to avoid overwhelming the system
-                        await asyncio.sleep(1)
+                        # Delay between links to allow API to recover and prevent rate limiting
+                        await asyncio.sleep(3)
                     except Exception as e:
                         log.exception(f"Error processing link: {link}")
                         try:
