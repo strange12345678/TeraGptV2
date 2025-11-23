@@ -41,10 +41,20 @@ Simply send a <code>TeraBox</code> link and I'll:
 <b>/set_upload_channel &lt;channel_id&gt;</b> - Auto-upload to channel
 <b>/remove_upload_channel</b> - Remove auto-upload channel
 
-<b>⏰ Auto-Delete Commands (Admin):</b>
-<b>/auto_delete</b> - Show auto-delete info & options
-<b>/set_auto_delete &lt;time&gt;</b> - Set auto-delete time (30s, 5m, 1h)
+<b>🗑️ Auto-Delete Commands:</b>
+<b>/auto_delete</b> - Show auto-delete status
+<b>/auto_delete on</b> - Enable auto-delete messages
+<b>/auto_delete off</b> - Disable auto-delete messages
+<b>/set_auto_delete &lt;time&gt;</b> - Set delete time (30s, 5m, 1h)
 <b>/remove_auto_delete</b> - Disable auto-delete
+
+<b>🛠️ Admin Commands:</b>
+<b>/admin</b> - Open admin control panel
+<b>/addpremium &lt;user_id&gt; [days]</b> - Add premium user
+<b>/removepremium &lt;user_id&gt;</b> - Remove premium status
+<b>/checkuser &lt;user_id&gt;</b> - Check user tier & stats
+<b>/toggle_autodelete</b> - Toggle auto-delete setting
+<b>/checkchannels</b> - Verify channel access
 
 <b>📌 Rename Variables:</b>
 • {file_name} • {file_size}
@@ -60,6 +70,7 @@ Simply send TeraBox links and the bot will download & send them with:
 ✅ Real-time progress tracking
 ✅ Custom file naming
 ✅ Multi-file support
+✅ Auto-delete for copyright protection
 """
 
     # ===== About =====
