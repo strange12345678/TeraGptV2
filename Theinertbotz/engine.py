@@ -45,59 +45,45 @@ async def extract_teraapi_link(html: str):
     """Extract link from TeraAPI response (JSON/structured format)"""
     log.debug("Using TeraAPI extractor")
     
-    # 1) JSON format with quoted URLs
-    for m in TERAAPI_JSON_RE.findall(html):
-        if m and is_plausible_direct(m):
-            log.info(f"TeraAPI: Found via JSON_RE: {m[:80]}")
-            return m
+    # TeraAPI returns clean JSON responses - use simple direct patterns
     
-    # 2) JS variable format
-    for m in TERAAPI_JS_VAR_RE.findall(html):
-        if m and is_plausible_direct(m):
-            log.info(f"TeraAPI: Found via JS_VAR_RE: {m[:80]}")
-            return m
+    # 1) directUrl pattern (most common)
+    m = re.search(r'"directUrl"\s*:\s*"([^"]+)"', html, re.IGNORECASE)
+    if m:
+        url = m.group(1)
+        if is_plausible_direct(url):
+            log.info(f"TeraAPI: Found directUrl: {url[:80]}")
+            return url
     
-    # 3) Candidate patterns
-    for c in CANDIDATE_RE.findall(html):
-        if is_plausible_direct(c):
-            log.info(f"TeraAPI: Found via CANDIDATE_RE: {c[:80]}")
-            return c
+    # 2) playUrl pattern
+    m = re.search(r'"playUrl"\s*:\s*"([^"]+)"', html, re.IGNORECASE)
+    if m:
+        url = m.group(1)
+        if is_plausible_direct(url):
+            log.info(f"TeraAPI: Found playUrl: {url[:80]}")
+            return url
     
-    # 4) Generic patterns
-    for c in GENERIC_URL_RE.findall(html):
-        if is_plausible_direct(c):
-            log.info(f"TeraAPI: Found via GENERIC_RE: {c[:80]}")
-            return c
+    # 3) Any "url" field in JSON
+    for m in re.finditer(r'"(?:url|fileUrl|downloadUrl)"\s*:\s*"(https?://[^"]+)"', html):
+        url = m.group(1)
+        if is_plausible_direct(url):
+            log.info(f"TeraAPI: Found JSON url field: {url[:80]}")
+            return url
+    
+    # 4) Fallback: look for all URLs containing file/d.1024 patterns
+    for url in URL_ANY_RE.findall(html):
+        if any(x in url for x in ("d.1024", "data.1024", "fid=")) and is_plausible_direct(url):
+            log.info(f"TeraAPI: Found via URL pattern: {url[:80]}")
+            return url
     
     return None
 
 async def extract_iteraplay_link(html: str):
     """Extract link from iTeraPlay response (HTML with embedded JavaScript)"""
-    log.debug("Using iTeraPlay extractor")
+    log.debug("Using iTeraPlay extractor - TODO: Will implement proper extraction")
     
-    # 1) Window variables (primary for iTeraPlay)
-    for m in ITERAPLAY_WINDOW_RE.findall(html):
-        if m and is_plausible_direct(m):
-            log.info(f"iTeraPlay: Found via WINDOW_RE: {m[:80]}")
-            return m
-    
-    # 2) src= and data-url= attributes
-    for m in ITERAPLAY_SRC_RE.findall(html):
-        if m and is_plausible_direct(m):
-            log.info(f"iTeraPlay: Found via SRC_RE: {m[:80]}")
-            return m
-    
-    # 3) Try generic patterns as fallback
-    for c in CANDIDATE_RE.findall(html):
-        if is_plausible_direct(c):
-            log.info(f"iTeraPlay: Found via CANDIDATE_RE: {c[:80]}")
-            return c
-    
-    for c in GENERIC_URL_RE.findall(html):
-        if is_plausible_direct(c):
-            log.info(f"iTeraPlay: Found via GENERIC_RE: {c[:80]}")
-            return c
-    
+    # TODO: Implement iTeraPlay extraction after TeraAPI is working
+    # For now, return None to let generic fallback handle it
     return None
 
 async def find_direct_link_from_html(html: str, api_source: str = "teraapi"):
