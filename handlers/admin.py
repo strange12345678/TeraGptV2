@@ -93,7 +93,8 @@ def register_handlers(app):
                 [InlineKeyboardButton("⚙️ Settings", callback_data="admin_settings")],
                 [InlineKeyboardButton("← Back to Commands", callback_data="help")]
             ])
-            await callback_query.message.edit_text(panel_text, reply_markup=buttons, parse_mode=enums.ParseMode.HTML)
+            await client.send_message(callback_query.message.chat.id, panel_text, reply_markup=buttons, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.delete()
         except Exception:
             log.exception("admin_panel_callback error")
     
@@ -106,7 +107,8 @@ def register_handlers(app):
         
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text(Script.ADMIN_MANAGE_TEXT, reply_markup=ADMIN_MANAGE_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await client.send_message(callback_query.message.chat.id, Script.ADMIN_MANAGE_TEXT, reply_markup=ADMIN_MANAGE_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.delete()
         except Exception:
             log.exception("admin_manage_callback error")
     
@@ -119,7 +121,8 @@ def register_handlers(app):
         
         try:
             await callback_query.answer()
-            await callback_query.message.edit_text("📝 <b>Check User Status</b>\n\nReply with: <code>/checkuser &lt;user_id&gt;</code>", reply_markup=ADMIN_PANEL_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await client.send_message(callback_query.message.chat.id, "📝 <b>Check User Status</b>\n\nReply with: <code>/checkuser &lt;user_id&gt;</code>", reply_markup=ADMIN_PANEL_BUTTONS, parse_mode=enums.ParseMode.HTML)
+            await callback_query.message.delete()
         except Exception:
             log.exception("admin_check_callback error")
     
