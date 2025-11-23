@@ -87,7 +87,7 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 ━━━━━━━━━━━━━━━━━━
 
 ⚙️ <b>Bot Status</b>  
-🟢 ᴀᴘɪ sᴛᴀᴛᴜs: <b>{api_status}</b>  
+🔆 ᴀᴘɪ sᴛᴀᴛᴜs: <b>{api_status}</b>  
 📡 ᴘɪɴɢ: <b>{ping_ms} ms</b>  
 ⏱️ ᴜᴘᴛɪᴍᴇ: <b>{bot_uptime}</b>  
 🧵 ᴀᴄᴛɪᴠᴇ ᴡᴏʀᴋᴇʀs: <b>{workers_active}</b>  
@@ -102,7 +102,10 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 ━━━━━━━━━━━━━━━━━━
 
 <b>✨ ᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴜsɪɴɢ {bot_name}!</b>
-<blockquote><u><b>𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗕𝘆 :</b></u> The Inert Botz (https://t.me/theinertbotz) </blockquote>"""
+
+<code>━━━━━━━━━━━━━━━━━━━━━━</code>
+<u><b>𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗕𝘆 :</b></u> <a href="https://t.me/TheInertBotz">The Inert Botz</a>
+<code>━━━━━━━━━━━━━━━━━━━━━━</code>"""
 
     # ===== Settings =====
     SETTINGS_TEXT = """
