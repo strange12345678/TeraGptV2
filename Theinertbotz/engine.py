@@ -80,10 +80,48 @@ async def extract_teraapi_link(html: str):
 
 async def extract_iteraplay_link(html: str):
     """Extract link from iTeraPlay response (HTML with embedded JavaScript)"""
-    log.debug("Using iTeraPlay extractor - TODO: Will implement proper extraction")
+    log.debug("Using iTeraPlay extractor")
     
-    # TODO: Implement iTeraPlay extraction after TeraAPI is working
-    # For now, return None to let generic fallback handle it
+    # Save HTML snippet for debugging
+    with open("iteraplay_response.html", "w") as f:
+        f.write(html[:2000])
+    log.info("Saved iTeraPlay HTML sample to iteraplay_response.html for debugging")
+    
+    # iTeraPlay returns HTML with JavaScript - try multiple extraction methods
+    
+    # 1) Look for window.playurl or window.downloadurl
+    for pattern in [r'window\.playurl\s*=\s*["\']([^"\']+)["\']', 
+                    r'window\.downloadurl\s*=\s*["\']([^"\']+)["\']',
+                    r'window\.directurl\s*=\s*["\']([^"\']+)["\']']:
+        m = re.search(pattern, html, re.IGNORECASE)
+        if m:
+            url = m.group(1)
+            if is_plausible_direct(url):
+                log.info(f"iTeraPlay: Found window variable: {url[:80]}")
+                return url
+    
+    # 2) Look for src= in video/iframe tags
+    for pattern in [r'src=["\']([^"\']+)["\']', r'data-src=["\']([^"\']+)["\']']:
+        for m in re.finditer(pattern, html):
+            url = m.group(1)
+            if is_plausible_direct(url):
+                log.info(f"iTeraPlay: Found in {pattern}: {url[:80]}")
+                return url
+    
+    # 3) Look for embedded JSON with url field
+    for m in re.finditer(r'"(?:url|downloadUrl|playUrl)"\s*:\s*"([^"]+)"', html):
+        url = m.group(1)
+        if is_plausible_direct(url):
+            log.info(f"iTeraPlay: Found JSON url: {url[:80]}")
+            return url
+    
+    # 4) Generic fallback - any URL with d.1024 or data.1024
+    for url in URL_ANY_RE.findall(html):
+        if any(x in url for x in ("d.1024", "data.1024")) and is_plausible_direct(url):
+            log.info(f"iTeraPlay: Found via URL pattern: {url[:80]}")
+            return url
+    
+    log.warning("iTeraPlay extractor found no link, returning None for fallback")
     return None
 
 async def find_direct_link_from_html(html: str, api_source: str = "teraapi"):
