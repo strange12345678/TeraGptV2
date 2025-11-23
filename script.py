@@ -48,12 +48,11 @@ Simply send a <code>TeraBox</code> link and I'll:
 
 <b>📌 Rename Variables:</b>
 • {file_name} • {file_size}
-• {username} • {user_id}
-• {date} • {time} • {timestamp}
+• {original_name} • {ext}
 
 <b>💡 Example Patterns:</b>
-<code>/set_rename @Theinertbotz_{file_name}_{file_size}</code>
-<code>/set_rename {{username}}_{{date}}_{{file_name}}</code>
+<code>/set_rename @Bot_{file_name}_{file_size}</code>
+<code>/set_rename Download_{original_name}</code>
 
 <b>📊 How It Works:</b>
 Simply send TeraBox links and the bot will download & send them with:
@@ -179,19 +178,14 @@ Click the button below to upgrade now!
 <code>/set_rename &lt;your_pattern&gt;</code>
 
 <b>📝 Available Variables:</b>
-{{file_name}} • {{file_size}} • {{username}}
-{{user_id}} • {{date}} • {{time}}
-{{timestamp}} • {{ext}}
+{{file_name}} • {{file_size}} • {{original_name}} • {{ext}}
 
 <b>💡 Pattern Examples:</b>
-<code>@Theinertbotz_{{file_name}}_{{file_size}}</code>
-→ @Theinertbotz_video_42MB.mp4
+<code>@Bot_{{file_name}}_{{file_size}}</code>
+→ @Bot_video_42MB.mp4
 
-<code>{{username}}_{{date}}_{{file_name}}</code>
-→ admin_2025-11-22_video.mp4
-
-<code>Archive_{{timestamp}}</code>
-→ Archive_20251122_082326.zip
+<code>Download_{{original_name}}</code>
+→ Download_video.mp4
 
 ━━━━━━━━━━━━━━━━━━━━
 """
