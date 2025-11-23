@@ -36,7 +36,7 @@ def generate_thumbnail(video_path: str, output_path: Optional[str] = None) -> Op
             "ffmpeg", "-i", video_path,
             "-ss", str(seek_time),
             "-vframes", "1",
-            "-vf", "scale=320:180",
+            "-vf", "scale=320:-1",
             "-y",  # overwrite
             output_path
         ]
