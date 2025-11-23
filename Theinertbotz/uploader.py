@@ -124,7 +124,8 @@ async def upload_file(client, message, filepath, bot_username: str):
             parse_mode=enums.ParseMode.HTML,
             supports_streaming=True,
             progress=_progress_cb,
-            progress_args=()
+            progress_args=(),
+            reply_to_message_id=message.id
         )
 
     except Exception as e:
