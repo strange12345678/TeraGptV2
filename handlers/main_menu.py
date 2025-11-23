@@ -2,6 +2,7 @@
 from pyrogram import filters, enums
 from pyrogram.enums import ChatAction
 import logging
+from config import Config
 from script import Script
 from plugins.buttons import MAIN_MENU, PREMIUM_BUTTONS, HELP_BUTTONS, DASHBOARD_BACK_BUTTON
 
@@ -118,11 +119,12 @@ def register_handlers(app):
             await callback_query.answer()
             # Show typing indicator for smooth transition
             await client.send_chat_action(callback_query.message.chat.id, ChatAction.TYPING)
-            # Delete the current message and send a new one with the main menu
+            # Delete the current message and send a new one with the main menu image
             await callback_query.message.delete()
-            await client.send_message(
+            await client.send_photo(
                 chat_id=callback_query.message.chat.id,
-                text=Script.START_TEXT,
+                photo=Config.START_IMG,
+                caption=Script.START_TEXT,
                 reply_markup=MAIN_MENU,
                 parse_mode=enums.ParseMode.HTML
             )
