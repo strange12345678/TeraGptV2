@@ -31,12 +31,12 @@ RENAME_BUTTONS = InlineKeyboardMarkup([
 # Premium buttons
 PREMIUM_BUTTONS = InlineKeyboardMarkup([
     [InlineKeyboardButton("👤 My Status", callback_data="premium_status")],
+    [InlineKeyboardButton("💳 Upgrade", callback_data="premium_upgrade")],
     [InlineKeyboardButton("← Back to Commands", callback_data="help")]
 ])
 
 # Premium status buttons
 PREMIUM_STATUS_BUTTONS = InlineKeyboardMarkup([
-    [InlineKeyboardButton("💳 Upgrade", callback_data="premium_upgrade")],
     [InlineKeyboardButton("← Back", callback_data="premium")]
 ])
 
