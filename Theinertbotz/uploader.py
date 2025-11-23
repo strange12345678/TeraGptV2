@@ -113,6 +113,7 @@ async def upload_file(client, message, filepath, bot_username: str):
     ############################################################################
     # Upload as video (Pyrogram handles chunking). Provide a simple caption.
     ############################################################################
+    sent_video_msg = None
     try:
         # Get video duration if it's a video file
         duration = 0
@@ -121,7 +122,7 @@ async def upload_file(client, message, filepath, bot_username: str):
             if duration > 0:
                 log.info(f"Video duration: {duration} seconds")
         
-        await client.send_video(
+        sent_video_msg = await client.send_video(
             chat_id=message.chat.id,
             video=filepath,
             caption=f"<b>Uploaded:</b> {filename}",
@@ -180,12 +181,22 @@ async def upload_file(client, message, filepath, bot_username: str):
             notify_text = Script.AUTO_DELETE_NOTIFY.format(time=time_display)
             notify_msg = await message.reply(notify_text, parse_mode=enums.ParseMode.HTML)
             
-            # Wait for the delete time, then delete notification
+            # Wait for the delete time
             await asyncio.sleep(delete_time)
+            
+            # Delete the notification message
             try:
                 await notify_msg.delete()
             except:
                 pass
+            
+            # Delete the sent video message
+            try:
+                if sent_video_msg:
+                    await sent_video_msg.delete()
+                    log.info(f"Auto-deleted video message: {filename}")
+            except Exception as e:
+                log.warning(f"Failed to auto-delete video message: {e}")
         
         # Update and delete status message
         try:
