@@ -259,7 +259,7 @@ def register_handlers(app):
                 elif auto_delete_time < 3600:
                     time_str = f"{auto_delete_time // 60}m"
                 else:
-                    time_str = f"{auto_delete_time // 3600}d"
+                    time_str = f"{auto_delete_time // 3600}h"
                 status = f"✅ <b>Enabled</b> - Files deleted after {time_str}"
             
             info_text = f"""<b>⏰ Auto-Delete Settings</b>
@@ -268,14 +268,14 @@ def register_handlers(app):
 
 <b>📝 Available Commands:</b>
 <code>/set_auto_delete &lt;time&gt;</code> - Set auto-delete time
-  Examples: <code>/set_auto_delete 30s</code>, <code>/set_auto_delete 5m</code>, <code>/set_auto_delete 1d</code>
+  Examples: <code>/set_auto_delete 30s</code>, <code>/set_auto_delete 5m</code>, <code>/set_auto_delete 1h</code>
 
 <code>/remove_auto_delete</code> - Disable auto-delete
 
 <b>⏱️ Time Format:</b>
 • s = seconds (30s = 30 seconds)
 • m = minutes (5m = 5 minutes)  
-• d = days (1d = 1 day)"""
+• h = hours (1h = 1 hour)"""
             await message.reply(info_text, parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("auto_delete_info_cmd error")
@@ -291,7 +291,7 @@ def register_handlers(app):
         try:
             args = message.text.split()
             if len(args) < 2:
-                await message.reply("📝 Usage: <code>/set_auto_delete &lt;time&gt;</code>\n\n<b>Examples:</b>\n<code>/set_auto_delete 30s</code>\n<code>/set_auto_delete 5m</code>\n<code>/set_auto_delete 1d</code>", parse_mode=enums.ParseMode.HTML)
+                await message.reply("📝 Usage: <code>/set_auto_delete &lt;time&gt;</code>\n\n<b>Examples:</b>\n<code>/set_auto_delete 30s</code>\n<code>/set_auto_delete 5m</code>\n<code>/set_auto_delete 1h</code>", parse_mode=enums.ParseMode.HTML)
                 return
             
             time_str = args[1].strip()
@@ -301,10 +301,10 @@ def register_handlers(app):
                 seconds = int(time_str[:-1])
             elif time_str.endswith('m'):
                 seconds = int(time_str[:-1]) * 60
-            elif time_str.endswith('d'):
-                seconds = int(time_str[:-1]) * 86400
+            elif time_str.endswith('h'):
+                seconds = int(time_str[:-1]) * 3600
             else:
-                await message.reply("❌ Invalid format. Use: 30s, 5m, or 1d", parse_mode=enums.ParseMode.HTML)
+                await message.reply("❌ Invalid format. Use: 30s, 5m, or 1h", parse_mode=enums.ParseMode.HTML)
                 return
             
             if seconds <= 0:
@@ -319,7 +319,7 @@ def register_handlers(app):
             elif seconds < 3600:
                 display_time = f"{seconds // 60}m"
             else:
-                display_time = f"{seconds // 3600}d"
+                display_time = f"{seconds // 3600}h"
             
             await message.reply(f"✅ Auto-delete set to: <b>{display_time}</b>\n\nFiles will be deleted {display_time} after successful upload.", parse_mode=enums.ParseMode.HTML)
             log.info(f"Admin {message.from_user.id} set auto-delete time to {seconds}s")

@@ -43,7 +43,7 @@ Simply send a <code>TeraBox</code> link and I'll:
 
 <b>⏰ Auto-Delete Commands (Admin):</b>
 <b>/auto_delete</b> - Show auto-delete info & options
-<b>/set_auto_delete &lt;time&gt;</b> - Set auto-delete time (30s, 5m, 1d)
+<b>/set_auto_delete &lt;time&gt;</b> - Set auto-delete time (30s, 5m, 1h)
 <b>/remove_auto_delete</b> - Disable auto-delete
 
 <b>📌 Rename Variables:</b>
