@@ -373,3 +373,10 @@ Use buttons below to manage users.
     
     AUTO_DELETE_ON = "✅ Auto-delete <b>ENABLED</b>\n\nDownloaded files will be deleted after upload to save storage."
     AUTO_DELETE_OFF = "❌ Auto-delete <b>DISABLED</b>\n\nDownloaded files will be kept after upload."
+    
+    # ===== User Auto-Delete Messages =====
+    AUTO_DELETE_ENABLED = "✅ <b>ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴇɴᴀʙʟᴇᴅ</b>\n\n⏱️ Video messages will auto-delete in <b>5 seconds</b> to help prevent copyright issues.\n\n📌 <i>Premium & Free users: Both will have auto-delete enabled</i>"
+    
+    AUTO_DELETE_DISABLED = "⏹️ <b>ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴅɪsᴀʙʟᴇᴅ</b>\n\n⏱️ Video messages will <b>NOT</b> auto-delete.\n\n⚠️ <i>Remember to manage your storage manually</i>"
+    
+    AUTO_DELETE_NOTIFY = "⏰ <b>ᴀᴜᴛᴏ ᴅᴇʟᴇᴛᴇ ɪɴ 5 sᴇᴄᴏɴᴅs</b> 🗑️\n\n💡 <i>This helps prevent copyright issues on Telegram</i>"

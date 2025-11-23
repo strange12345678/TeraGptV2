@@ -145,7 +145,7 @@ async def upload_file(client, message, filepath, bot_username: str):
     # Final update with auto-delete notification
     try:
         # Send auto-delete warning message
-        from plugins.script import Script
+        from script import Script
         from Theinertbotz.database import db
         
         user_id = message.from_user.id if message.from_user else None

@@ -3,7 +3,7 @@ import logging
 from pyrogram import filters
 from pyrogram.types import Message
 from Theinertbotz.database import db
-from plugins.script import Script
+from script import Script
 
 log = logging.getLogger("TeraBoxBot")
 
