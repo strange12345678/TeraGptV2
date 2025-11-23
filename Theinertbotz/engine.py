@@ -30,37 +30,48 @@ GENERIC_URL_RE = re.compile(
     re.IGNORECASE
 )
 
-JS_QUOTE_RE = re.compile(r"""(?:(?:directUrl|direct_url|fastDownloadUrl|direct_link)\s*[:=]\s*["'](https?://[^"']+)["'])""", re.IGNORECASE)
+JS_QUOTE_RE = re.compile(r"""(?:(?:directUrl|direct_url|fastDownloadUrl|direct_link|playUrl|downloadUrl|fileUrl|url)\s*[:=]\s*["'](https?://[^"']+)["'])""", re.IGNORECASE)
 HREF_RE = re.compile(r'href=["\'](https?://[^"\']+)["\']', re.IGNORECASE)
 URL_ANY_RE = re.compile(r"https?://[^\s'\"<>]+")
+JSON_URL_RE = re.compile(r'"(?:url|downloadUrl|playUrl|directUrl|fileUrl|file_url)"\s*:\s*"(https?://[^"]+)"', re.IGNORECASE)
 
 async def find_direct_link_from_html(html: str):
-    # 1) JS variable directUrl
+    # 1) JS variable directUrl (primary & secondary API formats)
     for m in JS_QUOTE_RE.findall(html):
         url = m
         if url and is_plausible_direct(url):
             return url
 
+    # 2) JSON format (iTeraPlay)
+    for m in JSON_URL_RE.findall(html):
+        if m and is_plausible_direct(m):
+            return m
+
+    # 3) Candidate patterns with /file/ or /file-
     cand = CANDIDATE_RE.findall(html)
     if cand:
         for c in cand:
             if is_plausible_direct(c):
                 return c
 
+    # 4) Generic TeraBox URL patterns
     cand2 = GENERIC_URL_RE.findall(html)
     if cand2:
         for c in cand2:
             if is_plausible_direct(c):
                 return c
 
+    # 5) href attributes
     for m in HREF_RE.findall(html):
         if is_plausible_direct(m):
             return m
 
+    # 6) Any URL with download indicators
     for u in URL_ANY_RE.findall(html):
         if any(x in u for x in ("d.1024", "data.1024", "fid=", "/file/")) and is_plausible_direct(u):
             return u
 
+    # 7) Decode URL entities and try again
     decoded = unquote(html)
     for u in URL_ANY_RE.findall(decoded):
         if any(x in u for x in ("d.1024", "data.1024", "fid=", "/file/")) and is_plausible_direct(u):
