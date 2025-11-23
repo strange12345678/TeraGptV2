@@ -255,6 +255,18 @@ Type <code>/rename</code> for available variables."""
     CUSTOM_PATTERN_ERROR = """❌ Pattern must contain at least one variable.
 Example: <code>/set_rename @Bot_{{file_name}}_{{file_size}}</code>"""
 
+    RENAME_RESTRICTED = """❌ <b>Auto-Rename Feature Restricted</b>
+
+This feature is only available for:
+👑 Premium Members
+🔐 Admins
+
+<b>To unlock this feature:</b>
+• <code>/premium</code> - Upgrade to premium
+• Contact admin for more details
+
+💡 Other features are still available for all users!"""
+
     # ===== Premium System =====
     LIMIT_REACHED = """❌ <b>Daily Limit Reached</b>
 

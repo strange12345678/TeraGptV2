@@ -2,13 +2,23 @@ from pyrogram import filters, enums
 import logging
 from Theinertbotz.database import db
 from script import Script
+from config import Config
 
 log = logging.getLogger("TeraBoxBot")
+
+def is_admin(user_id):
+    """Check if user is an admin."""
+    return user_id in Config.ADMIN_IDS
 
 def register_handlers(app):
     @app.on_message(filters.command("rename") & filters.private)
     async def rename_cmd(client, message):
         user_id = message.from_user.id
+        
+        # Check if user is admin or premium
+        if not is_admin(user_id) and not db.is_premium_valid(user_id):
+            await message.reply(Script.RENAME_RESTRICTED, parse_mode=enums.ParseMode.HTML)
+            return
         args = message.text.split()
         
         if len(args) < 2:
@@ -52,6 +62,12 @@ def register_handlers(app):
     @app.on_message(filters.command("set_rename") & filters.private)
     async def set_rename_cmd(client, message):
         user_id = message.from_user.id
+        
+        # Check if user is admin or premium
+        if not is_admin(user_id) and not db.is_premium_valid(user_id):
+            await message.reply(Script.RENAME_RESTRICTED, parse_mode=enums.ParseMode.HTML)
+            return
+        
         try:
             # Extract pattern from command
             cmd_parts = message.text.split(maxsplit=1)
