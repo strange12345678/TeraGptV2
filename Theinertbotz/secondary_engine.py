@@ -31,23 +31,34 @@ async def process_video_secondary(client, message, user_url: str) -> None:
     try:
         log.info(f"[SECONDARY API] Processing link: {user_url} from user {uid}")
         
-        # Try direct API call first (faster and more reliable)
+        # Try Playwright method first (most reliable - handles cookies and JS)
         loop = asyncio.get_running_loop()
         m3u8_url = None
         video_title = None
         
         try:
-            from Theinertbotz.secondary_api import fetch_video_from_terabox_api
-            log.info(f"[SECONDARY API] Trying direct API call...")
-            m3u8_url, video_title = await loop.run_in_executor(
-                None, fetch_video_from_terabox_api, user_url
-            )
+            from Theinertbotz.secondary_api_improved import extract_m3u8_with_playwright
+            log.info(f"[SECONDARY API] Trying Playwright extraction...")
+            m3u8_url, video_title = await extract_m3u8_with_playwright(user_url)
             if m3u8_url:
-                log.info(f"[SECONDARY API] Got m3u8 from direct API: {m3u8_url[:100]}...")
-        except Exception as api_error:
-            log.warning(f"[SECONDARY API] Direct API failed: {api_error}, falling back to HTML extraction")
+                log.info(f"[SECONDARY API] Got m3u8 from Playwright: {m3u8_url[:100]}...")
+        except Exception as pw_error:
+            log.warning(f"[SECONDARY API] Playwright extraction failed: {pw_error}, trying fallback methods")
         
-        # Fallback to HTML extraction if direct API failed
+        # Fallback to direct API call if Playwright failed
+        if not m3u8_url:
+            try:
+                from Theinertbotz.secondary_api import fetch_video_from_terabox_api
+                log.info(f"[SECONDARY API] Trying direct API call...")
+                m3u8_url, video_title = await loop.run_in_executor(
+                    None, fetch_video_from_terabox_api, user_url
+                )
+                if m3u8_url:
+                    log.info(f"[SECONDARY API] Got m3u8 from direct API: {m3u8_url[:100]}...")
+            except Exception as api_error:
+                log.warning(f"[SECONDARY API] Direct API failed: {api_error}, falling back to HTML extraction")
+        
+        # Fallback to HTML extraction if both methods failed
         if not m3u8_url:
             html = await loop.run_in_executor(None, fetch_iteraplay_html, user_url)
             log.info(f"[SECONDARY API] Fetched iTeraPlay HTML (len={len(html) if html else 0})")

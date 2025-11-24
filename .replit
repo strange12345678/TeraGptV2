@@ -4,7 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["cacert", "ffmpeg", "gitFull", "playwright-driver"]
+packages = ["cacert", "ffmpeg", "gitFull", "playwright-driver", "nspr", "nss", "dbus", "atk", "at-spi2-atk", "cups", "xorg.libxcb", "libxkbcommon", "at-spi2-core", "xorg.libXcomposite", "xorg.libXdamage", "xorg.libXfixes", "mesa", "cairo", "pango", "alsa-lib"]
 
 [workflows]
 runButton = "Project"
@@ -33,10 +33,6 @@ outputType = "console"
 [[ports]]
 localPort = 8000
 externalPort = 8000
-
-[[ports]]
-localPort = 35931
-externalPort = 3000
 
 [[ports]]
 localPort = 43695
