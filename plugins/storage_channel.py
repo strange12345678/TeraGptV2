@@ -55,4 +55,10 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
         
         log.debug(f"Backup sent to channel {channel}")
     except Exception as e:
-        log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: {e}")
+        error_str = str(e)
+        if "Peer id invalid" in error_str:
+            log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: Bot is not in the channel or channel ID is invalid. Add bot as admin and try again.")
+        elif "USER_RESTRICTED" in error_str or "CHAT_SEND_PLAIN_FORBIDDEN" in error_str:
+            log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: Bot doesn't have permission to send messages. Check admin rights.")
+        else:
+            log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: {e}")

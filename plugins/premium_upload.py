@@ -75,4 +75,10 @@ async def upload_to_premium_channel(client, filepath: str, filename: str, file_s
                 pass
                 
     except Exception as e:
-        log.error(f"Failed to upload to PREMIUM_UPLOAD_CHANNEL: {e}")
+        error_str = str(e)
+        if "Peer id invalid" in error_str:
+            log.error(f"Failed to upload to PREMIUM_UPLOAD_CHANNEL: Bot is not in the channel or channel ID is invalid. Add bot as admin and try again.")
+        elif "USER_RESTRICTED" in error_str or "CHAT_SEND_PLAIN_FORBIDDEN" in error_str:
+            log.error(f"Failed to upload to PREMIUM_UPLOAD_CHANNEL: Bot doesn't have permission to send messages. Check admin rights.")
+        else:
+            log.error(f"Failed to upload to PREMIUM_UPLOAD_CHANNEL: {e}")
