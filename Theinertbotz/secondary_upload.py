@@ -118,8 +118,7 @@ async def upload_file_secondary(client, message, filepath, bot_username: str):
                 filepath,
                 duration=duration,
                 thumb=thumbnail_path,
-                progress=_progress_cb,
-                progress_args=(filename,)
+                progress=_progress_cb
             )
             
             # Clean up thumbnail
@@ -133,8 +132,7 @@ async def upload_file_secondary(client, message, filepath, bot_username: str):
             await client.send_document(
                 message.chat.id,
                 filepath,
-                progress=_progress_cb,
-                progress_args=(filename,)
+                progress=_progress_cb
             )
         
         # Update final status
