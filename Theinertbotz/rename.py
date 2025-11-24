@@ -37,12 +37,17 @@ def auto_rename_file(filename: str, pattern: str = "timestamp", variables: dict 
             if not variables:
                 variables = {}
             
-            # Set default variables
+            # Set default variables including date/time formats
+            now = datetime.now()
             defaults = {
                 "file_name": name,
                 "original_name": filename,
                 "ext": ext,
                 "file_size": variables.get("file_size", "unknown"),
+                "date": now.strftime("%Y-%m-%d"),
+                "timestamp": now.strftime("%Y%m%d_%H%M%S"),
+                "time": now.strftime("%H-%M-%S"),
+                "datetime": now.strftime("%Y-%m-%d_%H-%M-%S"),
             }
             defaults.update(variables)
             
