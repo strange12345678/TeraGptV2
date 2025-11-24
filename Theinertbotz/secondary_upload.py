@@ -114,7 +114,8 @@ async def upload_file_secondary(client, message, filepath, bot_username: str, or
     try:
         if is_video:
             # Upload as video with duration and thumbnail
-            duration = get_video_duration(filepath)
+            # Skip duration check to save 2+ seconds - let Telegram handle it
+            duration = 0
             
             await client.send_video(
                 message.chat.id,

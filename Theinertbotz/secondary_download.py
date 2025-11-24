@@ -94,29 +94,10 @@ async def download_hls_video(client, message, m3u8_url: str, bot_username: str, 
         rename_pattern = getattr(Config, "AUTO_RENAME", "")
 
     try:
-        await edit_coro("⏳ <b>ꜰᴇᴛᴄʜɪɴɢ ᴠɪᴅᴇᴏ sᴛʀᴇᴀᴍ...</b>")
+        await edit_coro("⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴠɪᴅᴇᴏ...</b>")
         
-        # Get video duration using ffprobe for accurate progress
+        # Skip duration probing to save time - just start download immediately
         total_duration = 0
-        try:
-            probe_cmd = [
-                "ffprobe",
-                "-v", "error",
-                "-show_entries", "format=duration",
-                "-of", "default=noprint_wrappers=1:nokey=1",
-                m3u8_url
-            ]
-            probe_result = await asyncio.create_subprocess_exec(
-                *probe_cmd,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
-            stdout, _ = await asyncio.wait_for(probe_result.communicate(), timeout=15)
-            if stdout:
-                total_duration = float(stdout.decode().strip())
-                log.info(f"Video duration: {total_duration:.1f} seconds")
-        except Exception as e:
-            log.warning(f"Could not get video duration: {e}")
         
         # Build ffmpeg command with progress output
         # -c copy = stream copy without re-encoding (fastest)
