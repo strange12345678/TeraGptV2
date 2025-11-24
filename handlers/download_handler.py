@@ -110,6 +110,11 @@ class LinkQueue:
                             backoff = 2 ** retry_count
                             log.info(f"[QUEUE] Retrying in {backoff}s...")
                             await asyncio.sleep(backoff)
+                
+                # Add 2-second delay between queue items (rate limiting)
+                if self.queue:
+                    log.info("[QUEUE] Waiting 2s before next item (rate limiting)...")
+                    await asyncio.sleep(2)
             
             log.info("[QUEUE] Worker FINISHED - queue empty")
         
