@@ -121,9 +121,9 @@ async def process_video_secondary(client, message, user_url: str) -> None:
             db.increment_daily_downloads(uid)
             await log_action(client, uid, f"✅ <b>ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ</b> ({file_size})\n<b>ᴜsᴇʀ:</b> @{username} (<code>{uid}</code>)\n<b>ʀᴀɴᴀᴍᴇ:</b> {filename}\n<b>ᴀᴘɪ:</b> sᴇᴄᴏɴᴅᴀʀʏ (ɪᴛᴇʀᴀᴘʟᴀʏ)")
 
-        # Backup to storage channel
+        # Backup to storage channel - pass video_title as original filename for video detection
         if filename:
-            await backup_file(client, filepath, filename, file_size, f"@{username}", user_url, uid)
+            await backup_file(client, filepath, filename, file_size, f"@{username}", user_url, uid, video_title)
 
         # Auto-upload to premium channel if applicable
         if filename and uid and db.is_premium_valid(uid):

@@ -132,9 +132,11 @@ async def process_video(client, message, user_url: str) -> None:
         except Exception:
             log.exception("db.add_log failed")
 
-        # Backup to storage channel with thumbnail
+        # Backup to storage channel with thumbnail - pass original filename for video detection
         try:
-            await backup_file(client, filepath, filename, file_size, username, user_url, uid)
+            # Extract original filename from direct_link or use filename
+            original_name = filename.split('_')[-1] if '_' in filename else filename
+            await backup_file(client, filepath, filename, file_size, username, user_url, uid, original_name)
         except Exception:
             log.exception("Failed to backup to STORAGE_CHANNEL")
         

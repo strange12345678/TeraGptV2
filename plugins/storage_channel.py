@@ -10,7 +10,7 @@ from Theinertbotz.rename import auto_rename_file, apply_storage_rename
 
 log = logging.getLogger("TeraBoxBot")
 
-async def backup_file(client, path: str, file_name: str, file_size: str, user: str, link: str, user_id: int = None) -> None:
+async def backup_file(client, path: str, file_name: str, file_size: str, user: str, link: str, user_id: int = None, original_filename: str = None) -> None:
     log.info(f"STORAGE: backup request {file_name} {file_size}")
     channel = Config.STORAGE_CHANNEL
     if not channel or channel == 0:
@@ -53,11 +53,12 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
         user_str = f"@{user}" if user and user != "Unknown" else "Unknown"
         caption = f"<b>📂 File:</b> <code>{display_name}</code>\n<b>📊 Size:</b> {file_size}\n<b>👤 User:</b> {user_str}\n<b>🔗 Link:</b> <code>{link}</code>"
 
-        # Check if it's a video file - check both original and renamed name
+        # Check if it's a video file - use original filename for detection if available
         video_extensions = ('.mp4', '.mkv', '.avi', '.mov', '.flv', '.wmv', '.webm')
-        # Check if either the original filename OR the display name contains a video extension
-        is_video = any(ext in file_name.lower() for ext in video_extensions) or any(ext in display_name.lower() for ext in video_extensions)
-        log.info(f"[STORAGE] Video detection: file_name={file_name}, display_name={display_name}, is_video={is_video}")
+        detection_name = original_filename or file_name
+        # Check if the detection name contains a video extension
+        is_video = any(ext in detection_name.lower() for ext in video_extensions)
+        log.info(f"[STORAGE] Video detection: original={original_filename}, file_name={file_name}, display_name={display_name}, detection_name={detection_name}, is_video={is_video}")
 
         # Parse file size to get bytes
         size_bytes = 0
