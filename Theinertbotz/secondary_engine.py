@@ -72,20 +72,10 @@ async def process_video_secondary(client, message, user_url: str) -> None:
 
         if not m3u8_url:
             error_msg = f"[SECONDARY API] Failed to extract m3u8 URL from {user_url}"
-            log.warning(error_msg)
+            log.error(error_msg)
+            await message.reply("❌ ꜰᴀɪʟᴇᴅ ᴛᴏ ᴇxᴛʀᴀᴄᴛ ᴠɪᴅᴇᴏ. ᴘʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ.", quote=True)
             await log_error(client, error_msg)
-            
-            # Fallback to primary API
-            log.info("[SECONDARY API] Falling back to primary API...")
-            try:
-                from Theinertbotz.engine import process_video
-                await message.reply("🔄 ꜱᴇᴄᴏɴᴅᴀʀʏ ᴀᴘɪ ꜰᴀɪʟᴇᴅ. ᴛʀʏɪɴɢ ᴘʀɪᴍᴀʀʏ ᴀᴘɪ...", quote=True)
-                await process_video(client, message, user_url)
-                return
-            except Exception as fallback_error:
-                log.error(f"[SECONDARY API] Fallback also failed: {fallback_error}")
-                await message.reply("❌ ʙᴏᴛʜ ᴀᴘɪs ꜰᴀɪʟᴇᴅ. ᴘʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ ʟᴀᴛᴇʀ.", quote=True)
-                return
+            return
 
         log.info(f"[SECONDARY API] Found m3u8: {m3u8_url}")
         
