@@ -202,29 +202,5 @@ class Database:
         """Set user's auto-delete preference for video messages."""
         self.users.update_one({"_id": user_id}, {"$set": {"auto_delete_msgs": enabled}}, upsert=True)
         return True
-    
-    def get_primary_api(self):
-        """Get primary API setting. Returns 'teraapi' or 'iteraplay'. Default: 'teraapi'"""
-        doc = self.settings.find_one({"_id": "api_settings"})
-        if doc:
-            return doc.get("primary_api", "teraapi")
-        return "teraapi"
-    
-    def set_primary_api(self, api_name):
-        """Set primary API. api_name: 'teraapi' or 'iteraplay'"""
-        self.settings.update_one({"_id": "api_settings"}, {"$set": {"primary_api": api_name}}, upsert=True)
-        return True
-    
-    def get_secondary_api(self):
-        """Get secondary API setting. Returns 'teraapi' or 'iteraplay'. Default: 'iteraplay'"""
-        doc = self.settings.find_one({"_id": "api_settings"})
-        if doc:
-            return doc.get("secondary_api", "iteraplay")
-        return "iteraplay"
-    
-    def set_secondary_api(self, api_name):
-        """Set secondary API. api_name: 'teraapi' or 'iteraplay'"""
-        self.settings.update_one({"_id": "api_settings"}, {"$set": {"secondary_api": api_name}}, upsert=True)
-        return True
 
 db = Database()

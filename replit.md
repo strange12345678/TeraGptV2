@@ -6,14 +6,6 @@ TeraBox Telegram Bot is a Python-based Telegram bot that downloads and processes
 **Current State**: Fully featured production bot with premium system, auto-upload channels, and auto-delete functionality.
 
 ## Recent Changes
-- **2025-11-23**: Dual API implementation & UI improvements
-  - Simplified START_TEXT welcome message (removed help & advanced features)
-  - All user-facing text converted to small caps Unicode format
-  - Implemented dual API system with automatic failover (Primary: TeraAPI, Secondary: iTeraPlay)
-  - Multi-tasking support: if primary API busy/fails, automatically tries secondary API
-  - Comprehensive error logging for API failures
-  - Secondary API URL: `https://iteraplay.com/api/play.php?url={URL}&key=iTeraPlay2025`
-  
 - **2025-11-22**: Complete feature implementation
   - Auto-upload channel system for premium users (command: `/set_upload_channel`, `/remove_upload_channel`)
   - Auto-delete downloaded files feature (toggle: `/toggle_autodelete`)
@@ -76,15 +68,8 @@ TeraBox Telegram Bot is a Python-based Telegram bot that downloads and processes
 - Database name: teraboxbot
 - Collections: users, logs, settings
 
-### API Integration - Dual API System
-**Primary API**: `https://teraapi.boogafantastic.workers.dev/play?url={url}`
-**Secondary API (Failover)**: `https://iteraplay.com/api/play.php?url={URL}&key=iTeraPlay2025`
-
-**How it works**:
-1. Bot tries primary API (TeraAPI) first
-2. If primary times out, fails connection, or returns HTTP error → automatically tries secondary API (iTeraPlay)
-3. If secondary also fails → comprehensive error logged to ERROR_CHANNEL
-4. Supports multi-tasking: both APIs can handle requests simultaneously (no mutual exclusion)
+### API Integration
+- TeraBox API endpoint: `https://teraapi.boogafantastic.workers.dev/play?url={url}`
 
 ## Environment Configuration
 
@@ -120,12 +105,11 @@ These have default values and can be customized:
 - **Admin Status Check**: `/checkuser [user_id]` to view user tier and download stats
 
 ### Download & Processing
-- **Dual API Failover**: Primary API with automatic fallback to secondary if busy/failed
 - **Direct Link Extraction**: Advanced HTML parsing for TeraBox links
 - **Video Thumbnails**: Auto-generated for videos in storage and premium channels
 - **File Renaming**: Auto-rename with variables ({file_name}, {timestamp}, {date}, etc.)
 - **Progress Tracking**: Real-time download/upload progress with visual feedback
-- **Error Logging**: Comprehensive error logging to ERROR_CHANNEL with API source identification
+- **Error Logging**: Comprehensive error logging to ERROR_CHANNEL
 
 ### Auto-Delete Feature
 - **Configurable**: Toggle on/off via admin panel or `/toggle_autodelete` command

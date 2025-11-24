@@ -19,145 +19,54 @@ from plugins.premium_upload import upload_to_premium_channel
 
 log = logging.getLogger("TeraBoxBot")
 
-# ===== TERAAPI PATTERNS =====
-# Patterns for TeraAPI (JSON/structured response format)
-TERAAPI_JSON_RE = re.compile(r'"(?:url|downloadUrl|playUrl|directUrl|fileUrl|file_url)"\s*:\s*"(https?://[^"]+)"', re.IGNORECASE)
-TERAAPI_JS_VAR_RE = re.compile(r"""(?:directUrl|direct_url|fastDownloadUrl|direct_link)\s*[:=]\s*["'](https?://[^"']+)["']""", re.IGNORECASE)
-
-# ===== ITERAPLAY PATTERNS =====
-# Patterns for iTeraPlay (HTML with embedded JavaScript)
-ITERAPLAY_WINDOW_RE = re.compile(r'window\.(?:playurl|downloadurl|directurl|fileurl|url)\s*=\s*["\']?(https?://[^"\'\s;]+)', re.IGNORECASE)
-ITERAPLAY_SRC_RE = re.compile(r'(?:src|data-url|data-src)\s*=\s*["\']?(https?://[^"\'\s>]+)', re.IGNORECASE)
-
-# ===== GENERIC PATTERNS (fallback for both) =====
+# Patterns tuned to common tera/play html outputs
 CANDIDATE_RE = re.compile(
     r"https?://(?:d|data|file|data\.)[^\s'\"<>]+(?:/file/|/file\-|/file%2F|/file%3F|/file\?)[^\s'\"<>]*",
     re.IGNORECASE
 )
+
 GENERIC_URL_RE = re.compile(
     r"https?://[^\s'\"<>]+(?:d\.1024tera\.com|data\.1024tera\.com|1024tera\.com|data\.)[^\s'\"<>]*",
     re.IGNORECASE
 )
+
+JS_QUOTE_RE = re.compile(r"""(?:(?:directUrl|direct_url|fastDownloadUrl|direct_link)\s*[:=]\s*["'](https?://[^"']+)["'])""", re.IGNORECASE)
 HREF_RE = re.compile(r'href=["\'](https?://[^"\']+)["\']', re.IGNORECASE)
 URL_ANY_RE = re.compile(r"https?://[^\s'\"<>]+")
 
-async def extract_teraapi_link(html: str):
-    """Extract link from TeraAPI response (JSON/structured format)"""
-    log.debug("Using TeraAPI extractor")
-    
-    # TeraAPI returns clean JSON responses - use simple direct patterns
-    
-    # 1) directUrl pattern (most common)
-    m = re.search(r'"directUrl"\s*:\s*"([^"]+)"', html, re.IGNORECASE)
-    if m:
-        url = m.group(1)
-        if is_plausible_direct(url):
-            log.info(f"TeraAPI: Found directUrl: {url[:80]}")
+async def find_direct_link_from_html(html: str):
+    # 1) JS variable directUrl
+    for m in JS_QUOTE_RE.findall(html):
+        url = m
+        if url and is_plausible_direct(url):
             return url
-    
-    # 2) playUrl pattern
-    m = re.search(r'"playUrl"\s*:\s*"([^"]+)"', html, re.IGNORECASE)
-    if m:
-        url = m.group(1)
-        if is_plausible_direct(url):
-            log.info(f"TeraAPI: Found playUrl: {url[:80]}")
-            return url
-    
-    # 3) Any "url" field in JSON
-    for m in re.finditer(r'"(?:url|fileUrl|downloadUrl)"\s*:\s*"(https?://[^"]+)"', html):
-        url = m.group(1)
-        if is_plausible_direct(url):
-            log.info(f"TeraAPI: Found JSON url field: {url[:80]}")
-            return url
-    
-    # 4) Fallback: look for all URLs containing file/d.1024 patterns
-    for url in URL_ANY_RE.findall(html):
-        if any(x in url for x in ("d.1024", "data.1024", "fid=")) and is_plausible_direct(url):
-            log.info(f"TeraAPI: Found via URL pattern: {url[:80]}")
-            return url
-    
-    return None
 
-async def extract_iteraplay_link(html: str):
-    """Extract link from iTeraPlay response (HTML with embedded JavaScript)"""
-    log.debug("Using iTeraPlay extractor")
-    
-    # Save HTML snippet for debugging
-    with open("iteraplay_response.html", "w") as f:
-        f.write(html[:2000])
-    log.info("Saved iTeraPlay HTML sample to iteraplay_response.html for debugging")
-    
-    # iTeraPlay returns HTML with JavaScript - try multiple extraction methods
-    
-    # 1) Look for window.playurl or window.downloadurl
-    for pattern in [r'window\.playurl\s*=\s*["\']([^"\']+)["\']', 
-                    r'window\.downloadurl\s*=\s*["\']([^"\']+)["\']',
-                    r'window\.directurl\s*=\s*["\']([^"\']+)["\']']:
-        m = re.search(pattern, html, re.IGNORECASE)
-        if m:
-            url = m.group(1)
-            if is_plausible_direct(url):
-                log.info(f"iTeraPlay: Found window variable: {url[:80]}")
-                return url
-    
-    # 2) Look for src= in video/iframe tags
-    for pattern in [r'src=["\']([^"\']+)["\']', r'data-src=["\']([^"\']+)["\']']:
-        for m in re.finditer(pattern, html):
-            url = m.group(1)
-            if is_plausible_direct(url):
-                log.info(f"iTeraPlay: Found in {pattern}: {url[:80]}")
-                return url
-    
-    # 3) Look for embedded JSON with url field
-    for m in re.finditer(r'"(?:url|downloadUrl|playUrl)"\s*:\s*"([^"]+)"', html):
-        url = m.group(1)
-        if is_plausible_direct(url):
-            log.info(f"iTeraPlay: Found JSON url: {url[:80]}")
-            return url
-    
-    # 4) Generic fallback - any URL with d.1024 or data.1024
-    for url in URL_ANY_RE.findall(html):
-        if any(x in url for x in ("d.1024", "data.1024")) and is_plausible_direct(url):
-            log.info(f"iTeraPlay: Found via URL pattern: {url[:80]}")
-            return url
-    
-    log.warning("iTeraPlay extractor found no link, returning None for fallback")
-    return None
+    cand = CANDIDATE_RE.findall(html)
+    if cand:
+        for c in cand:
+            if is_plausible_direct(c):
+                return c
 
-async def find_direct_link_from_html(html: str, api_source: str = "teraapi"):
-    """
-    Extract direct link from HTML based on API source.
-    Uses optimized patterns for each API type.
-    """
-    log.debug(f"Searching for download link using {api_source} extractor (HTML length: {len(html)})")
-    
-    if api_source == "iteraplay":
-        direct_link = await extract_iteraplay_link(html)
-    else:  # teraapi or unknown
-        direct_link = await extract_teraapi_link(html)
-    
-    # Final fallback: try generic URL extraction if specific extractors failed
-    if not direct_link:
-        log.debug(f"Extractors failed, trying generic fallback...")
-        for u in URL_ANY_RE.findall(html):
-            if any(x in u for x in ("d.1024", "data.1024", "fid=", "/file/")) and is_plausible_direct(u):
-                log.info(f"Found via generic URL_ANY_RE: {u[:80]}")
-                direct_link = u
-                break
-        
-        # Try decoded version
-        if not direct_link:
-            decoded = unquote(html)
-            for u in URL_ANY_RE.findall(decoded):
-                if any(x in u for x in ("d.1024", "data.1024", "fid=", "/file/")) and is_plausible_direct(u):
-                    log.info(f"Found via decoded URL_ANY_RE: {u[:80]}")
-                    direct_link = u
-                    break
-    
-    if not direct_link:
-        log.warning(f"No download link found using {api_source} extractor. HTML length: {len(html)}")
-    
-    return direct_link
+    cand2 = GENERIC_URL_RE.findall(html)
+    if cand2:
+        for c in cand2:
+            if is_plausible_direct(c):
+                return c
+
+    for m in HREF_RE.findall(html):
+        if is_plausible_direct(m):
+            return m
+
+    for u in URL_ANY_RE.findall(html):
+        if any(x in u for x in ("d.1024", "data.1024", "fid=", "/file/")) and is_plausible_direct(u):
+            return u
+
+    decoded = unquote(html)
+    for u in URL_ANY_RE.findall(decoded):
+        if any(x in u for x in ("d.1024", "data.1024", "fid=", "/file/")) and is_plausible_direct(u):
+            return u
+
+    return None
 
 def is_plausible_direct(url: str) -> bool:
     try:
@@ -182,12 +91,13 @@ async def process_video(client, message, user_url: str) -> None:
     filepath: Optional[str] = None
     
     try:
+        play_api_url = Config.TERAAPI_PLAY.format(url=user_url) if hasattr(Config, "TERAAPI_PLAY") else user_url
         log.info(f"Processing link: {user_url} from user {uid}")
         loop = asyncio.get_running_loop()
-        html, api_source = await loop.run_in_executor(None, fetch_play_html, user_url)
-        log.info(f"Fetched play HTML using {api_source} (len={len(html) if html else 0})")
+        html = await loop.run_in_executor(None, fetch_play_html, user_url)
+        log.info(f"Fetched play HTML (len={len(html) if html else 0})")
 
-        direct_link = await find_direct_link_from_html(html, api_source)
+        direct_link = await find_direct_link_from_html(html)
 
         if not direct_link:
             error_msg = f"Failed to extract direct link for {user_url}"
