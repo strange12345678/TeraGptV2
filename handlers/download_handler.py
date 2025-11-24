@@ -93,10 +93,10 @@ class LinkQueue:
                     except:
                         pass
                 
-                # Add 2-second delay between queue items (rate limiting)
+                # Add 5-second delay between queue items (rate limiting)
                 if self.queue:
-                    log.info("[QUEUE] Waiting 2s before next item (rate limiting)...")
-                    await asyncio.sleep(2)
+                    log.info("[QUEUE] Waiting 5s before next item (rate limiting)...")
+                    await asyncio.sleep(5)
             
             log.info("[QUEUE] Worker FINISHED - queue empty")
         
