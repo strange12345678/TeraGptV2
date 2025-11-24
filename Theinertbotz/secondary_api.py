@@ -2,6 +2,7 @@
 import re
 import requests
 import logging
+from urllib.parse import quote
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -10,13 +11,25 @@ def fetch_iteraplay_html(url: str, timeout=20):
     Fetch HTML from iTeraPlay API endpoint.
     Returns HTML content that contains HLS video player.
     """
-    api_url = f"https://iteraplay.com/api/play.php?url={url}&key=iTeraPlay2025"
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+    # Properly URL encode the TeraBox link
+    encoded_url = quote(url, safe=':/')
+    api_url = f"https://iteraplay.com/api/play.php?url={encoded_url}&key=iTeraPlay2025"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Referer": "https://iteraplay.com/",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    }
     
     try:
         r = requests.get(api_url, timeout=timeout, headers=headers)
         r.raise_for_status()
-        return r.text
+        html = r.text
+        
+        # Log first 500 chars for debugging if no m3u8 found
+        if html and '.m3u8' not in html.lower() and 'error' in html.lower():
+            log.warning(f"iTeraPlay returned error HTML: {html[:500]}")
+        
+        return html
     except Exception as e:
         log.error(f"Failed to fetch iTeraPlay HTML: {e}")
         raise
@@ -98,17 +111,27 @@ def extract_m3u8_from_html(html: str):
     
     if not urls_found:
         log.warning("No m3u8 URLs found in HTML")
+        
+        # Check if HTML is an error page
+        if 'error' in html.lower() or 'not found' in html.lower() or len(html) < 1000:
+            log.error(f"iTeraPlay returned error/empty response (len={len(html)})")
+            return None
+        
         # Try to extract any video stream URL as fallback
         video_patterns = [
+            r'(https?://[^\s"\'<>]*?\.m3u8[^\s"\'<>]*)',  # m3u8 with different encoding
             r'(https?://[^\s"\'<>]*?/stream[^\s"\'<>]*)',
             r'(https?://[^\s"\'<>]*?video[^\s"\'<>]*)',
+            r'(https?://[^\s"\'<>]*?hls[^\s"\'<>]*)',
+            r'(https?://[^\s"\'<>]*?\.cdnext\.[^\s"\'<>]*)',  # CDN streams
+            r'(https?://[^\s"\'<>]*?cdn[^\s"\'<>]*)',
         ]
         for pattern in video_patterns:
             try:
                 matches = re.finditer(pattern, html, re.IGNORECASE)
                 for match in matches:
                     url = match.group(1).strip()
-                    if url.startswith(('http://', 'https://')):
+                    if url.startswith(('http://', 'https://')) and not url.endswith(('.js', '.css', '.html', '.png', '.jpg')):
                         log.info(f"Found fallback video URL: {url}")
                         return url
             except:
