@@ -358,39 +358,54 @@ def extract_filename_from_terabox_html(terabox_url: str) -> Optional[str]:
     """
     try:
         import requests
+        import html
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         }
         response = requests.get(terabox_url, headers=headers, timeout=10)
         response.raise_for_status()
-        html = response.text
+        page_html = response.text
         
         # Try to extract filename from various sources in TeraBox HTML
         patterns = [
-            # Title from page title tag
-            r'<title>([^<]+)</title>',
+            # From share title in JavaScript (most reliable)
+            r'share_title\s*:\s*["\']([^"\']+)["\']',
+            # From data in JSON
+            r'"name"\s*:\s*"([^"]+)"',
+            r'"title"\s*:\s*"([^"]+)"',
             # From folder/file name in data attributes
             r'data-name="([^"]+)"',
             r'data-filename="([^"]+)"',
             # From h1 heading (might be the folder/file name)
             r'<h1[^>]*>([^<]+)</h1>',
-            # From share title in JavaScript
-            r'share_title\s*:\s*["\']([^"\']+)["\']',
-            # From data in JSON
-            r'"name"\s*:\s*"([^"]+)"',
-            r'"title"\s*:\s*"([^"]+)"',
+            # Title from page title tag (least reliable - has page branding)
+            r'<title>([^<]+)</title>',
         ]
         
         for pattern in patterns:
-            match = re.search(pattern, html, re.IGNORECASE)
+            match = re.search(pattern, page_html, re.IGNORECASE)
             if match:
                 title = match.group(1).strip()
+                
+                # Decode HTML entities
+                title = html.unescape(title)
+                
+                # Remove TeraBox page branding if present
+                if ' - Share Files' in title or ' - ' in title and 'Tera' in title:
+                    # Extract just the filename part before the dash
+                    parts = title.split(' - ')
+                    if parts[0]:
+                        title = parts[0].strip()
+                
                 # Filter out unwanted titles
-                if title and len(title) > 3 and title.lower() not in ['video', 'download', 'untitled', 'terabox']:
-                    log.info(f"Extracted filename from TeraBox HTML: {title}")
-                    return title
+                excluded = ['video', 'download', 'untitled', 'terabox', 'share files']
+                if title and len(title) > 3 and title.lower() not in excluded:
+                    # Ensure it looks like a filename (not just words)
+                    if any(char.isdigit() or char in '@_-.' for char in title):
+                        log.info(f"Extracted filename from TeraBox HTML: {title}")
+                        return title
                     
-        log.info("No filename found in TeraBox HTML")
+        log.info("No valid filename found in TeraBox HTML")
         return None
     except Exception as e:
         log.debug(f"Failed to extract from TeraBox HTML: {e}")
