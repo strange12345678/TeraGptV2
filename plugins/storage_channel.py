@@ -53,9 +53,11 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
         user_str = f"@{user}" if user and user != "Unknown" else "Unknown"
         caption = f"<b>📂 File:</b> <code>{display_name}</code>\n<b>📊 Size:</b> {file_size}\n<b>👤 User:</b> {user_str}\n<b>🔗 Link:</b> <code>{link}</code>"
 
-        # Check if it's a video file
+        # Check if it's a video file - check both original and renamed name
         video_extensions = ('.mp4', '.mkv', '.avi', '.mov', '.flv', '.wmv', '.webm')
-        is_video = file_name.lower().endswith(video_extensions)
+        # Check if either the original filename OR the display name contains a video extension
+        is_video = any(ext in file_name.lower() for ext in video_extensions) or any(ext in display_name.lower() for ext in video_extensions)
+        log.info(f"[STORAGE] Video detection: file_name={file_name}, display_name={display_name}, is_video={is_video}")
 
         # Parse file size to get bytes
         size_bytes = 0
