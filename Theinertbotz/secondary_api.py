@@ -3,6 +3,7 @@ import re
 import requests
 import logging
 from urllib.parse import quote
+from Theinertbotz.debug_helper import save_html_debug, extract_error_message
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -46,6 +47,9 @@ def extract_m3u8_from_html(html: str):
     """
     if not html:
         return None
+    
+    # Debug: Save HTML for inspection if needed
+    log.debug(f"HTML length: {len(html)} bytes")
     
     urls_found = []
     
@@ -111,19 +115,31 @@ def extract_m3u8_from_html(html: str):
     if not urls_found:
         log.warning("No m3u8 URLs found in HTML")
         
+        # Save HTML for debugging
+        save_html_debug(html, "iteraplay_failed")
+        
         # Check if HTML is an error page
-        if 'error' in html.lower() or 'not found' in html.lower() or len(html) < 1000:
-            log.error(f"iTeraPlay returned error/empty response (len={len(html)})")
+        if 'error' in html.lower() or 'not found' in html.lower():
+            log.error(f"iTeraPlay returned error response")
+            # Try to extract error message
+            error_msg = extract_error_message(html)
+            if error_msg:
+                log.error(f"Error message: {error_msg}")
+            return None
+        
+        if len(html) < 1000:
+            log.error(f"Response too short (len={len(html)}), likely an error")
             return None
         
         # Try to extract any video stream URL as fallback
+        log.info("Attempting fallback extraction methods...")
         video_patterns = [
             r'(https?://[^\s"\'<>]*?\.m3u8[^\s"\'<>]*)',  # m3u8 with different encoding
             r'(https?://[^\s"\'<>]*?/stream[^\s"\'<>]*)',
             r'(https?://[^\s"\'<>]*?video[^\s"\'<>]*)',
             r'(https?://[^\s"\'<>]*?hls[^\s"\'<>]*)',
             r'(https?://[^\s"\'<>]*?\.cdnext\.[^\s"\'<>]*)',  # CDN streams
-            r'(https?://[^\s"\'<>]*?cdn[^\s"\'<>]*)',
+            r'(https?://[^\s"\'<>]*?cdn[^\s"\'<>]*\.m3u8[^\s"\'<>]*)',
         ]
         for pattern in video_patterns:
             try:
