@@ -40,9 +40,7 @@ def auto_rename_file(filename: str, pattern: str = "timestamp", variables: dict 
             # Set default variables including date/time formats
             now = datetime.now()
             defaults = {
-                "file_name": name,
-                "original_name": filename,
-                "ext": ext,
+                "file_name": filename,  # Original filename with extension
                 "file_size": variables.get("file_size", "unknown"),
                 "date": now.strftime("%Y-%m-%d"),
                 "timestamp": now.strftime("%Y%m%d_%H%M%S"),
@@ -52,9 +50,9 @@ def auto_rename_file(filename: str, pattern: str = "timestamp", variables: dict 
             defaults.update(variables)
             
             try:
-                # Replace variables in pattern FIRST (before sanitization)
-                new_name_without_ext = pattern.format(**defaults)
-                new_name = f"{new_name_without_ext}{ext}"
+                # Replace variables in pattern
+                # Note: {file_name} already includes extension, so don't add it again
+                new_name = pattern.format(**defaults)
                 
                 # Sanitize filename - keep alphanumeric, spaces, common punctuation and underscores
                 # Remove only very dangerous characters, preserve most printable characters

@@ -176,10 +176,8 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 <b>📝 ᴀᴠᴀɪʟᴀʙʟᴇ ᴠᴀʀɪᴀʙʟᴇs:</b>
 
 <b>ꜰɪʟᴇ ɪɴꜰᴏ:</b>
-• {{file_name}} - ꜰɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜᴏᴜᴛ ᴇxᴛ
+• {{file_name}} - ᴏʀɪɢɪɴᴀʟ ꜰɪʟᴇɴᴀᴍᴇ (ᴡɪᴛʜ ᴇxᴛ)
 • {{file_size}} - ꜰɪʟᴇ sɪᴢᴇ (ᴇ.ɢ. 5.2ᴍʙ)
-• {{original_name}} - ᴄᴏᴍᴘʟᴇᴛᴇ ꜰɪʟᴇɴᴀᴍᴇ
-• {{ext}} - ꜰɪʟᴇ ᴇxᴛᴇɴsɪᴏɴ
 
 <b>ᴅᴀᴛᴇ & ᴛɪᴍᴇ:</b>
 • {{date}} - ᴅᴀᴛᴇ (YYYY-MM-DD)
@@ -193,16 +191,13 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 
 <b>💡 ᴘᴀᴛᴛᴇʀɴ ᴇxᴀᴍᴘʟᴇs:</b>
 <code>{{file_name}}_{{date}}</code>
-→ video_2025-11-24.mp4
+→ movie.mp4_2025-11-24
 
-<code>Download_{{timestamp}}</code>
-→ Download_20251124_145230.mp4
+<code>Download_{{file_name}}</code>
+→ Download_movie.mp4
 
-<code>{{username}}_{{file_size}}</code>
-→ john_5.2MB.mp4
-
-<code>@Bot_{{file_name}}</code>
-→ @Bot_video.mp4
+<code>{{username}}_{{timestamp}}_{{file_name}}</code>
+→ john_20251124_145230_movie.mp4
 
 ━━━━━━━━━━━━━━━━━━━━
 """
