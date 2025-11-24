@@ -469,3 +469,83 @@ def register_handlers(app):
             await message.reply("❌ Invalid user ID format", parse_mode=enums.ParseMode.HTML)
         except Exception:
             log.exception("check_user_cmd error")
+    
+    # ===== Storage Channel Rename Commands =====
+    @app.on_message(filters.command("store_rename") & filters.private)
+    async def store_rename_cmd(client, message):
+        """Enable/disable storage channel rename. Usage: /store_rename on/off"""
+        if not is_admin(message.from_user.id):
+            await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
+            return
+        
+        try:
+            args = message.text.split()
+            if len(args) < 2:
+                await message.reply("📝 Usage: <code>/store_rename on|off</code>", parse_mode=enums.ParseMode.HTML)
+                return
+            
+            action = args[1].lower()
+            if action == "on":
+                db.enable_store_rename()
+                await message.reply("✅ Storage channel rename <b>enabled</b>", parse_mode=enums.ParseMode.HTML)
+                log.info(f"Admin {message.from_user.id} enabled store rename")
+            elif action == "off":
+                db.disable_store_rename()
+                await message.reply("✅ Storage channel rename <b>disabled</b>", parse_mode=enums.ParseMode.HTML)
+                log.info(f"Admin {message.from_user.id} disabled store rename")
+            else:
+                await message.reply("❌ Invalid argument. Use: <code>/store_rename on|off</code>", parse_mode=enums.ParseMode.HTML)
+        except Exception:
+            log.exception("store_rename_cmd error")
+    
+    @app.on_message(filters.command("set_store_rename") & filters.private)
+    async def set_store_rename_cmd(client, message):
+        """Set custom rename pattern for storage channel. Usage: /set_store_rename [pattern with variables]"""
+        if not is_admin(message.from_user.id):
+            await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
+            return
+        
+        try:
+            parts = message.text.split(maxsplit=1)
+            if len(parts) < 2:
+                help_text = """📝 <b>Set Storage Channel Rename Pattern</b>
+
+<b>Usage:</b> <code>/set_store_rename [pattern]</code>
+
+<b>Available Variables:</b>
+• <code>{file_name}</code> - Original filename with extension
+• <code>{file_size}</code> - File size (e.g., "2.6 MB")
+• <code>{date}</code> - Current date (YYYY-MM-DD)
+• <code>{timestamp}</code> - Timestamp (YYYYMMDD_HHMMSS)
+• <code>{time}</code> - Current time (HH-MM-SS)
+• <code>{datetime}</code> - Full datetime (YYYY-MM-DD_HH-MM-SS)
+• <code>{user_id}</code> - User ID
+• <code>{username}</code> - Username
+
+<b>Examples:</b>
+<code>/set_store_rename [STORAGE] {file_name}_{date}</code>
+<code>/set_store_rename {username}_{file_name}_{timestamp}</code>
+<code>/set_store_rename {date}_{file_name}</code>"""
+                await message.reply(help_text, parse_mode=enums.ParseMode.HTML)
+                return
+            
+            pattern = parts[1]
+            db.set_store_rename_pattern(pattern)
+            await message.reply(f"✅ Storage rename pattern set to:\n<code>{pattern}</code>", parse_mode=enums.ParseMode.HTML)
+            log.info(f"Admin {message.from_user.id} set store rename pattern: {pattern}")
+        except Exception:
+            log.exception("set_store_rename_cmd error")
+    
+    @app.on_message(filters.command("remove_store_rename") & filters.private)
+    async def remove_store_rename_cmd(client, message):
+        """Remove storage channel rename and use default format."""
+        if not is_admin(message.from_user.id):
+            await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
+            return
+        
+        try:
+            db.remove_store_rename()
+            await message.reply("✅ Storage channel rename <b>removed</b>. Using default format.", parse_mode=enums.ParseMode.HTML)
+            log.info(f"Admin {message.from_user.id} removed store rename")
+        except Exception:
+            log.exception("remove_store_rename_cmd error")

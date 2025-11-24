@@ -1,7 +1,10 @@
 import logging
+import os
 from config import Config
 from pyrogram import enums
 from Theinertbotz.thumbnail import generate_thumbnail
+from Theinertbotz.database import db
+from Theinertbotz.rename import auto_rename_file
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -12,8 +15,24 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
         log.debug(f"STORAGE_CHANNEL not configured, skipping backup")
         return
     try:
+        # Apply storage channel rename if enabled
+        display_name = file_name
+        enabled, pattern = db.get_store_rename_setting()
+        if enabled and pattern:
+            # Parse file size for variables
+            size_value = file_size.split()[0] if file_size else "unknown"
+            variables = {
+                "file_size": size_value,
+                "user_id": user.replace("@", ""),  # Remove @ if present
+                "username": user.replace("@", "")
+            }
+            renamed = auto_rename_file(file_name, pattern, variables)
+            if renamed != file_name:
+                display_name = renamed
+                log.info(f"[STORAGE] Renamed for channel: {file_name} -> {display_name}")
+        
         user_str = f"@{user}" if user and user != "Unknown" else "Unknown"
-        caption = f"<b>📂 File:</b> <code>{file_name}</code>\n<b>📊 Size:</b> {file_size}\n<b>👤 User:</b> {user_str}\n<b>🔗 Link:</b> <code>{link}</code>"
+        caption = f"<b>📂 File:</b> <code>{display_name}</code>\n<b>📊 Size:</b> {file_size}\n<b>👤 User:</b> {user_str}\n<b>🔗 Link:</b> <code>{link}</code>"
         
         # Check if it's a video file
         video_extensions = ('.mp4', '.mkv', '.avi', '.mov', '.flv', '.wmv', '.webm')
@@ -43,14 +62,16 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
                 video=path,
                 caption=caption,
                 parse_mode=enums.ParseMode.HTML,
-                thumb=thumbnail
+                thumb=thumbnail,
+                file_name=display_name if display_name != file_name else None
             )
         else:
             await client.send_document(
                 chat_id=channel,
                 document=path,
                 caption=caption,
-                parse_mode=enums.ParseMode.HTML
+                parse_mode=enums.ParseMode.HTML,
+                file_name=display_name if display_name != file_name else None
             )
         
         log.debug(f"Backup sent to channel {channel}")

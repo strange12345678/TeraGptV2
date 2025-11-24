@@ -217,5 +217,33 @@ class Database:
         new_api = "secondary" if current == "primary" else "primary"
         self.settings.update_one({"_id": "current_api"}, {"$set": {"api": new_api}}, upsert=True)
         return new_api
+    
+    # ===== Storage Channel Rename Settings =====
+    def get_store_rename_setting(self):
+        """Get storage channel rename setting. Returns (enabled, pattern)."""
+        settings = self.settings.find_one({"_id": "store_rename"})
+        if settings:
+            return (settings.get("enabled", False), settings.get("pattern", ""))
+        return (False, "")
+    
+    def enable_store_rename(self):
+        """Enable storage channel rename."""
+        self.settings.update_one({"_id": "store_rename"}, {"$set": {"enabled": True}}, upsert=True)
+        return True
+    
+    def disable_store_rename(self):
+        """Disable storage channel rename."""
+        self.settings.update_one({"_id": "store_rename"}, {"$set": {"enabled": False, "pattern": ""}}, upsert=True)
+        return True
+    
+    def set_store_rename_pattern(self, pattern):
+        """Set storage channel rename pattern."""
+        self.settings.update_one({"_id": "store_rename"}, {"$set": {"enabled": True, "pattern": pattern}}, upsert=True)
+        return True
+    
+    def remove_store_rename(self):
+        """Remove storage channel rename and reset to default."""
+        self.settings.update_one({"_id": "store_rename"}, {"$set": {"enabled": False, "pattern": ""}}, upsert=True)
+        return True
 
 db = Database()

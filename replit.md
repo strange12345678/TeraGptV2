@@ -6,6 +6,13 @@ TeraBox Telegram Bot is a Python-based Telegram bot that downloads and processes
 **Current State**: Fully featured production bot with premium system, auto-upload channels, and auto-delete functionality.
 
 ## Recent Changes
+- **2025-11-24**: Storage channel rename feature for admins
+  - **Commands**: `/store_rename on/off`, `/set_store_rename [pattern]`, `/remove_store_rename`
+  - **Variables**: {file_name}, {file_size}, {date}, {timestamp}, {time}, {datetime}, {user_id}, {username}
+  - **Feature**: Admin-only custom renaming of files in storage channel
+  - **Storage**: Persisted in MongoDB for consistency
+  
+- **2025-11-24**: Fixed channel message sending
 - **2025-11-24**: Videos sent in video format with thumbnail support
   - **Format**: Both primary and secondary upload functions use `send_video` format
   - **Streaming**: Supports streaming with `supports_streaming=True` for better UX
@@ -197,6 +204,9 @@ The bot runs via a single workflow:
 - `/remove_upload_channel` - Remove premium upload channel
 - `/toggle_autodelete` - Toggle auto-delete feature on/off
 - `/checkchannels` - Verify bot access to all configured channels
+- `/store_rename on|off` - Enable/disable storage channel rename
+- `/set_store_rename [pattern]` - Set custom rename pattern for storage channel files
+- `/remove_store_rename` - Remove storage rename and use default format
 
 ## User Commands
 - `/start` - Welcome message
