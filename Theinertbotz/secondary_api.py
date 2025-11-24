@@ -7,6 +7,18 @@ from Theinertbotz.debug_helper import save_html_debug, extract_error_message
 
 log = logging.getLogger("TeraBoxBot")
 
+def _extract_video_filename(file_data: dict) -> str:
+    """Extract the cleanest available filename from API response."""
+    # Prefer 'filename' (cleaner) over 'server_filename' (may contain metadata)
+    filename = file_data.get('filename') or file_data.get('server_filename', 'video.mp4')
+    
+    # Ensure .mp4 extension if needed
+    if filename and not any(filename.lower().endswith(ext) for ext in ['.mp4', '.mkv', '.webm', '.mov']):
+        filename = filename + '.mp4'
+    
+    return filename
+
+
 def fetch_video_from_terabox_api(terabox_url: str, timeout=20):
     """
     Call the TeraBox API directly (the one iTeraPlay uses internally).
@@ -49,22 +61,22 @@ def fetch_video_from_terabox_api(terabox_url: str, timeout=20):
                     for quality in quality_order:
                         if quality in stream_url and stream_url[quality]:
                             log.info(f"Found {quality} stream URL from API")
-                            return stream_url[quality], file_data.get('server_filename', 'video.mp4')
+                            return stream_url[quality], _extract_video_filename(file_data)
                     # Return first available quality
                     for url in stream_url.values():
                         if url:
                             log.info(f"Found stream URL from API (first available)")
-                            return url, file_data.get('server_filename', 'video.mp4')
+                            return url, _extract_video_filename(file_data)
                 # If it's a direct string URL
                 elif isinstance(stream_url, str) and stream_url:
                     log.info(f"Found stream URL from API (direct)")
-                    return stream_url, file_data.get('server_filename', 'video.mp4')
+                    return stream_url, _extract_video_filename(file_data)
             
             # Fallback to other possible fields
             for field in ['dlink', 'download_url', 'stream_url', 'video_url']:
                 if field in file_data and file_data[field]:
                     log.info(f"Found {field} from API")
-                    return file_data[field], file_data.get('server_filename', 'video.mp4')
+                    return file_data[field], _extract_video_filename(file_data)
         
         log.warning("No valid stream URL found in API response")
         return None, None
