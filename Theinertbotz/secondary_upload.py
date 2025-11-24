@@ -117,7 +117,7 @@ async def upload_file_secondary(client, message, filepath, bot_username: str):
                 message.chat.id,
                 filepath,
                 duration=duration,
-                thumbnail=thumbnail_path,
+                thumb=thumbnail_path,
                 progress=_progress_cb,
                 progress_args=(filename,)
             )
