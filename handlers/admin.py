@@ -558,3 +558,12 @@ def register_handlers(app):
             log.info(f"Admin {message.from_user.id} removed store rename pattern")
         except Exception:
             log.exception("remove_store_rename_cmd error")
+    
+    @app.on_message(filters.command("store_rename_help") & filters.private)
+    async def store_rename_help_cmd(client, message):
+        """Show storage rename help."""
+        if not is_admin(message.from_user.id):
+            await message.reply("❌ Admin access required", parse_mode=enums.ParseMode.HTML)
+            return
+        
+        await message.reply(Script.ADMIN_STORE_RENAME_HELP, parse_mode=enums.ParseMode.HTML)
