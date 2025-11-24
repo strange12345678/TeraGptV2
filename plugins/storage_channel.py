@@ -12,6 +12,7 @@ log = logging.getLogger("TeraBoxBot")
 
 async def backup_file(client, path: str, file_name: str, file_size: str, user: str, link: str, user_id: int = None, original_filename: str = None) -> None:
     log.info(f"STORAGE: backup request {file_name} {file_size}")
+    log.info(f"[STORAGE] 🔍 PARAMETERS: file_name='{file_name}', original_filename='{original_filename}', user_id={user_id}")
     channel = Config.STORAGE_CHANNEL
     if not channel or channel == 0:
         log.debug(f"STORAGE_CHANNEL not configured, skipping backup")
@@ -58,7 +59,17 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
         detection_name = original_filename or file_name
         # Check if the detection name contains a video extension
         is_video = any(ext in detection_name.lower() for ext in video_extensions)
-        log.info(f"[STORAGE] Video detection: original={original_filename}, file_name={file_name}, is_video={is_video}")
+        
+        # Debug: Check each extension
+        for ext in video_extensions:
+            if ext in detection_name.lower():
+                log.info(f"[STORAGE] ✅ Found extension '{ext}' in '{detection_name}'")
+        
+        log.info(f"[STORAGE] Video detection: original_filename={original_filename}, file_name={file_name}, detection_name={detection_name}, is_video={is_video}")
+        if is_video:
+            log.info(f"[STORAGE] ✅ WILL SEND AS VIDEO")
+        else:
+            log.info(f"[STORAGE] ❌ WILL SEND AS DOCUMENT")
 
         # Parse file size to get bytes
         size_bytes = 0
