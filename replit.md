@@ -3,20 +3,16 @@
 ## Overview
 TeraBox Telegram Bot is a Python-based Telegram bot that downloads and processes files from TeraBox links. The bot uses Pyrogram to interact with the Telegram API and includes a Flask health check server.
 
-**Current State**: Fully featured production bot with premium system, auto-upload channels, auto-delete functionality, GUARANTEED SEQUENTIAL bulk link processing with auto-retry logic, and 2-second rate-limiting delay between queue items.
+**Current State**: Fully featured production bot with premium system, auto-upload channels, auto-delete functionality, GUARANTEED SEQUENTIAL bulk link processing with 2-second rate-limiting delay between queue items.
 
 ## Recent Changes
-- **2025-11-24**: FIXED bulk link random downloading + Added AUTO-RETRY for failed links
+- **2025-11-24**: FIXED bulk link random downloading + Added 2-second rate-limiting delay
   - **Race Condition Fixed**: Added `asyncio.Lock()` to `LinkQueue.add()` prevents concurrent queue modifications from 20 HandlerTasks
   - **Result**: GUARANTEED sequential processing - links download one-by-one, never concurrently
-  - **Auto-Retry Logic**: Failed links now retry up to 3 times total with exponential backoff (2s, 4s delay)
-  - **Retry Benefits**: 
-    * Temporary API failures auto-recover without user intervention
-    * Playwright timeout issues retry automatically
-    * iTeraPlay errors get second/third attempt
+  - **Rate-Limiting**: 2-second delay between each queue item to prevent API server overload
   - **Global Counter**: Each link gets unique global ID (Link #1, Link #2, etc.)
-  - **Status Updates**: Shows "Link #5, Queue: 95 pending, Attempt: 2/3" for transparency
-  - **Logging**: ★ PROCESSING / ⚠️ FAILED / ✅ COMPLETED markers
+  - **Status Updates**: Shows "Link #5, Queue: 95 pending" for transparency
+  - **Logging**: ★ PROCESSING / ⚠️ ERROR / ✅ COMPLETED markers
 
 - **2025-11-24**: Storage channel rename feature for admins
   - **Commands**: `/store_rename on/off`, `/set_store_rename [pattern]`, `/remove_store_rename`
