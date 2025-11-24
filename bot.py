@@ -21,5 +21,3 @@ app = Client(
 
 # Register handlers
 register_all(app)
-
-log.info("🔥 TeraBox Bot is starting...")
