@@ -6,11 +6,12 @@ TeraBox Telegram Bot is a Python-based Telegram bot that downloads and processes
 **Current State**: Fully featured production bot with premium system, auto-upload channels, and auto-delete functionality.
 
 ## Recent Changes
-- **2025-11-24**: Videos now sent as documents instead of video format
-  - **Change**: Both primary and secondary upload functions now use `send_document` instead of `send_video`
-  - **Reason**: User preference - documents provide better file preservation and download options
-  - **Impact**: Videos are uploaded as file downloads instead of streaming media
-  - **Applies to**: All downloads (primary TeraBox API and secondary iTeraPlay API)
+- **2025-11-24**: Videos sent in video format with thumbnail support
+  - **Format**: Both primary and secondary upload functions use `send_video` format
+  - **Streaming**: Supports streaming with `supports_streaming=True` for better UX
+  - **Thumbnails**: Auto-generated thumbnails for video preview
+  - **Duration**: Displays video duration when sending
+  - **Applies to**: All video downloads (primary TeraBox API and secondary iTeraPlay API)
 
 - **2025-11-24**: Fixed video filename extraction from TeraBox HTML
   - **Improvement**: Extracts actual filenames from TeraBox page instead of API generic "video.mp4"
