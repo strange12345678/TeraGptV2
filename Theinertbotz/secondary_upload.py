@@ -109,38 +109,22 @@ async def upload_file_secondary(client, message, filepath, bot_username: str):
                 log.info(f"Generated thumbnail: {thumbnail_path}")
 
     try:
-        if is_video:
-            # Upload as video with duration and thumbnail
-            duration = get_video_duration(filepath)
-            
-            await client.send_video(
-                message.chat.id,
-                filepath,
-                caption=f"<b>Uploaded:</b> {filename}",
-                duration=duration,
-                thumb=thumbnail_path,
-                parse_mode=enums.ParseMode.HTML,
-                supports_streaming=True,
-                progress=_progress_cb,
-                progress_args=()
-            )
-            
-            # Clean up thumbnail
-            if thumbnail_path and os.path.exists(thumbnail_path):
-                try:
-                    os.remove(thumbnail_path)
-                except:
-                    pass
-        else:
-            # Upload as document
-            await client.send_document(
-                message.chat.id,
-                filepath,
-                caption=f"<b>Uploaded:</b> {filename}",
-                parse_mode=enums.ParseMode.HTML,
-                progress=_progress_cb,
-                progress_args=()
-            )
+        # Always send as document (user preference)
+        await client.send_document(
+            message.chat.id,
+            filepath,
+            caption=f"<b>Uploaded:</b> {filename}",
+            parse_mode=enums.ParseMode.HTML,
+            progress=_progress_cb,
+            progress_args=()
+        )
+        
+        # Clean up thumbnail if it exists
+        if thumbnail_path and os.path.exists(thumbnail_path):
+            try:
+                os.remove(thumbnail_path)
+            except:
+                pass
         
         # Update final status
         await edit_coro(f"✅ <b>ᴜᴘʟᴏᴀᴅ ᴄᴏᴍᴘʟᴇᴛᴇ!</b>\n<code>{filename}</code>")

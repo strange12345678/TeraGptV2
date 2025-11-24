@@ -111,25 +111,16 @@ async def upload_file(client, message, filepath, bot_username: str):
                     log.info(f"Generated thumbnail for large video: {thumbnail_path}")
 
     ############################################################################
-    # Upload as video (Pyrogram handles chunking). Provide a simple caption.
+    # Upload as document (user preference) - Pyrogram handles chunking
     ############################################################################
     sent_video_msg = None
     try:
-        # Get video duration if it's a video file
-        duration = 0
-        if is_video:
-            duration = get_video_duration(filepath)
-            if duration > 0:
-                log.info(f"Video duration: {duration} seconds")
-        
-        sent_video_msg = await client.send_video(
+        # Send as document (all files including videos)
+        sent_video_msg = await client.send_document(
             chat_id=message.chat.id,
-            video=filepath,
+            document=filepath,
             caption=f"<b>Uploaded:</b> {filename}",
-            thumb=thumbnail_path,
-            duration=duration if is_video else None,
             parse_mode=enums.ParseMode.HTML,
-            supports_streaming=True,
             progress=_progress_cb,
             progress_args=(),
             reply_to_message_id=message.id
