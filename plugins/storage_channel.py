@@ -57,12 +57,8 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
         video_extensions = ('.mp4', '.mkv', '.avi', '.mov', '.flv', '.wmv', '.webm')
         detection_name = original_filename or file_name
         # Check if the detection name contains a video extension
-        is_video_file = any(ext in detection_name.lower() for ext in video_extensions)
-        
-        # Only send as video format if user is admin
-        from handlers.admin import is_admin
-        is_video = is_video_file and is_admin(user_id) if user_id else False
-        log.info(f"[STORAGE] Video detection: original={original_filename}, file_name={file_name}, user_id={user_id}, is_admin={is_admin(user_id) if user_id else False}, is_video={is_video}")
+        is_video = any(ext in detection_name.lower() for ext in video_extensions)
+        log.info(f"[STORAGE] Video detection: original={original_filename}, file_name={file_name}, is_video={is_video}")
 
         # Parse file size to get bytes
         size_bytes = 0
