@@ -174,14 +174,35 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 <code>/set_rename &lt;your_pattern&gt;</code>
 
 <b>📝 ᴀᴠᴀɪʟᴀʙʟᴇ ᴠᴀʀɪᴀʙʟᴇs:</b>
-{{file_name}} • {{file_size}} • {{original_name}} • {{ext}}
+
+<b>ꜰɪʟᴇ ɪɴꜰᴏ:</b>
+• {{file_name}} - ꜰɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜᴏᴜᴛ ᴇxᴛ
+• {{file_size}} - ꜰɪʟᴇ sɪᴢᴇ (ᴇ.ɢ. 5.2ᴍʙ)
+• {{original_name}} - ᴄᴏᴍᴘʟᴇᴛᴇ ꜰɪʟᴇɴᴀᴍᴇ
+• {{ext}} - ꜰɪʟᴇ ᴇxᴛᴇɴsɪᴏɴ
+
+<b>ᴅᴀᴛᴇ & ᴛɪᴍᴇ:</b>
+• {{date}} - ᴅᴀᴛᴇ (YYYY-MM-DD)
+• {{timestamp}} - ᴛɪᴍᴇsᴛᴀᴍᴘ (YYYYMMDDHHMMss)
+• {{datetime}} - ᴅᴀᴛᴇ+ᴛɪᴍᴇ (YYYY-MM-DD_HH-MM-SS)
+• {{time}} - ᴛɪᴍᴇ ᴏɴʟʏ (HH-MM-SS)
+
+<b>ᴜsᴇʀ ɪɴꜰᴏ:</b>
+• {{user_id}} - ʏᴏᴜʀ ᴜsᴇʀ ɪᴅ
+• {{username}} - ʏᴏᴜʀ ᴛᴇʟᴇɢʀᴀᴍ ᴜsᴇʀɴᴀᴍᴇ
 
 <b>💡 ᴘᴀᴛᴛᴇʀɴ ᴇxᴀᴍᴘʟᴇs:</b>
-<code>@Bot_{{file_name}}_{{file_size}}</code>
-→ @Bot_video_42MB.mp4
+<code>{{file_name}}_{{date}}</code>
+→ video_2025-11-24.mp4
 
-<code>Download_{{original_name}}</code>
-→ Download_video.mp4
+<code>Download_{{timestamp}}</code>
+→ Download_20251124_145230.mp4
+
+<code>{{username}}_{{file_size}}</code>
+→ john_5.2MB.mp4
+
+<code>@Bot_{{file_name}}</code>
+→ @Bot_video.mp4
 
 ━━━━━━━━━━━━━━━━━━━━
 """
