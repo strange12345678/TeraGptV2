@@ -6,14 +6,17 @@ TeraBox Telegram Bot is a Python-based Telegram bot that downloads and processes
 **Current State**: Fully featured production bot with premium system, auto-upload channels, auto-delete functionality, and GUARANTEED SEQUENTIAL bulk link processing.
 
 ## Recent Changes
-- **2025-11-24**: FIXED bulk link random downloading - Added asyncio.Lock() for sequential queue processing
-  - **Issue**: When users sent multiple links, bot was sometimes downloading them concurrently instead of one-by-one
-  - **Root Cause**: Multiple message handlers executing in parallel (Pyrogram has 20 HandlerTasks), causing race condition when adding to queue
-  - **Fix**: Added `asyncio.Lock()` to `LinkQueue.add()` method to ensure only one handler can modify queue at a time
-  - **Result**: GUARANTEED sequential processing - links now download one-by-one, never concurrently
-  - **Logging**: Improved debug logs with ★ PROCESSING / ✅ COMPLETED markers for transparency
-  - **Global Counter**: Each link gets unique global ID (Link #1, Link #2, etc.) across all users/messages
-  - **Status Updates**: Queue size shown in real-time (e.g., "Link #5, Queue: 95 pending")
+- **2025-11-24**: FIXED bulk link random downloading + Added AUTO-RETRY for failed links
+  - **Race Condition Fixed**: Added `asyncio.Lock()` to `LinkQueue.add()` prevents concurrent queue modifications from 20 HandlerTasks
+  - **Result**: GUARANTEED sequential processing - links download one-by-one, never concurrently
+  - **Auto-Retry Logic**: Failed links now retry up to 3 times total with exponential backoff (2s, 4s delay)
+  - **Retry Benefits**: 
+    * Temporary API failures auto-recover without user intervention
+    * Playwright timeout issues retry automatically
+    * iTeraPlay errors get second/third attempt
+  - **Global Counter**: Each link gets unique global ID (Link #1, Link #2, etc.)
+  - **Status Updates**: Shows "Link #5, Queue: 95 pending, Attempt: 2/3" for transparency
+  - **Logging**: ★ PROCESSING / ⚠️ FAILED / ✅ COMPLETED markers
 
 - **2025-11-24**: Storage channel rename feature for admins
   - **Commands**: `/store_rename on/off`, `/set_store_rename [pattern]`, `/remove_store_rename`

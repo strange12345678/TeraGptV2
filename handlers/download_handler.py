@@ -47,12 +47,12 @@ class LinkQueue:
                 asyncio.create_task(self._worker())
     
     async def _worker(self):
-        """Global worker that processes one link at a time with semaphore lock"""
+        """Global worker that processes one link at a time with retry logic"""
         if self.processing:
             return
         
         self.processing = True
-        log.info("[QUEUE] Worker STARTED - Processing links sequentially")
+        log.info("[QUEUE] Worker STARTED - Processing links sequentially with auto-retry")
         
         try:
             while self.queue:
@@ -60,38 +60,56 @@ class LinkQueue:
                 item = self.queue.popleft()
                 remaining = len(self.queue)
                 
-                try:
-                    log.info(f"[QUEUE] ★ PROCESSING Link #{item['global_num']}: {item['link']} (Remaining: {remaining})")
-                    
-                    # Update status with global queue position
-                    if item['status_msg']:
-                        try:
-                            status_text = f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Link #{item['global_num']}"
-                            if remaining > 0:
-                                status_text += f"\nQueue: {remaining} pending"
-                            status_text += "</i>"
-                            await item['status_msg'].edit(status_text, parse_mode=enums.ParseMode.HTML)
-                        except:
-                            pass
-                    
-                    # Process the link - ATOMIC: No concurrent downloads
-                    current_api = db.get_current_api()
-                    if current_api == "secondary":
-                        log.info(f"[QUEUE] Using SECONDARY API for link #{item['global_num']}")
-                        await process_video_secondary(item['client'], item['message'], item['link'].strip(), status_msg=item['status_msg'])
-                    else:
-                        log.info(f"[QUEUE] Using PRIMARY API for link #{item['global_num']}")
-                        await process_video(item['client'], item['message'], item['link'].strip(), status_msg=item['status_msg'])
-                    
-                    log.info(f"[QUEUE] ✅ COMPLETED Link #{item['global_num']}")
-                    
-                except Exception as e:
-                    log.exception(f"[QUEUE] ❌ ERROR Link #{item['global_num']}: {e}")
+                max_retries = 2
+                retry_count = 0
+                
+                while retry_count <= max_retries:
                     try:
+                        log.info(f"[QUEUE] ★ PROCESSING Link #{item['global_num']}: {item['link']} (Remaining: {remaining}, Attempt: {retry_count + 1}/{max_retries + 1})")
+                        
+                        # Update status with queue position and retry attempt
                         if item['status_msg']:
-                            await item['status_msg'].edit(f"⚠️ <b>Failed link #{item['global_num']}</b>", parse_mode=enums.ParseMode.HTML)
-                    except:
-                        pass
+                            try:
+                                status_text = f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Link #{item['global_num']}"
+                                if remaining > 0:
+                                    status_text += f"\nQueue: {remaining} pending"
+                                if retry_count > 0:
+                                    status_text += f"\nAttempt: {retry_count + 1}/{max_retries + 1}"
+                                status_text += "</i>"
+                                await item['status_msg'].edit(status_text, parse_mode=enums.ParseMode.HTML)
+                            except:
+                                pass
+                        
+                        # Process the link - ATOMIC: No concurrent downloads
+                        current_api = db.get_current_api()
+                        if current_api == "secondary":
+                            log.info(f"[QUEUE] Using SECONDARY API for link #{item['global_num']} (attempt {retry_count + 1})")
+                            await process_video_secondary(item['client'], item['message'], item['link'].strip(), status_msg=item['status_msg'])
+                        else:
+                            log.info(f"[QUEUE] Using PRIMARY API for link #{item['global_num']} (attempt {retry_count + 1})")
+                            await process_video(item['client'], item['message'], item['link'].strip(), status_msg=item['status_msg'])
+                        
+                        log.info(f"[QUEUE] ✅ COMPLETED Link #{item['global_num']} on attempt {retry_count + 1}")
+                        break  # Success! Move to next link
+                        
+                    except Exception as e:
+                        retry_count += 1
+                        log.warning(f"[QUEUE] ⚠️ Attempt {retry_count}/{max_retries + 1} FAILED for Link #{item['global_num']}: {str(e)[:100]}")
+                        
+                        if retry_count > max_retries:
+                            # All retries exhausted
+                            log.error(f"[QUEUE] ❌ FAILED Link #{item['global_num']} after {max_retries + 1} attempts")
+                            try:
+                                if item['status_msg']:
+                                    await item['status_msg'].edit(f"⚠️ <b>Failed link #{item['global_num']}</b>\n<i>Tried {max_retries + 1} times</i>", parse_mode=enums.ParseMode.HTML)
+                            except:
+                                pass
+                            break  # Give up on this link
+                        else:
+                            # Retry with exponential backoff: 2s, 4s
+                            backoff = 2 ** retry_count
+                            log.info(f"[QUEUE] Retrying in {backoff}s...")
+                            await asyncio.sleep(backoff)
             
             log.info("[QUEUE] Worker FINISHED - queue empty")
         
