@@ -481,7 +481,16 @@ def register_handlers(app):
         try:
             args = message.text.split()
             if len(args) < 2:
-                await message.reply("📝 Usage: <code>/store_rename on|off</code>", parse_mode=enums.ParseMode.HTML)
+                # Show current status
+                enabled, pattern = db.get_store_rename_setting()
+                status = "✅ Enabled" if enabled else "❌ Disabled"
+                pattern_text = f"\n<b>Pattern:</b> <code>{pattern}</code>" if pattern else ""
+                await message.reply(
+                    f"<b>📝 Storage Channel Rename Status</b>\n\n"
+                    f"<b>Status:</b> {status}{pattern_text}\n\n"
+                    f"<b>Usage:</b> <code>/store_rename on|off</code>",
+                    parse_mode=enums.ParseMode.HTML
+                )
                 return
             
             action = args[1].lower()
@@ -545,7 +554,8 @@ def register_handlers(app):
         
         try:
             db.remove_store_rename()
-            await message.reply("✅ Storage channel rename <b>removed</b>. Using default format.", parse_mode=enums.ParseMode.HTML)
+            await message.reply("✅ Storage channel rename pattern removed. Using default format.", parse_mode=enums.ParseMode.HTML)
+            log.info(f"Admin {message.from_user.id} removed store rename pattern")ename <b>removed</b>. Using default format.", parse_mode=enums.ParseMode.HTML)
             log.info(f"Admin {message.from_user.id} removed store rename")
         except Exception:
             log.exception("remove_store_rename_cmd error")

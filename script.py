@@ -135,6 +135,33 @@ Pyrogram 2.0.106 • Python 3.11 • MongoDB
 ᴀʟʟ ʏᴏᴜʀ sᴇᴛᴛɪɴɢs ᴀʀᴇ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ sᴀᴠᴇᴅ ᴀɴᴅ sʏɴᴄᴇᴅ ᴀᴄʀᴏss ᴅᴇᴠɪᴄᴇs.
 """
 
+    # ===== Admin Storage Rename Commands =====
+    ADMIN_STORE_RENAME_HELP = """
+<b>📝 Storage Channel Rename Commands</b>
+
+<b>Available Commands:</b>
+• <code>/store_rename</code> - Show current status
+• <code>/store_rename on</code> - Enable rename
+• <code>/store_rename off</code> - Disable rename
+• <code>/set_store_rename [pattern]</code> - Set custom pattern
+• <code>/remove_store_rename</code> - Reset to default
+
+<b>Available Variables:</b>
+• <code>{file_name}</code> - Original filename with extension
+• <code>{file_size}</code> - File size (e.g., "2.6 MB")
+• <code>{date}</code> - Current date (YYYY-MM-DD)
+• <code>{timestamp}</code> - Timestamp (YYYYMMDD_HHMMSS)
+• <code>{time}</code> - Current time (HH-MM-SS)
+• <code>{datetime}</code> - Full datetime (YYYY-MM-DD_HH-MM-SS)
+• <code>{user_id}</code> - User ID
+• <code>{username}</code> - Username
+
+<b>Examples:</b>
+<code>/set_store_rename [STORAGE] {file_name}_{date}</code>
+<code>/set_store_rename {username}_{file_name}_{timestamp}</code>
+<code>/set_store_rename BACKUP_{date}_{file_name}</code>
+"""
+
     # ===== Premium Info =====
     PREMIUM_INFO = """
 <b>💎 ᴘʀᴇᴍɪᴜᴍ ᴍᴇᴍʙᴇʀsʜɪᴘ</b>
