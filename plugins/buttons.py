@@ -63,8 +63,9 @@ ADMIN_MANAGE_BUTTONS = InlineKeyboardMarkup([
 
 # Admin settings buttons
 ADMIN_SETTINGS_BUTTONS = InlineKeyboardMarkup([
-    [InlineKeyboardButton("♻️ Auto-Delete", callback_data="admin_auto_delete")],
-    [InlineKeyboardButton("← Back", callback_data="admin_panel")]
+    [InlineKeyboardButton("♻️ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ", callback_data="admin_auto_delete")],
+    [InlineKeyboardButton("🔄 ᴀᴘɪ sᴡɪᴛᴄʜ", callback_data="admin_api_switch")],
+    [InlineKeyboardButton("← ʙᴀᴄᴋ", callback_data="admin_panel")]
 ])
 
 # Dashboard back button only

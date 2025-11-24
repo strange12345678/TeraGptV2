@@ -202,5 +202,20 @@ class Database:
         """Set user's auto-delete preference for video messages."""
         self.users.update_one({"_id": user_id}, {"$set": {"auto_delete_msgs": enabled}}, upsert=True)
         return True
+    
+    # ===== API Switching =====
+    def get_current_api(self):
+        """Get current API: 'primary' or 'secondary'. Defaults to 'primary'."""
+        settings = self.settings.find_one({"_id": "current_api"})
+        if settings:
+            return settings.get("api", "primary")
+        return "primary"
+    
+    def toggle_api(self):
+        """Toggle between primary and secondary API. Returns new API name."""
+        current = self.get_current_api()
+        new_api = "secondary" if current == "primary" else "primary"
+        self.settings.update_one({"_id": "current_api"}, {"$set": {"api": new_api}}, upsert=True)
+        return new_api
 
 db = Database()

@@ -247,16 +247,33 @@ def register_handlers(app):
             return
         
         try:
+            await callback_query.answer()
             current_status = db.is_auto_delete_enabled()
             new_status = not current_status
             db.set_auto_delete(new_status)
             
             status_text = Script.AUTO_DELETE_ON if new_status else Script.AUTO_DELETE_OFF
-            await callback_query.answer()
             await callback_query.message.edit_text(status_text, reply_markup=ADMIN_SETTINGS_BUTTONS, parse_mode=enums.ParseMode.HTML)
             log.info(f"Admin {callback_query.from_user.id} toggled auto-delete to {new_status}")
         except Exception:
             log.exception("admin_auto_delete_callback error")
+    
+    # ===== API Switch Toggle Callback =====
+    @app.on_callback_query(filters.regex("^admin_api_switch$"))
+    async def admin_api_switch_callback(client, callback_query):
+        if not is_admin(callback_query.from_user.id):
+            await callback_query.answer("❌ Admin access required", show_alert=True)
+            return
+        
+        try:
+            await callback_query.answer()
+            new_api = db.toggle_api()
+            api_display = "ᴘʀɪᴍᴀʀʏ" if new_api == "primary" else "sᴇᴄᴏɴᴅᴀʀʏ"
+            status_text = Script.API_SWITCHED.format(current_api=api_display)
+            await callback_query.message.edit_text(status_text, parse_mode=enums.ParseMode.HTML, reply_markup=ADMIN_SETTINGS_BUTTONS)
+            log.info(f"Admin {callback_query.from_user.id} switched API to {new_api}")
+        except Exception:
+            log.exception("admin_api_switch_callback error")
     
     # ===== Auto-Delete Info Command =====
     @app.on_message(filters.command("auto_delete") & filters.private)
