@@ -3,9 +3,18 @@
 ## Overview
 TeraBox Telegram Bot is a Python-based Telegram bot that downloads and processes files from TeraBox links. The bot uses Pyrogram to interact with the Telegram API and includes a Flask health check server.
 
-**Current State**: Fully featured production bot with premium system, auto-upload channels, and auto-delete functionality.
+**Current State**: Fully featured production bot with premium system, auto-upload channels, auto-delete functionality, and GUARANTEED SEQUENTIAL bulk link processing.
 
 ## Recent Changes
+- **2025-11-24**: FIXED bulk link random downloading - Added asyncio.Lock() for sequential queue processing
+  - **Issue**: When users sent multiple links, bot was sometimes downloading them concurrently instead of one-by-one
+  - **Root Cause**: Multiple message handlers executing in parallel (Pyrogram has 20 HandlerTasks), causing race condition when adding to queue
+  - **Fix**: Added `asyncio.Lock()` to `LinkQueue.add()` method to ensure only one handler can modify queue at a time
+  - **Result**: GUARANTEED sequential processing - links now download one-by-one, never concurrently
+  - **Logging**: Improved debug logs with ★ PROCESSING / ✅ COMPLETED markers for transparency
+  - **Global Counter**: Each link gets unique global ID (Link #1, Link #2, etc.) across all users/messages
+  - **Status Updates**: Queue size shown in real-time (e.g., "Link #5, Queue: 95 pending")
+
 - **2025-11-24**: Storage channel rename feature for admins
   - **Commands**: `/store_rename on/off`, `/set_store_rename [pattern]`, `/remove_store_rename`
   - **Variables**: {file_name}, {file_size}, {date}, {timestamp}, {time}, {datetime}, {user_id}, {username}

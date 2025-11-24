@@ -21,36 +21,38 @@ class LinkQueue:
         self.processing = False
         self.global_counter = 0  # Global counter for all links ever added
         self.current_status_msg = None
+        self.add_lock = asyncio.Lock()  # CRITICAL: Prevent concurrent queue modifications
     
     async def add(self, client, message, links, user_id, status_msg):
-        """Add a batch of links to the queue"""
-        total = len(links)
-        
-        # Each link gets a unique global number
-        for idx, link in enumerate(links, 1):
-            self.global_counter += 1
-            self.queue.append({
-                'client': client,
-                'message': message,
-                'link': link,
-                'user_id': user_id,
-                'status_msg': status_msg,
-                'global_num': self.global_counter
-            })
-        
-        log.info(f"[QUEUE] Added {total} link(s). Global queue: {self.global_counter} total. Pending: {len(self.queue)}")
-        
-        # Start worker if not already running
-        if not self.processing:
-            asyncio.create_task(self._worker())
+        """Add a batch of links to the queue (thread-safe with lock)"""
+        async with self.add_lock:  # CRITICAL: Ensure only one handler adds to queue at a time
+            total = len(links)
+            
+            # Each link gets a unique global number
+            for idx, link in enumerate(links, 1):
+                self.global_counter += 1
+                self.queue.append({
+                    'client': client,
+                    'message': message,
+                    'link': link,
+                    'user_id': user_id,
+                    'status_msg': status_msg,
+                    'global_num': self.global_counter
+                })
+            
+            log.info(f"[QUEUE] Added {total} link(s). Global: #{self.global_counter}. Pending: {len(self.queue)}")
+            
+            # Start worker if not already running
+            if not self.processing:
+                asyncio.create_task(self._worker())
     
     async def _worker(self):
-        """Global worker that processes one link at a time"""
+        """Global worker that processes one link at a time with semaphore lock"""
         if self.processing:
             return
         
         self.processing = True
-        log.info("[QUEUE] Worker started")
+        log.info("[QUEUE] Worker STARTED - Processing links sequentially")
         
         try:
             while self.queue:
@@ -59,7 +61,7 @@ class LinkQueue:
                 remaining = len(self.queue)
                 
                 try:
-                    log.info(f"[QUEUE] Processing link #{item['global_num']}: {item['link']} (Remaining: {remaining})")
+                    log.info(f"[QUEUE] ★ PROCESSING Link #{item['global_num']}: {item['link']} (Remaining: {remaining})")
                     
                     # Update status with global queue position
                     if item['status_msg']:
@@ -72,25 +74,30 @@ class LinkQueue:
                         except:
                             pass
                     
-                    # Process the link - ONE AT A TIME, NO CONCURRENCY
+                    # Process the link - ATOMIC: No concurrent downloads
                     current_api = db.get_current_api()
                     if current_api == "secondary":
+                        log.info(f"[QUEUE] Using SECONDARY API for link #{item['global_num']}")
                         await process_video_secondary(item['client'], item['message'], item['link'].strip(), status_msg=item['status_msg'])
                     else:
+                        log.info(f"[QUEUE] Using PRIMARY API for link #{item['global_num']}")
                         await process_video(item['client'], item['message'], item['link'].strip(), status_msg=item['status_msg'])
                     
+                    log.info(f"[QUEUE] ✅ COMPLETED Link #{item['global_num']}")
+                    
                 except Exception as e:
-                    log.exception(f"[QUEUE] Error processing link #{item['global_num']}: {e}")
+                    log.exception(f"[QUEUE] ❌ ERROR Link #{item['global_num']}: {e}")
                     try:
                         if item['status_msg']:
                             await item['status_msg'].edit(f"⚠️ <b>Failed link #{item['global_num']}</b>", parse_mode=enums.ParseMode.HTML)
                     except:
                         pass
             
-            log.info("[QUEUE] Worker finished - queue empty")
+            log.info("[QUEUE] Worker FINISHED - queue empty")
         
         finally:
             self.processing = False
+            log.info("[QUEUE] Worker cleanup - processing flag reset")
 
 # Global instance
 link_queue = LinkQueue()
