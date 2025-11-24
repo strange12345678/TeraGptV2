@@ -17,7 +17,7 @@ from plugins.premium_upload import upload_to_premium_channel
 log = logging.getLogger("TeraBoxBot")
 
 
-async def process_video_secondary(client, message, user_url: str) -> None:
+async def process_video_secondary(client, message, user_url: str, status_msg=None) -> None:
     """
     Process video using iTeraPlay secondary API.
     Extracts m3u8 from HTML and downloads using ffmpeg.
@@ -97,8 +97,8 @@ async def process_video_secondary(client, message, user_url: str) -> None:
         me = await client.get_me()
         bot_username = "@" + me.username if getattr(me, "username", None) else (me.first_name or "@bot")
 
-        # Download HLS video
-        filepath, filename = await download_hls_video(client, message, m3u8_url, bot_username, video_title)
+        # Download HLS video (pass existing status_msg to update instead of creating new one)
+        filepath, filename = await download_hls_video(client, message, m3u8_url, bot_username, video_title, status_msg=status_msg)
         
         if not filepath or not os.path.exists(filepath):
             error_msg = f"[SECONDARY API] HLS download failed for {user_url}"

@@ -83,7 +83,7 @@ def is_plausible_direct(url: str) -> bool:
     except Exception:
         return False
 
-async def process_video(client, message, user_url: str) -> None:
+async def process_video(client, message, user_url: str, status_msg=None) -> None:
     from typing import Optional
     uid: Optional[int] = getattr(message.from_user, "id", None)
     username: str = getattr(message.from_user, "username", "Unknown") or "Unknown"

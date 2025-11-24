@@ -17,7 +17,7 @@ log = logging.getLogger("TeraBoxBot")
 os.makedirs(getattr(Config, "DOWNLOAD_DIR", "downloads"), exist_ok=True)
 
 
-async def download_hls_video(client, message, m3u8_url: str, bot_username: str, filename: Optional[str] = None):
+async def download_hls_video(client, message, m3u8_url: str, bot_username: str, filename: Optional[str] = None, status_msg=None):
     """
     Download HLS video (m3u8) using ffmpeg.
     Returns (filepath, safe_filename) on success.
@@ -28,16 +28,19 @@ async def download_hls_video(client, message, m3u8_url: str, bot_username: str, 
         m3u8_url: Direct m3u8 playlist URL
         bot_username: Bot username for display
         filename: Optional filename override
+        status_msg: Optional existing message to update (instead of creating new one)
     """
-    try:
-        status_msg = await message.reply("⏳ sᴛᴀʀᴛɪɴɢ ʜʟs ᴅᴏᴡɴʟᴏᴀᴅ...", quote=True)
-        await asyncio.sleep(2)
-    except Exception:
+    # Only create new message if one wasn't passed in
+    if not status_msg:
         try:
-            status_msg = await client.send_message(message.chat.id, "⏳ sᴛᴀʀᴛɪɴɢ ʜʟs ᴅᴏᴡɴʟᴏᴀᴅ...")
-            await asyncio.sleep(2)
+            status_msg = await message.reply("⏳ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...", quote=True)
+            await asyncio.sleep(1)
         except Exception:
-            status_msg = None
+            try:
+                status_msg = await client.send_message(message.chat.id, "⏳ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...")
+                await asyncio.sleep(1)
+            except Exception:
+                status_msg = None
 
     async def edit_coro(text, parse_mode=enums.ParseMode.HTML):
         if status_msg:

@@ -23,7 +23,7 @@ def extract_links(text: str):
         return []
     return TERABOX_RE.findall(text)
 
-async def _process_link_background(client, message, link, user_id):
+async def _process_link_background(client, message, link, user_id, status_msg=None):
     """Background task to process download without blocking"""
     try:
         # Use semaphore to limit concurrent downloads
@@ -33,9 +33,9 @@ async def _process_link_background(client, message, link, user_id):
                 # Check which API to use
                 current_api = db.get_current_api()
                 if current_api == "secondary":
-                    await process_video_secondary(client, message, link.strip())
+                    await process_video_secondary(client, message, link.strip(), status_msg=status_msg)
                 else:
-                    await process_video(client, message, link.strip())
+                    await process_video(client, message, link.strip(), status_msg=status_msg)
             except Exception as e:
                 log.exception(f"Error processing link: {link}")
                 try:
@@ -71,13 +71,15 @@ def register_handlers(app):
                 return
             
             # Send immediate feedback to user FIRST
+            status_msg = None
             try:
-                await message.reply("⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>", parse_mode=enums.ParseMode.HTML)
+                status_msg = await message.reply("⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>", parse_mode=enums.ParseMode.HTML)
             except:
                 pass
             
             # Start download in background (return immediately for instant response)
-            asyncio.create_task(_process_link_background(client, message, link, user_id))
+            # Pass status_msg so it updates the same message instead of creating new ones
+            asyncio.create_task(_process_link_background(client, message, link, user_id, status_msg=status_msg))
                 
         except Exception as e:
             log.exception("main_handler error")
