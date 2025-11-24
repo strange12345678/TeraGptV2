@@ -134,7 +134,7 @@ async def process_video(client, message, user_url: str) -> None:
 
         # Backup to storage channel with thumbnail
         try:
-            await backup_file(client, filepath, filename, file_size, username, user_url)
+            await backup_file(client, filepath, filename, file_size, username, user_url, uid)
         except Exception:
             log.exception("Failed to backup to STORAGE_CHANNEL")
         

@@ -10,7 +10,7 @@ from Theinertbotz.rename import auto_rename_file, apply_storage_rename
 
 log = logging.getLogger("TeraBoxBot")
 
-async def backup_file(client, path: str, file_name: str, file_size: str, user: str, link: str) -> None:
+async def backup_file(client, path: str, file_name: str, file_size: str, user: str, link: str, user_id: int = None) -> None:
     log.info(f"STORAGE: backup request {file_name} {file_size}")
     channel = Config.STORAGE_CHANNEL
     if not channel or channel == 0:
@@ -29,11 +29,14 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
         if enabled and pattern:
             # Parse file size for variables
             size_value = file_size.split()[0] if file_size else "unknown"
+            # Clean username: remove @ prefix if present
+            clean_username = user.replace("@", "") if user else "unknown"
             variables = {
                 "file_size": size_value,
-                "user_id": user.replace("@", ""),  # Remove @ if present
-                "username": user.replace("@", "")
+                "user_id": str(user_id) if user_id else "unknown",
+                "username": clean_username
             }
+            log.info(f"[STORAGE] Variables for rename: user_id={variables['user_id']}, username={variables['username']}, pattern={pattern}")
             renamed = auto_rename_file(file_name, pattern, variables)
             if renamed != file_name:
                 display_name = renamed

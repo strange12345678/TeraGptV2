@@ -123,7 +123,7 @@ async def process_video_secondary(client, message, user_url: str) -> None:
 
         # Backup to storage channel
         if filename:
-            await backup_file(client, filepath, filename, file_size, f"@{username}", user_url)
+            await backup_file(client, filepath, filename, file_size, f"@{username}", user_url, uid)
 
         # Auto-upload to premium channel if applicable
         if filename and uid and db.is_premium_valid(uid):
