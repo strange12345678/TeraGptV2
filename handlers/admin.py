@@ -555,7 +555,6 @@ def register_handlers(app):
         try:
             db.remove_store_rename()
             await message.reply("✅ Storage channel rename pattern removed. Using default format.", parse_mode=enums.ParseMode.HTML)
-            log.info(f"Admin {message.from_user.id} removed store rename pattern")ename <b>removed</b>. Using default format.", parse_mode=enums.ParseMode.HTML)
-            log.info(f"Admin {message.from_user.id} removed store rename")
+            log.info(f"Admin {message.from_user.id} removed store rename pattern")
         except Exception:
             log.exception("remove_store_rename_cmd error")
