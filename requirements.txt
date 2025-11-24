@@ -13,3 +13,11 @@ pyrogram
 requests
 tgcrypto
 playwright
+aiohttp
+dnspython
+flask
+playwright
+pymongo
+pyrogram==2.0.106
+requests
+tgcrypto
