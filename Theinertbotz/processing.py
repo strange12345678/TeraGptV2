@@ -99,21 +99,26 @@ class ProgressManager:
             processed = int(processed or 0)
 
             # compute percent
-            if total > 0:
+            has_total = total > 0
+            if has_total:
                 perc = (processed / total) * 100.0
                 perc = max(0.0, min(100.0, perc))
             else:
-                # unknown total -> use heuristic percent (cap at 99.9)
-                perc = 0.0 if processed == 0 else 99.9
+                perc = 0.0  # placeholder for unknown total
 
             # throttle: update only when perc changed sufficiently or interval passed
-            perc_changed = abs(perc - self._last_perc) >= self._delta_perc
+            if has_total:
+                perc_changed = abs(perc - self._last_perc) >= self._delta_perc
+            else:
+                # For unknown total, use size change to throttle (1MB change threshold)
+                perc_changed = (processed - self._last_perc * 1024 * 1024) >= 1024 * 1024 if self._last_perc > 0 else True
+            
             time_elapsed = now - self._last_update_time
             if not perc_changed and time_elapsed < self._min_interval:
                 return  # skip to avoid spam
 
             self._last_update_time = now
-            self._last_perc = perc
+            self._last_perc = perc if has_total else (processed / (1024 * 1024))  # store size in MB if unknown total
 
             # speed -> human
             try:
@@ -132,27 +137,37 @@ class ProgressManager:
             processed_h = human_size(processed)
             total_h = human_size(total) if total > 0 else "Unknown"
 
-            # build bar
-            bar = build_bar(perc, self.blocks, kind=self.kind)
-
-            # percent text
-            perc_text = f"{perc:3.1f}%"
-
             # choose heading label
             heading = "Uᴘʟᴏᴀᴅɪɴɢ" if self.kind == "upload" else "Dᴏᴡɴʟᴏᴀᴅɪɴɢ"
 
-            # Compose HTML (kept compact — safe for telegram edit)
-            text = (
-                f"<b>\n"
-                f" ╭──⌯════{heading}═════⌯──╮\n"
-                f"├⚡ {bar} |﹝{perc_text}﹞\n"
-                f"├🚀 Speed » {sp}\n"
-                f"├📟 Processed » {processed_h}\n"
-                f"├🧲 Size - ETA » {total_h} - {eta_str}\n"
-                f"├🤖 𝔹ʏ » {self.bot_username}\n"
-                f"╰─═══ ✪ @theinertbotz ✪ ═══─╯\n"
-                f"</b>"
-            )
+            # Compose HTML based on whether total is known
+            if has_total:
+                # Known total: show percentage bar
+                bar = build_bar(perc, self.blocks, kind=self.kind)
+                perc_text = f"{perc:3.1f}%"
+                text = (
+                    f"<b>\n"
+                    f" ╭──⌯════{heading}═════⌯──╮\n"
+                    f"├⚡ {bar} |﹝{perc_text}﹞\n"
+                    f"├🚀 Speed » {sp}\n"
+                    f"├📟 Processed » {processed_h}\n"
+                    f"├🧲 Size - ETA » {total_h} - {eta_str}\n"
+                    f"├🤖 𝔹ʏ » {self.bot_username}\n"
+                    f"╰─═══ ✪ @theinertbotz ✪ ═══─╯\n"
+                    f"</b>"
+                )
+            else:
+                # Unknown total (HLS): show without percentage (Option A)
+                text = (
+                    f"<b>\n"
+                    f" ╭──⌯════{heading}═════⌯──╮\n"
+                    f"├⏳ Streaming...\n"
+                    f"├🚀 Speed » {sp}\n"
+                    f"├📥 Downloaded » {processed_h}\n"
+                    f"├🤖 𝔹ʏ » {self.bot_username}\n"
+                    f"╰─═══ ✪ @theinertbotz ✪ ═══─╯\n"
+                    f"</b>"
+                )
 
             # call edit coroutine (guard exceptions)
             try:
