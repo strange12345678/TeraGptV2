@@ -90,12 +90,6 @@ async def process_video(client, message, user_url: str) -> None:
     filename: Optional[str] = None
     filepath: Optional[str] = None
     
-    # Send immediate feedback to user
-    try:
-        await message.reply("⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>", parse_mode="html")
-    except:
-        pass
-    
     try:
         play_api_url = Config.TERAAPI_PLAY.format(url=user_url) if hasattr(Config, "TERAAPI_PLAY") else user_url
         log.info(f"Processing link: {user_url} from user {uid}")

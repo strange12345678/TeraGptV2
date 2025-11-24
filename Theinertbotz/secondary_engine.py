@@ -28,12 +28,6 @@ async def process_video_secondary(client, message, user_url: str) -> None:
     filename: Optional[str] = None
     filepath: Optional[str] = None
     
-    # Send immediate feedback to user
-    try:
-        await message.reply("⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>", parse_mode="html")
-    except:
-        pass
-    
     try:
         log.info(f"[SECONDARY API] Processing link: {user_url} from user {uid}")
         

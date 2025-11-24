@@ -70,6 +70,12 @@ def register_handlers(app):
                     pass
                 return
             
+            # Send immediate feedback to user FIRST
+            try:
+                await message.reply("⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>", parse_mode=enums.ParseMode.HTML)
+            except:
+                pass
+            
             # Start download in background (return immediately for instant response)
             asyncio.create_task(_process_link_background(client, message, link, user_id))
                 
