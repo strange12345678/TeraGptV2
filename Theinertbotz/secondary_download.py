@@ -34,11 +34,9 @@ async def download_hls_video(client, message, m3u8_url: str, bot_username: str, 
     if not status_msg:
         try:
             status_msg = await message.reply("⏳ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...", quote=True)
-            await asyncio.sleep(1)
         except Exception:
             try:
                 status_msg = await client.send_message(message.chat.id, "⏳ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...")
-                await asyncio.sleep(1)
             except Exception:
                 status_msg = None
 

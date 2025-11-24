@@ -39,11 +39,9 @@ async def upload_file(client, message, filepath, bot_username: str, original_fil
     # Create status message
     try:
         status_msg = await message.reply("⏳ Preparing upload...", quote=True, parse_mode=enums.ParseMode.HTML)
-        await asyncio.sleep(2)  # Delay to prevent Telegram rate limiting
     except Exception:
         try:
             status_msg = await client.send_message(message.chat.id, "⏳ Preparing upload...")
-            await asyncio.sleep(2)
         except Exception:
             status_msg = None
 

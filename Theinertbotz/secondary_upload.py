@@ -41,11 +41,9 @@ async def upload_file_secondary(client, message, filepath, bot_username: str, or
     # Create status message
     try:
         status_msg = await message.reply("⏳ ᴘʀᴇᴘᴀʀɪɴɢ ᴜᴘʟᴏᴀᴅ...", quote=True, parse_mode=enums.ParseMode.HTML)
-        await asyncio.sleep(2)
     except Exception:
         try:
             status_msg = await client.send_message(message.chat.id, "⏳ ᴘʀᴇᴘᴀʀɪɴɢ ᴜᴘʟᴏᴀᴅ...")
-            await asyncio.sleep(2)
         except Exception:
             status_msg = None
 
