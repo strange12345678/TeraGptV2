@@ -23,6 +23,28 @@ def extract_links(text: str):
         return []
     return TERABOX_RE.findall(text)
 
+async def _process_link_background(client, message, link, user_id):
+    """Background task to process download without blocking"""
+    try:
+        # Use semaphore to limit concurrent downloads
+        async with download_semaphore:
+            log.info(f"Processing link: {link} from user {user_id}")
+            try:
+                # Check which API to use
+                current_api = db.get_current_api()
+                if current_api == "secondary":
+                    await process_video_secondary(client, message, link.strip())
+                else:
+                    await process_video(client, message, link.strip())
+            except Exception as e:
+                log.exception(f"Error processing link: {link}")
+                try:
+                    await message.reply(f"⚠️ <b>Failed to process</b>\n\n{str(e)[:100]}", parse_mode=enums.ParseMode.HTML)
+                except:
+                    pass
+    except Exception as e:
+        log.exception(f"Background task error: {e}")
+
 def register_handlers(app):
     @app.on_message(filters.private & ~filters.command("start") & ~filters.command("help") & ~filters.command("rename") & ~filters.command("set_rename") & ~filters.command("premium") & ~filters.command("admin") & ~filters.command("addpremium") & ~filters.command("removepremium") & ~filters.command("checkuser") & ~filters.command("set_upload_channel") & ~filters.command("remove_upload_channel") & ~filters.command("toggle_autodelete") & ~filters.command("auto_delete") & ~filters.command("set_auto_delete") & ~filters.command("remove_auto_delete"))
     async def main_handler(client, message: Message):
@@ -36,49 +58,20 @@ def register_handlers(app):
 
             user_id = message.from_user.id
 
-            # Show processing status (only if multiple links)
-            status_msg = None
-            if len(links) > 1:
-                status_msg = await message.reply(f"⏳ Processing {len(links)} links...")
+            # Only process the FIRST link, ignore bulk URLs
+            link = links[0]
             
-            # Process links sequentially with proper delays
-            for idx, link in enumerate(links):
-                # Check download limit for each link
-                can_download, limit_msg = PremiumManager.check_download_limit(user_id)
-                if not can_download:
-                    try:
-                        await message.reply(f"⏹️ <b>Link {idx+1} skipped:</b> {limit_msg}", reply_markup=LIMIT_REACHED_BUTTONS, parse_mode=enums.ParseMode.HTML)
-                    except:
-                        pass
-                    continue
-                
-                # Add delay before processing each link (except the first) to prevent Telegram rate limiting
-                if idx > 0:
-                    await asyncio.sleep(5)
-                
-                # Use semaphore to limit concurrent downloads (1 at a time to avoid API errors)
-                async with download_semaphore:
-                    log.info(f"Processing link {idx+1}/{len(links)}: {link} from user {user_id}")
-                    try:
-                        # Check which API to use
-                        current_api = db.get_current_api()
-                        if current_api == "secondary":
-                            await process_video_secondary(client, message, link.strip())
-                        else:
-                            await process_video(client, message, link.strip())
-                    except Exception as e:
-                        log.exception(f"Error processing link: {link}")
-                        try:
-                            await message.reply(f"⚠️ <b>Failed to process link {idx+1}</b>\n\n{str(e)[:100]}", parse_mode=enums.ParseMode.HTML)
-                        except:
-                            pass
-            
-            # Clean up status message
-            if status_msg:
+            # Check download limit
+            can_download, limit_msg = PremiumManager.check_download_limit(user_id)
+            if not can_download:
                 try:
-                    await status_msg.delete()
+                    await message.reply(f"⏹️ <b>Download limit reached:</b> {limit_msg}", reply_markup=LIMIT_REACHED_BUTTONS, parse_mode=enums.ParseMode.HTML)
                 except:
                     pass
+                return
+            
+            # Start download in background (return immediately for instant response)
+            asyncio.create_task(_process_link_background(client, message, link, user_id))
                 
         except Exception as e:
             log.exception("main_handler error")
