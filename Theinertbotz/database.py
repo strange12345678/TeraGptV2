@@ -30,11 +30,11 @@ class Database:
         self.logs.insert_one(doc)
     
     def get_user_rename_setting(self, user_id):
-        """Get user's auto-rename setting. Returns pattern or None if not set."""
+        """Get user's auto-rename setting. Returns pattern or empty string (disabled) if not set."""
         user = self.users.find_one({"_id": user_id})
         if user:
-            return user.get("auto_rename", "timestamp")  # Default to timestamp
-        return "timestamp"
+            return user.get("auto_rename", "")  # Default to disabled
+        return ""  # Disabled by default
     
     def set_user_rename_setting(self, user_id, pattern):
         """Set user's auto-rename pattern. pattern: 'timestamp', 'datetime', custom, or '' (disabled)."""

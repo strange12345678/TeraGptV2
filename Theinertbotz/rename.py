@@ -54,11 +54,12 @@ def auto_rename_file(filename: str, pattern: str = "timestamp", variables: dict 
                 # Note: {file_name} already includes extension, so don't add it again
                 new_name = pattern.format(**defaults)
                 
-                # Sanitize filename - keep alphanumeric, spaces, common punctuation and underscores
-                # Remove only very dangerous characters, preserve most printable characters
-                new_name = "".join(c for c in new_name if c.isalnum() or c in " ._-@()[]")
-                # Remove leading/trailing spaces and dots
-                new_name = new_name.strip(". ")
+                # Sanitize filename - remove only filesystem-dangerous characters
+                # Allow everything except: / \ : * ? " < > |
+                dangerous_chars = '/\\:*?"<>|'
+                new_name = "".join(c for c in new_name if c not in dangerous_chars)
+                # Remove leading/trailing spaces
+                new_name = new_name.strip(" ")
                 if not new_name:
                     new_name = f"{int(time.time())}{ext}"
                 

@@ -55,22 +55,31 @@ async def download_hls_video(client, message, m3u8_url: str, bot_username: str, 
     # Store original filename for rename
     original_filename = filename
     
-    # Sanitize filename - preserve most characters except very dangerous ones
-    # Allow alphanumeric, spaces, and common special characters including @
-    safe_fn = "".join(c for c in filename if c.isalnum() or c in " .-_()[]{}%@!#$'").strip()
+    log.info(f"[DOWNLOAD] Original filename: {filename}")
+    
+    # Sanitize filename - remove only filesystem-dangerous characters
+    # Allow everything except: / \ : * ? " < > |
+    dangerous_chars = '/\\:*?"<>|'
+    safe_fn = "".join(c for c in filename if c not in dangerous_chars).strip()
+    
+    log.info(f"[DOWNLOAD] After sanitization: {safe_fn}")
     
     # Remove any remaining m3u8 or dangerous extensions
     if not safe_fn or safe_fn.lower().endswith(('.m3u8', '.m3u')):
+        log.warning(f"[DOWNLOAD] Filename became empty or has m3u8 extension, using fallback")
         safe_fn = f"video_{int(time.time())}.mp4"
     
     # Ensure .mp4 extension if missing
-    if safe_fn and not safe_fn.lower().endswith(('.mp4', '.mkv', '.webm', '.mov')):
+    if safe_fn and not safe_fn.lower().endswith(('.mp4', '.mkv', '.webm', '.mov', '.m4v')):
         safe_fn += ".mp4"
+        log.info(f"[DOWNLOAD] Added .mp4 extension: {safe_fn}")
     
     # Final fallback if all else fails
     if not safe_fn:
+        log.error(f"[DOWNLOAD] Filename is still empty, critical fallback!")
         safe_fn = f"video_{int(time.time())}.mp4"
     
+    log.info(f"[DOWNLOAD] Final filename: {safe_fn}")
     filepath = os.path.join(getattr(Config, "DOWNLOAD_DIR", "downloads"), safe_fn)
     
     # Get user info for auto-rename

@@ -26,7 +26,8 @@ class Config:
     WORKERS = int(os.getenv("WORKERS", "20"))
     
     # Auto-rename pattern: "timestamp", "datetime", or "" (disabled)
-    AUTO_RENAME = os.getenv("AUTO_RENAME", "timestamp")
+    # Default is disabled - only apply if user explicitly sets it
+    AUTO_RENAME = os.getenv("AUTO_RENAME", "")
     
     # Admin user IDs (comma-separated)
     ADMIN_IDS = []

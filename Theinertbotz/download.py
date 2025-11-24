@@ -68,11 +68,20 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
     # Store original filename for rename purposes
     original_filename = filename
     
-    # Sanitize filename - preserve most characters except very dangerous ones
-    # Allow alphanumeric, spaces, and common special characters including @
-    safe_fn = "".join(c for c in filename if c.isalnum() or c in " .-_()[]{}%@!#$'").strip()
+    log.info(f"[PRIMARY DOWNLOAD] Original filename: {filename}")
+    
+    # Sanitize filename - remove only filesystem-dangerous characters
+    # Allow everything except: / \ : * ? " < > |
+    dangerous_chars = '/\\:*?"<>|'
+    safe_fn = "".join(c for c in filename if c not in dangerous_chars).strip()
+    
+    log.info(f"[PRIMARY DOWNLOAD] After sanitization: {safe_fn}")
+    
     if not safe_fn:
+        log.warning(f"[PRIMARY DOWNLOAD] Filename became empty, using fallback")
         safe_fn = f"{int(time.time())}.bin"
+    
+    log.info(f"[PRIMARY DOWNLOAD] Final filename: {safe_fn}")
     
     # Get user info for later use in renaming
     user_id = getattr(message.from_user, "id", None) if hasattr(message, "from_user") else None
