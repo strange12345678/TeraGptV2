@@ -68,7 +68,9 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
     # Store original filename for rename purposes
     original_filename = filename
     
-    safe_fn = "".join(c for c in filename if c.isalnum() or c in " .-_()[]{}%").strip()
+    # Sanitize filename - preserve most characters except very dangerous ones
+    # Allow alphanumeric, spaces, and common special characters including @
+    safe_fn = "".join(c for c in filename if c.isalnum() or c in " .-_()[]{}%@!#$'").strip()
     if not safe_fn:
         safe_fn = f"{int(time.time())}.bin"
     

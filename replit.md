@@ -6,6 +6,13 @@ TeraBox Telegram Bot is a Python-based Telegram bot that downloads and processes
 **Current State**: Fully featured production bot with premium system, auto-upload channels, and auto-delete functionality.
 
 ## Recent Changes
+- **2025-11-24**: Fixed video filename being saved as "video.m4" instead of original names
+  - **Issue**: Filename sanitization was too aggressive, removing @ and other characters, causing fallback to "video_" default
+  - **Fix**: Updated sanitization to preserve @ and common special characters (@!#$'%-._()[]{}')
+  - **Result**: Videos now save with their proper original filenames (e.g., "telegram @Desipremier SEDTPG.mp4")
+  - Applied fix to both primary and secondary download functions for consistency
+  - Enhanced extension detection to recognize .mkv, .webm, .mov in addition to .mp4
+
 - **2025-11-24**: Simplified rename variables - removed {original_name}, made {file_name} primary
   - Removed {original_name} and {ext} variables for simplicity
   - Made {file_name} represent the complete original filename (with extension)

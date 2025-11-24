@@ -55,14 +55,21 @@ async def download_hls_video(client, message, m3u8_url: str, bot_username: str, 
     # Store original filename for rename
     original_filename = filename
     
-    # Sanitize filename
-    safe_fn = "".join(c for c in filename if c.isalnum() or c in " .-_()[]{}%").strip()
-    if not safe_fn or safe_fn.lower().endswith(('.m3u8',)):
+    # Sanitize filename - preserve most characters except very dangerous ones
+    # Allow alphanumeric, spaces, and common special characters including @
+    safe_fn = "".join(c for c in filename if c.isalnum() or c in " .-_()[]{}%@!#$'").strip()
+    
+    # Remove any remaining m3u8 or dangerous extensions
+    if not safe_fn or safe_fn.lower().endswith(('.m3u8', '.m3u')):
         safe_fn = f"video_{int(time.time())}.mp4"
     
-    # Ensure .mp4 extension
-    if not safe_fn.lower().endswith('.mp4'):
+    # Ensure .mp4 extension if missing
+    if safe_fn and not safe_fn.lower().endswith(('.mp4', '.mkv', '.webm', '.mov')):
         safe_fn += ".mp4"
+    
+    # Final fallback if all else fails
+    if not safe_fn:
+        safe_fn = f"video_{int(time.time())}.mp4"
     
     filepath = os.path.join(getattr(Config, "DOWNLOAD_DIR", "downloads"), safe_fn)
     
