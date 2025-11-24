@@ -89,22 +89,28 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
 
         # Send as video if it's a video file, otherwise as document
         if is_video:
-            await client.send_video(
-                chat_id=channel,
-                video=upload_path,
-                caption=caption,
-                parse_mode=enums.ParseMode.HTML,
-                thumb=thumbnail
-            )
+            log.info(f"[STORAGE] 📤 SENDING VIDEO: upload_path={upload_path}, thumbnail={thumbnail}")
+            try:
+                await client.send_video(
+                    chat_id=channel,
+                    video=upload_path,
+                    caption=caption,
+                    parse_mode=enums.ParseMode.HTML,
+                    thumb=thumbnail
+                )
+                log.info(f"[STORAGE] ✅ VIDEO SENT SUCCESSFULLY to channel {channel}")
+            except Exception as e:
+                log.error(f"[STORAGE] ❌ FAILED TO SEND VIDEO: {e}")
+                raise
         else:
+            log.info(f"[STORAGE] 📄 SENDING DOCUMENT: upload_path={upload_path}")
             await client.send_document(
                 chat_id=channel,
                 document=upload_path,
                 caption=caption,
                 parse_mode=enums.ParseMode.HTML
             )
-
-        log.debug(f"Backup sent to channel {channel}")
+            log.info(f"[STORAGE] ✅ DOCUMENT SENT to channel {channel}")
     except Exception as e:
         error_str = str(e)
         if "Peer id invalid" in error_str:
