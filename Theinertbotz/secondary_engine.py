@@ -5,7 +5,7 @@ import os
 from pyrogram import enums
 from Theinertbotz.secondary_api import fetch_iteraplay_html, extract_m3u8_from_html, extract_video_info_from_html
 from Theinertbotz.secondary_download import download_hls_video
-from Theinertbotz.uploader import upload_file
+from Theinertbotz.secondary_upload import upload_file_secondary
 from Theinertbotz.thumbnail import generate_thumbnail
 from Theinertbotz.processing import human_size
 from Theinertbotz.database import db
@@ -71,7 +71,7 @@ async def process_video_secondary(client, message, user_url: str) -> None:
             thumb_path = generate_thumbnail(filepath)
 
         # Upload to user
-        await upload_file(client, message, filepath, bot_username)
+        await upload_file_secondary(client, message, filepath, bot_username)
         
         # Log download
         if uid:
