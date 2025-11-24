@@ -116,9 +116,13 @@ async def upload_file_secondary(client, message, filepath, bot_username: str):
             await client.send_video(
                 message.chat.id,
                 filepath,
+                caption=f"<b>Uploaded:</b> {filename}",
                 duration=duration,
                 thumb=thumbnail_path,
-                progress=_progress_cb
+                parse_mode=enums.ParseMode.HTML,
+                supports_streaming=True,
+                progress=_progress_cb,
+                progress_args=()
             )
             
             # Clean up thumbnail
@@ -132,7 +136,10 @@ async def upload_file_secondary(client, message, filepath, bot_username: str):
             await client.send_document(
                 message.chat.id,
                 filepath,
-                progress=_progress_cb
+                caption=f"<b>Uploaded:</b> {filename}",
+                parse_mode=enums.ParseMode.HTML,
+                progress=_progress_cb,
+                progress_args=()
             )
         
         # Update final status
