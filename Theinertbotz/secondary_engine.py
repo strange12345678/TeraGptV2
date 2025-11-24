@@ -78,10 +78,7 @@ async def process_video_secondary(client, message, user_url: str) -> None:
             return
 
         log.info(f"[SECONDARY API] Found m3u8: {m3u8_url}")
-        
-        # Video title should already be extracted, but if not, use a default
-        if not video_title:
-            video_title = None
+        log.info(f"[SECONDARY API] Video metadata - title: {video_title}")
 
         # Get bot username
         me = await client.get_me()
