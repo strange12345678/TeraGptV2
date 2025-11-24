@@ -17,24 +17,28 @@ log = logging.getLogger("TeraBoxBot")
 # Global queue for sequential link processing - ensures only ONE link processes globally
 class LinkQueue:
     def __init__(self):
-        self.queue = deque()  # Queue of (client, message, link, user_id, status_msg, link_num, total_links)
+        self.queue = deque()  # Queue of {client, message, link, user_id, status_msg}
         self.processing = False
+        self.global_counter = 0  # Global counter for all links ever added
         self.current_status_msg = None
     
     async def add(self, client, message, links, user_id, status_msg):
         """Add a batch of links to the queue"""
         total = len(links)
+        
+        # Each link gets a unique global number
         for idx, link in enumerate(links, 1):
+            self.global_counter += 1
             self.queue.append({
                 'client': client,
                 'message': message,
                 'link': link,
                 'user_id': user_id,
                 'status_msg': status_msg,
-                'link_num': idx,
-                'total_links': total
+                'global_num': self.global_counter
             })
-        log.info(f"[QUEUE] Added {total} link(s). Queue size: {len(self.queue)}")
+        
+        log.info(f"[QUEUE] Added {total} link(s). Global queue: {self.global_counter} total. Pending: {len(self.queue)}")
         
         # Start worker if not already running
         if not self.processing:
@@ -55,19 +59,20 @@ class LinkQueue:
                 remaining = len(self.queue)
                 
                 try:
-                    log.info(f"[QUEUE] Processing {item['link_num']}/{item['total_links']}: {item['link']} (Queue remaining: {remaining})")
+                    log.info(f"[QUEUE] Processing link #{item['global_num']}: {item['link']} (Remaining: {remaining})")
                     
-                    # Update status if multiple links
-                    if item['total_links'] > 1 and item['status_msg']:
+                    # Update status with global queue position
+                    if item['status_msg']:
                         try:
-                            await item['status_msg'].edit(
-                                f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Link {item['link_num']}/{item['total_links']}</i>\n<i>Queue: {remaining} pending</i>",
-                                parse_mode=enums.ParseMode.HTML
-                            )
+                            status_text = f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Link #{item['global_num']}"
+                            if remaining > 0:
+                                status_text += f"\nQueue: {remaining} pending"
+                            status_text += "</i>"
+                            await item['status_msg'].edit(status_text, parse_mode=enums.ParseMode.HTML)
                         except:
                             pass
                     
-                    # Process the link
+                    # Process the link - ONE AT A TIME, NO CONCURRENCY
                     current_api = db.get_current_api()
                     if current_api == "secondary":
                         await process_video_secondary(item['client'], item['message'], item['link'].strip(), status_msg=item['status_msg'])
@@ -75,10 +80,10 @@ class LinkQueue:
                         await process_video(item['client'], item['message'], item['link'].strip(), status_msg=item['status_msg'])
                     
                 except Exception as e:
-                    log.exception(f"[QUEUE] Error processing link {item['link_num']}/{item['total_links']}: {e}")
+                    log.exception(f"[QUEUE] Error processing link #{item['global_num']}: {e}")
                     try:
-                        if item['total_links'] > 1 and item['status_msg']:
-                            await item['status_msg'].edit(f"⚠️ <b>Failed link {item['link_num']}/{item['total_links']}</b>", parse_mode=enums.ParseMode.HTML)
+                        if item['status_msg']:
+                            await item['status_msg'].edit(f"⚠️ <b>Failed link #{item['global_num']}</b>", parse_mode=enums.ParseMode.HTML)
                     except:
                         pass
             
@@ -123,10 +128,7 @@ def register_handlers(app):
             # Send immediate feedback to user
             status_msg = None
             try:
-                if len(links) == 1:
-                    status_msg = await message.reply("⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>", parse_mode=enums.ParseMode.HTML)
-                else:
-                    status_msg = await message.reply(f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Queued {len(links)} links for sequential processing...</i>", parse_mode=enums.ParseMode.HTML)
+                status_msg = await message.reply(f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Queued {len(links)} link(s) for sequential processing...</i>", parse_mode=enums.ParseMode.HTML)
             except:
                 pass
             
