@@ -1,5 +1,7 @@
 import logging
 import os
+import shutil
+import tempfile
 from config import Config
 from pyrogram import enums
 from Theinertbotz.thumbnail import generate_thumbnail
@@ -14,9 +16,15 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
     if not channel or channel == 0:
         log.debug(f"STORAGE_CHANNEL not configured, skipping backup")
         return
+    
+    # Track files to clean up
+    temp_file = None
+    thumbnail = None
+    upload_path = path  # Default: use original file
+    display_name = file_name
+    
     try:
         # Apply storage channel rename if enabled
-        display_name = file_name
         enabled, pattern = db.get_store_rename_setting()
         if enabled and pattern:
             # Parse file size for variables
@@ -29,7 +37,15 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
             renamed = auto_rename_file(file_name, pattern, variables)
             if renamed != file_name:
                 display_name = renamed
+                
+                # Create a temporary copy with the new name
+                temp_dir = tempfile.gettempdir()
+                temp_file = os.path.join(temp_dir, display_name)
+                shutil.copy2(path, temp_file)
+                upload_path = temp_file
+                
                 log.info(f"[STORAGE] Renamed for channel: {file_name} -> {display_name}")
+                log.info(f"[STORAGE] Using temp file: {upload_path}")
         
         user_str = f"@{user}" if user and user != "Unknown" else "Unknown"
         caption = f"<b>📂 File:</b> <code>{display_name}</code>\n<b>📊 Size:</b> {file_size}\n<b>👤 User:</b> {user_str}\n<b>🔗 Link:</b> <code>{link}</code>"
@@ -51,27 +67,24 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
             pass
         
         # Generate thumbnail for videos > 10MB
-        thumbnail = None
         if is_video and size_bytes > 10 * 1024 * 1024:
-            thumbnail = generate_thumbnail(path)
+            thumbnail = generate_thumbnail(upload_path)
         
         # Send as video if it's a video file, otherwise as document
         if is_video:
             await client.send_video(
                 chat_id=channel,
-                video=path,
+                video=upload_path,
                 caption=caption,
                 parse_mode=enums.ParseMode.HTML,
-                thumb=thumbnail,
-                file_name=display_name if display_name != file_name else None
+                thumb=thumbnail
             )
         else:
             await client.send_document(
                 chat_id=channel,
-                document=path,
+                document=upload_path,
                 caption=caption,
-                parse_mode=enums.ParseMode.HTML,
-                file_name=display_name if display_name != file_name else None
+                parse_mode=enums.ParseMode.HTML
             )
         
         log.debug(f"Backup sent to channel {channel}")
@@ -83,3 +96,18 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
             log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: Bot doesn't have permission to send messages. Check admin rights.")
         else:
             log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: {e}")
+    
+    finally:
+        # Clean up temporary files
+        if temp_file and os.path.exists(temp_file):
+            try:
+                os.remove(temp_file)
+                log.info(f"[STORAGE] Cleaned up temp file: {temp_file}")
+            except Exception as e:
+                log.warning(f"[STORAGE] Failed to clean temp file: {e}")
+        
+        if thumbnail and os.path.exists(thumbnail):
+            try:
+                os.remove(thumbnail)
+            except:
+                pass
