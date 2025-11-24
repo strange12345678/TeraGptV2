@@ -93,7 +93,10 @@ async def upload_file(client, message, filepath, bot_username: str):
     # Generate/attach thumbnail for video files
     thumbnail_path = None
     video_extensions = ('.mp4', '.mkv', '.avi', '.mov', '.flv', '.wmv', '.webm')
-    is_video = filename.lower().endswith(video_extensions)
+    
+    # Check if it's a video - check full filename for video extensions
+    # even if they're not at the very end (handles renamed files like video.mp4_2.6MB)
+    is_video = any(ext in filename.lower() for ext in video_extensions)
     
     if is_video:
         # Look for existing thumbnail first
