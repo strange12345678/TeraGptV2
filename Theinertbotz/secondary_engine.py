@@ -3,7 +3,7 @@ import asyncio
 import logging
 import os
 from pyrogram import enums
-from Theinertbotz.secondary_api import fetch_iteraplay_html, extract_m3u8_from_html, extract_m3u8_with_browser, extract_video_info_from_html
+from Theinertbotz.secondary_api import fetch_iteraplay_html, extract_m3u8_from_html, extract_video_info_from_html
 from Theinertbotz.secondary_download import download_hls_video
 from Theinertbotz.secondary_upload import upload_file_secondary
 from Theinertbotz.thumbnail import generate_thumbnail
@@ -31,17 +31,13 @@ async def process_video_secondary(client, message, user_url: str) -> None:
     try:
         log.info(f"[SECONDARY API] Processing link: {user_url} from user {uid}")
         
-        # Try to extract m3u8 using headless browser (handles JavaScript-loaded streams)
-        log.info(f"[SECONDARY API] Attempting browser-based extraction...")
-        m3u8_url = await extract_m3u8_with_browser(user_url)
-        
-        # Fallback: try static HTML extraction if browser failed
-        if not m3u8_url:
-            log.info(f"[SECONDARY API] Browser extraction failed, trying static HTML...")
-            loop = asyncio.get_running_loop()
-            html = await loop.run_in_executor(None, fetch_iteraplay_html, user_url)
-            log.info(f"[SECONDARY API] Fetched iTeraPlay HTML (len={len(html) if html else 0})")
-            m3u8_url = extract_m3u8_from_html(html)
+        # Fetch HTML from iTeraPlay
+        loop = asyncio.get_running_loop()
+        html = await loop.run_in_executor(None, fetch_iteraplay_html, user_url)
+        log.info(f"[SECONDARY API] Fetched iTeraPlay HTML (len={len(html) if html else 0})")
+
+        # Extract m3u8 URL
+        m3u8_url = extract_m3u8_from_html(html)
 
         if not m3u8_url:
             error_msg = f"[SECONDARY API] Failed to extract m3u8 URL from {user_url}"

@@ -2,8 +2,6 @@
 import re
 import requests
 import logging
-import asyncio
-import json
 from urllib.parse import quote
 
 log = logging.getLogger("TeraBoxBot")
@@ -27,71 +25,13 @@ def fetch_iteraplay_html(url: str, timeout=20):
         r.raise_for_status()
         html = r.text
         
-        # Log first 500 chars for debugging if no m3u8 found
         if html and '.m3u8' not in html.lower() and 'error' in html.lower():
-            log.warning(f"iTeraPlay returned error HTML: {html[:500]}")
+            log.warning(f"iTeraPlay returned error/unsupported link")
         
         return html
     except Exception as e:
         log.error(f"Failed to fetch iTeraPlay HTML: {e}")
         raise
-
-
-async def extract_m3u8_with_browser(url: str, timeout=30):
-    """
-    Extract m3u8 using Playwright headless browser (executes JavaScript).
-    This is needed because iTeraPlay loads the m3u8 URL via JavaScript.
-    """
-    try:
-        from playwright.async_api import async_playwright
-        
-        encoded_url = quote(url, safe=':/')
-        api_url = f"https://iteraplay.com/api/play.php?url={encoded_url}&key=iTeraPlay2025"
-        
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
-            
-            try:
-                # Navigate to the page
-                await page.goto(api_url, wait_until="networkidle", timeout=timeout*1000)
-                
-                # Wait for video player to load
-                await asyncio.sleep(3)
-                
-                # Try to extract m3u8 from page content
-                content = await page.content()
-                m3u8 = extract_m3u8_from_html(content)
-                
-                if m3u8:
-                    log.info(f"Extracted m3u8 via browser: {m3u8}")
-                    return m3u8
-                
-                # Try to intercept XHR/fetch requests for the m3u8
-                async def handle_response(response):
-                    try:
-                        if 'm3u8' in response.url.lower():
-                            log.info(f"Intercepted m3u8 request: {response.url}")
-                            return response.url
-                    except:
-                        pass
-                    return None
-                
-                # Check network requests
-                requests_log = page.context.tracing
-                log.info(f"Page content length: {len(content)}")
-                
-            finally:
-                await browser.close()
-                
-    except ImportError:
-        log.warning("Playwright not installed, skipping browser extraction")
-        return None
-    except Exception as e:
-        log.error(f"Browser extraction failed: {e}")
-        return None
-    
-    return None
 
 
 def extract_m3u8_from_html(html: str):
