@@ -44,15 +44,24 @@ async def extract_m3u8_with_playwright(terabox_url: str, timeout=45):
                                 if isinstance(data, dict) and 'list' in data and len(data['list']) > 0:
                                     file_data = data['list'][0]
                                     
-                                    # Get video title - prefer 'filename' (cleaner) over 'server_filename'
+                                    # Log all available fields for debugging
+                                    log.info(f"API response fields: {list(file_data.keys())}")
+                                    
+                                    # Get video title - check multiple fields in order of preference
                                     nonlocal video_title
-                                    video_title = file_data.get('filename') or file_data.get('server_filename', 'video.mp4')
+                                    video_title = (
+                                        file_data.get('server_filename') or  # Full filename with metadata
+                                        file_data.get('filename') or  # Simpler filename
+                                        file_data.get('title') or  # Title field
+                                        file_data.get('name') or  # Generic name field
+                                        'video.mp4'  # Ultimate fallback
+                                    )
                                     
                                     # Ensure .mp4 extension if needed
                                     if video_title and not any(video_title.lower().endswith(ext) for ext in ['.mp4', '.mkv', '.webm', '.mov']):
                                         video_title = video_title + '.mp4'
                                     
-                                    log.info(f"Video title selected: {video_title}")
+                                    log.info(f"Video title selected: {video_title} (fields checked: server_filename, filename, title, name)")
                                     
                                     # Check fast_stream_url
                                     if 'fast_stream_url' in file_data:

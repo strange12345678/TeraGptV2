@@ -3,7 +3,7 @@ import asyncio
 import logging
 import os
 from pyrogram import enums
-from Theinertbotz.secondary_api import fetch_iteraplay_html, extract_m3u8_from_html, extract_video_info_from_html
+from Theinertbotz.secondary_api import fetch_iteraplay_html, extract_m3u8_from_html, extract_video_info_from_html, extract_filename_from_terabox_html
 from Theinertbotz.secondary_download import download_hls_video
 from Theinertbotz.secondary_upload import upload_file_secondary
 from Theinertbotz.thumbnail import generate_thumbnail
@@ -31,17 +31,30 @@ async def process_video_secondary(client, message, user_url: str) -> None:
     try:
         log.info(f"[SECONDARY API] Processing link: {user_url} from user {uid}")
         
-        # Try Playwright method first (most reliable - handles cookies and JS)
+        # Try to extract real filename from TeraBox HTML first
         loop = asyncio.get_running_loop()
         m3u8_url = None
         video_title = None
         
+        # Extract actual filename from TeraBox page
+        try:
+            real_filename = await loop.run_in_executor(None, extract_filename_from_terabox_html, user_url)
+            if real_filename:
+                video_title = real_filename
+                log.info(f"[SECONDARY API] Got filename from TeraBox HTML: {video_title}")
+        except Exception as e:
+            log.debug(f"[SECONDARY API] TeraBox filename extraction failed: {e}")
+        
+        # Try Playwright method first (most reliable - handles cookies and JS)
         try:
             from Theinertbotz.secondary_api_improved import extract_m3u8_with_playwright
             log.info(f"[SECONDARY API] Trying Playwright extraction...")
-            m3u8_url, video_title = await extract_m3u8_with_playwright(user_url)
+            m3u8_url, video_title_from_api = await extract_m3u8_with_playwright(user_url)
             if m3u8_url:
                 log.info(f"[SECONDARY API] Got m3u8 from Playwright: {m3u8_url[:100]}...")
+                # Use API title only if we didn't get one from TeraBox
+                if not video_title and video_title_from_api:
+                    video_title = video_title_from_api
         except Exception as pw_error:
             log.warning(f"[SECONDARY API] Playwright extraction failed: {pw_error}, trying fallback methods")
         
@@ -109,11 +122,12 @@ async def process_video_secondary(client, message, user_url: str) -> None:
             await log_action(client, uid, f"✅ <b>ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ</b> ({file_size})\n<b>ᴜsᴇʀ:</b> @{username} (<code>{uid}</code>)\n<b>ʀᴀɴᴀᴍᴇ:</b> {filename}\n<b>ᴀᴘɪ:</b> sᴇᴄᴏɴᴅᴀʀʏ (ɪᴛᴇʀᴀᴘʟᴀʏ)")
 
         # Backup to storage channel
-        await backup_file(client, filepath, filename, f"@{username}")
+        if filename:
+            await backup_file(client, filepath, filename, file_size, f"@{username}", user_url)
 
         # Auto-upload to premium channel if applicable
-        if uid and db.is_premium_valid(uid):
-            await upload_to_premium_channel(client, filepath, filename, uid, thumb_path)
+        if filename and uid and db.is_premium_valid(uid):
+            await upload_to_premium_channel(client, filepath, filename, file_size, uid, username)
 
         # Auto-delete if enabled
         auto_delete_time = db.get_auto_delete_time()

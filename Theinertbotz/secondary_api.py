@@ -2,6 +2,7 @@
 import re
 import requests
 import logging
+from typing import Optional
 from urllib.parse import quote
 from Theinertbotz.debug_helper import save_html_debug, extract_error_message
 
@@ -9,8 +10,17 @@ log = logging.getLogger("TeraBoxBot")
 
 def _extract_video_filename(file_data: dict) -> str:
     """Extract the cleanest available filename from API response."""
-    # Prefer 'filename' (cleaner) over 'server_filename' (may contain metadata)
-    filename = file_data.get('filename') or file_data.get('server_filename', 'video.mp4')
+    # Check multiple fields in order of preference
+    filename = (
+        file_data.get('server_filename') or  # Full filename with metadata
+        file_data.get('filename') or  # Simpler filename
+        file_data.get('title') or  # Title field
+        file_data.get('name') or  # Generic name field
+        'video.mp4'  # Ultimate fallback
+    )
+    
+    log.info(f"API fields available: {list(file_data.keys())}")
+    log.info(f"Selected filename: {filename}")
     
     # Ensure .mp4 extension if needed
     if filename and not any(filename.lower().endswith(ext) for ext in ['.mp4', '.mkv', '.webm', '.mov']):
@@ -341,26 +351,93 @@ def extract_m3u8_from_html(html: str):
     return urls_found[0]
 
 
+def extract_filename_from_terabox_html(terabox_url: str) -> Optional[str]:
+    """
+    Extract the actual filename/folder name directly from TeraBox HTML.
+    TeraBox HTML contains the file/folder name in title or data attributes.
+    """
+    try:
+        import requests
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        }
+        response = requests.get(terabox_url, headers=headers, timeout=10)
+        response.raise_for_status()
+        html = response.text
+        
+        # Try to extract filename from various sources in TeraBox HTML
+        patterns = [
+            # Title from page title tag
+            r'<title>([^<]+)</title>',
+            # From folder/file name in data attributes
+            r'data-name="([^"]+)"',
+            r'data-filename="([^"]+)"',
+            # From h1 heading (might be the folder/file name)
+            r'<h1[^>]*>([^<]+)</h1>',
+            # From share title in JavaScript
+            r'share_title\s*:\s*["\']([^"\']+)["\']',
+            # From data in JSON
+            r'"name"\s*:\s*"([^"]+)"',
+            r'"title"\s*:\s*"([^"]+)"',
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, html, re.IGNORECASE)
+            if match:
+                title = match.group(1).strip()
+                # Filter out unwanted titles
+                if title and len(title) > 3 and title.lower() not in ['video', 'download', 'untitled', 'terabox']:
+                    log.info(f"Extracted filename from TeraBox HTML: {title}")
+                    return title
+                    
+        log.info("No filename found in TeraBox HTML")
+        return None
+    except Exception as e:
+        log.debug(f"Failed to extract from TeraBox HTML: {e}")
+        return None
+
+
 def extract_video_info_from_html(html: str):
     """
     Extract video title/filename from iTeraPlay HTML.
+    Tries multiple extraction methods to find actual filename.
     """
     try:
-        # Try to extract title from HTML
+        # Try to extract title from HTML with comprehensive patterns
         title_patterns = [
-            r'<title>([^<]+)</title>',
+            # JavaScript variables for filename
+            r'var\s+filename\s*=\s*["\']([^"\']+)["\']',
+            r'filename\s*:\s*["\']([^"\']+)["\']',
+            r'data-filename="([^"]+)"',
+            # JSON objects with filename/title
+            r'"filename"\s*:\s*"([^"]+)"',
+            r'"file_name"\s*:\s*"([^"]+)"',
+            r'"server_filename"\s*:\s*"([^"]+)"',
+            # Meta tags and data attributes
             r'data-title="([^"]+)"',
+            r'data-video-title="([^"]+)"',
+            # Class-based title
             r'class="title"[^>]*>([^<]+)<',
+            r'class="video-title"[^>]*>([^<]+)<',
+            # Regular title tag
+            r'<title>([^<]+)</title>',
+            r'<h1[^>]*>([^<]+)</h1>',
+            r'<h2[^>]*>([^<]+)</h2>',
+            # Direct title property
             r'"title"\s*:\s*"([^"]+)"',
+            r'"name"\s*:\s*"([^"]+)"',
         ]
         
         for pattern in title_patterns:
             match = re.search(pattern, html, re.IGNORECASE)
             if match:
                 title = match.group(1).strip()
-                if title and len(title) > 3:
+                # Filter out common junk titles
+                if title and len(title) > 3 and title.lower() not in ['video', 'download', 'untitled']:
+                    log.info(f"Extracted title from HTML: {title} (pattern: {pattern})")
                     return title
     except Exception as e:
         log.warning(f"Failed to extract video info: {e}")
     
+    log.info("No video title found in HTML patterns")
     return None

@@ -5,6 +5,7 @@ import asyncio
 import time
 import logging
 import re
+from typing import Optional, Tuple
 from pyrogram import enums
 from config import Config
 from Theinertbotz.processing import ProgressManager
@@ -16,7 +17,7 @@ log = logging.getLogger("TeraBoxBot")
 os.makedirs(getattr(Config, "DOWNLOAD_DIR", "downloads"), exist_ok=True)
 
 
-async def download_hls_video(client, message, m3u8_url: str, bot_username: str, filename: str = None):
+async def download_hls_video(client, message, m3u8_url: str, bot_username: str, filename: Optional[str] = None):
     """
     Download HLS video (m3u8) using ffmpeg.
     Returns (filepath, safe_filename) on success.
@@ -150,7 +151,7 @@ async def download_hls_video(client, message, m3u8_url: str, bot_username: str, 
         
         # Read ffmpeg progress output line by line
         while True:
-            line = await process.stdout.readline()
+            line = await process.stdout.readline() if process.stdout else b''
             if not line:
                 break
             
@@ -221,7 +222,7 @@ async def download_hls_video(client, message, m3u8_url: str, bot_username: str, 
         await process.wait()
         
         if process.returncode != 0:
-            stderr = await process.stderr.read()
+            stderr = await process.stderr.read() if process.stderr else b''
             error_out = stderr.decode() if stderr else "Unknown error"
             log.error(f"ffmpeg failed: {error_out}")
             await edit_coro(f"❌ <b>ꜰꜰᴍᴘᴇɢ ᴅᴏᴡɴʟᴏᴀᴅ ꜰᴀɪʟᴇᴅ</b>\n\n{error_out[:200]}")
