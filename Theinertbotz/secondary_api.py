@@ -7,6 +7,72 @@ from Theinertbotz.debug_helper import save_html_debug, extract_error_message
 
 log = logging.getLogger("TeraBoxBot")
 
+def fetch_video_from_terabox_api(terabox_url: str, timeout=20):
+    """
+    Call the TeraBox API directly (the one iTeraPlay uses internally).
+    Returns the m3u8 URL directly from API response.
+    """
+    # Use the same API endpoint that iTeraPlay uses
+    api_url = "https://api.teraboxdownloader.online/api/get-info"
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Referer": "https://iteraplay.com/",
+        "Origin": "https://iteraplay.com",
+    }
+    
+    try:
+        # Make POST request with form data
+        response = requests.post(
+            api_url,
+            data={'url': terabox_url},
+            headers=headers,
+            timeout=timeout
+        )
+        response.raise_for_status()
+        data = response.json()
+        
+        log.info(f"TeraBox API response: {data.keys() if isinstance(data, dict) else type(data)}")
+        
+        # Extract m3u8 from response
+        if isinstance(data, dict) and 'list' in data and len(data['list']) > 0:
+            file_data = data['list'][0]
+            
+            # Check fast_stream_url (contains quality options)
+            if 'fast_stream_url' in file_data:
+                stream_url = file_data['fast_stream_url']
+                
+                # If it's a dict with quality options
+                if isinstance(stream_url, dict):
+                    quality_order = ['1080p', '720p', '480p', '360p']
+                    for quality in quality_order:
+                        if quality in stream_url and stream_url[quality]:
+                            log.info(f"Found {quality} stream URL from API")
+                            return stream_url[quality], file_data.get('server_filename', 'video.mp4')
+                    # Return first available quality
+                    for url in stream_url.values():
+                        if url:
+                            log.info(f"Found stream URL from API (first available)")
+                            return url, file_data.get('server_filename', 'video.mp4')
+                # If it's a direct string URL
+                elif isinstance(stream_url, str) and stream_url:
+                    log.info(f"Found stream URL from API (direct)")
+                    return stream_url, file_data.get('server_filename', 'video.mp4')
+            
+            # Fallback to other possible fields
+            for field in ['dlink', 'download_url', 'stream_url', 'video_url']:
+                if field in file_data and file_data[field]:
+                    log.info(f"Found {field} from API")
+                    return file_data[field], file_data.get('server_filename', 'video.mp4')
+        
+        log.warning("No valid stream URL found in API response")
+        return None, None
+        
+    except Exception as e:
+        log.error(f"Failed to fetch from TeraBox API: {e}")
+        raise
+
 def fetch_iteraplay_html(url: str, timeout=20):
     """
     Fetch HTML from iTeraPlay API endpoint.
@@ -38,12 +104,8 @@ def fetch_iteraplay_html(url: str, timeout=20):
 def extract_m3u8_from_html(html: str):
     """
     Extract m3u8 URL from iTeraPlay HTML page.
-    Searches for patterns like:
-    - hls.loadSource("https://...index.m3u8")
-    - fast_stream_url: "https://...m3u8"
-    - Quality URLs (360p, 480p, 720p, 1080p)
-    - Direct .m3u8 links
-    - Video source in script tags
+    The page makes a POST request to an API endpoint to get video data.
+    We need to extract the API endpoint and make the request ourselves.
     """
     if not html:
         return None
@@ -51,6 +113,73 @@ def extract_m3u8_from_html(html: str):
     # Debug: Save HTML for inspection if needed
     log.debug(f"HTML length: {len(html)} bytes")
     
+    # First, try to extract the API endpoint URL from the JavaScript
+    api_patterns = [
+        r'const\s+apiUrl\s*=\s*["\']([^"\']+)["\']',
+        r'apiUrl\s*=\s*["\']([^"\']+)["\']',
+        r'fetch\s*\(\s*["\']([^"\']+api[^"\']*)["\']',
+    ]
+    
+    api_endpoint = None
+    for pattern in api_patterns:
+        match = re.search(pattern, html, re.IGNORECASE)
+        if match:
+            api_endpoint = match.group(1)
+            log.info(f"Found API endpoint: {api_endpoint}")
+            break
+    
+    # If we found an API endpoint, try to extract the TeraBox URL and make the request
+    if api_endpoint:
+        terabox_url_pattern = r'url\s*=\s*["\']([^"\']+terabox[^"\']*)["\']'
+        match = re.search(terabox_url_pattern, html, re.IGNORECASE)
+        if match:
+            terabox_url = match.group(1)
+            log.info(f"Found TeraBox URL in HTML: {terabox_url}")
+            
+            # Make the API request
+            try:
+                import requests
+                response = requests.post(api_endpoint, data={'url': terabox_url}, timeout=15)
+                response.raise_for_status()
+                data = response.json()
+                
+                log.info(f"API response received: {len(str(data))} bytes")
+                
+                # Extract m3u8 from API response
+                if 'list' in data and len(data['list']) > 0:
+                    file_data = data['list'][0]
+                    
+                    # Check fast_stream_url (contains quality options)
+                    if 'fast_stream_url' in file_data:
+                        stream_url = file_data['fast_stream_url']
+                        
+                        # If it's a dict with quality options
+                        if isinstance(stream_url, dict):
+                            quality_order = ['1080p', '720p', '480p', '360p']
+                            for quality in quality_order:
+                                if quality in stream_url and stream_url[quality]:
+                                    log.info(f"Found {quality} stream URL from API")
+                                    return stream_url[quality]
+                            # Return first available quality
+                            for url in stream_url.values():
+                                if url:
+                                    log.info(f"Found stream URL from API (first available)")
+                                    return url
+                        # If it's a direct string URL
+                        elif isinstance(stream_url, str) and stream_url:
+                            log.info(f"Found stream URL from API (direct)")
+                            return stream_url
+                    
+                    # Fallback to other possible fields
+                    for field in ['dlink', 'download_url', 'stream_url', 'video_url']:
+                        if field in file_data and file_data[field]:
+                            log.info(f"Found {field} from API")
+                            return file_data[field]
+                
+            except Exception as e:
+                log.error(f"Failed to fetch from API endpoint: {e}")
+    
+    # Fallback to HTML extraction
     urls_found = []
     
     # Extended pattern list with more variations
@@ -96,6 +225,40 @@ def extract_m3u8_from_html(html: str):
         except Exception as e:
             log.debug(f"Regex pattern failed: {e}")
             continue
+    
+    # Try to extract from script tags - look for JSON data
+    try:
+        script_pattern = r'<script[^>]*>(.*?)</script>'
+        for script_match in re.finditer(script_pattern, html, re.DOTALL | re.IGNORECASE):
+            script_content = script_match.group(1)
+            
+            # Look for JSON objects in script
+            json_patterns = [
+                r'const\s+data\s*=\s*({[^;]+})',
+                r'var\s+data\s*=\s*({[^;]+})',
+                r'let\s+videoData\s*=\s*({[^;]+})',
+            ]
+            
+            for json_pattern in json_patterns:
+                json_match = re.search(json_pattern, script_content)
+                if json_match:
+                    try:
+                        import json
+                        json_str = json_match.group(1)
+                        # Clean up the JSON string
+                        json_str = json_str.replace("'", '"')
+                        data = json.loads(json_str)
+                        
+                        # Look for m3u8 in the JSON
+                        if isinstance(data, dict):
+                            for key in ['m3u8', 'stream_url', 'video_url', 'url']:
+                                if key in data and data[key]:
+                                    log.info(f"Found m3u8 in script JSON: {data[key]}")
+                                    return data[key]
+                    except Exception as e:
+                        log.debug(f"Failed to parse JSON from script: {e}")
+    except Exception as e:
+        log.debug(f"Script extraction failed: {e}")
     
     # Also try to extract from escaped/encoded URLs
     try:

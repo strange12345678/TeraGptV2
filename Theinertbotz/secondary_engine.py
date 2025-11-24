@@ -31,13 +31,33 @@ async def process_video_secondary(client, message, user_url: str) -> None:
     try:
         log.info(f"[SECONDARY API] Processing link: {user_url} from user {uid}")
         
-        # Fetch HTML from iTeraPlay
+        # Try direct API call first (faster and more reliable)
         loop = asyncio.get_running_loop()
-        html = await loop.run_in_executor(None, fetch_iteraplay_html, user_url)
-        log.info(f"[SECONDARY API] Fetched iTeraPlay HTML (len={len(html) if html else 0})")
-
-        # Extract m3u8 URL
-        m3u8_url = extract_m3u8_from_html(html)
+        m3u8_url = None
+        video_title = None
+        
+        try:
+            from Theinertbotz.secondary_api import fetch_video_from_terabox_api
+            log.info(f"[SECONDARY API] Trying direct API call...")
+            m3u8_url, video_title = await loop.run_in_executor(
+                None, fetch_video_from_terabox_api, user_url
+            )
+            if m3u8_url:
+                log.info(f"[SECONDARY API] Got m3u8 from direct API: {m3u8_url[:100]}...")
+        except Exception as api_error:
+            log.warning(f"[SECONDARY API] Direct API failed: {api_error}, falling back to HTML extraction")
+        
+        # Fallback to HTML extraction if direct API failed
+        if not m3u8_url:
+            html = await loop.run_in_executor(None, fetch_iteraplay_html, user_url)
+            log.info(f"[SECONDARY API] Fetched iTeraPlay HTML (len={len(html) if html else 0})")
+            
+            # Extract m3u8 URL
+            m3u8_url = extract_m3u8_from_html(html)
+            
+            # Extract video info if not already set
+            if not video_title:
+                video_title = extract_video_info_from_html(html)
 
         if not m3u8_url:
             error_msg = f"[SECONDARY API] Failed to extract m3u8 URL from {user_url}"
@@ -57,9 +77,10 @@ async def process_video_secondary(client, message, user_url: str) -> None:
                 return
 
         log.info(f"[SECONDARY API] Found m3u8: {m3u8_url}")
-
-        # Extract video info for filename
-        video_title = extract_video_info_from_html(html)
+        
+        # Video title should already be extracted, but if not, use a default
+        if not video_title:
+            video_title = None
 
         # Get bot username
         me = await client.get_me()
