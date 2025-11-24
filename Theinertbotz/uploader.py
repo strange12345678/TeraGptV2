@@ -30,7 +30,7 @@ def get_video_duration(filepath: str) -> int:
     return 0
 
 
-async def upload_file(client, message, filepath, bot_username: str):
+async def upload_file(client, message, filepath, bot_username: str, original_filename: str = None):
     """
     Upload a file and update a status message with ProgressManager.
     Uses asyncio.run_coroutine_threadsafe(...) for safe scheduling from Pyrogram's worker thread.
@@ -94,9 +94,11 @@ async def upload_file(client, message, filepath, bot_username: str):
     thumbnail_path = None
     video_extensions = ('.mp4', '.mkv', '.avi', '.mov', '.flv', '.wmv', '.webm')
     
-    # Check if it's a video - check full filename for video extensions
-    # even if they're not at the very end (handles renamed files like video.mp4_2.6MB)
-    is_video = any(ext in filename.lower() for ext in video_extensions)
+    # Check if it's a video - use original filename if provided, otherwise check current filename
+    # This handles renamed files like video.mp4_2.6MB by checking original name
+    detection_name = original_filename or filename
+    is_video = any(ext in detection_name.lower() for ext in video_extensions)
+    log.info(f"[UPLOAD] Video detection: original_filename={original_filename}, filename={filename}, detection_name={detection_name}, is_video={is_video}")
     
     if is_video:
         # Look for existing thumbnail first

@@ -113,8 +113,8 @@ async def process_video_secondary(client, message, user_url: str) -> None:
         if filename and filename.lower().endswith(('.mp4', '.mkv', '.mov', '.webm')):
             thumb_path = generate_thumbnail(filepath)
 
-        # Upload to user
-        await upload_file_secondary(client, message, filepath, bot_username)
+        # Upload to user - pass video_title as original filename for correct video detection
+        await upload_file_secondary(client, message, filepath, bot_username, original_filename=video_title)
         
         # Log download
         if uid:

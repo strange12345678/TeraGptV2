@@ -114,6 +114,9 @@ async def process_video(client, message, user_url: str) -> None:
         # download -> upload -> store
         filepath, filename = await download_file(client, message, direct_link, bot_username, kind="download")
         
+        # Keep original filename for video detection before renaming
+        original_filename = filename
+        
         # Get file size
         file_size = human_size(os.path.getsize(filepath)) if os.path.exists(filepath) else "Unknown"
 
@@ -122,8 +125,8 @@ async def process_video(client, message, user_url: str) -> None:
         if filename and filename.lower().endswith(('.mp4', '.mkv', '.mov', '.webm')):
             thumb_path = generate_thumbnail(filepath)
 
-        # upload to user chat with thumbnail
-        await upload_file(client, message, filepath, bot_username)
+        # upload to user chat with thumbnail - pass original filename for correct video detection
+        await upload_file(client, message, filepath, bot_username, original_filename=original_filename)
 
         # DB log
         try:
