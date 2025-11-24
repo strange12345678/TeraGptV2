@@ -6,6 +6,7 @@ from pyrogram import filters, enums
 from pyrogram.types import Message
 from config import Config
 from Theinertbotz.engine import process_video
+from Theinertbotz.secondary_engine import process_video_secondary
 from Theinertbotz.database import db
 from script import Script
 from plugins.buttons import LIMIT_REACHED_BUTTONS
@@ -59,8 +60,12 @@ def register_handlers(app):
                 async with download_semaphore:
                     log.info(f"Processing link {idx+1}/{len(links)}: {link} from user {user_id}")
                     try:
-                        await process_video(client, message, link.strip())
-                        db.increment_daily_downloads(user_id)
+                        # Check which API to use
+                        current_api = db.get_current_api()
+                        if current_api == "secondary":
+                            await process_video_secondary(client, message, link.strip())
+                        else:
+                            await process_video(client, message, link.strip())
                     except Exception as e:
                         log.exception(f"Error processing link: {link}")
                         try:
