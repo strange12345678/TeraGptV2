@@ -276,8 +276,7 @@ async def download_hls_video(client, message, m3u8_url: str, bot_username: str, 
         file_size = os.path.getsize(filepath)
         await edit_coro(f"✅ <b>ᴅᴏᴡɴʟᴏᴀᴅ ᴄᴏᴍᴘʟᴇᴛᴇ!</b>\n<code>{safe_fn}</code>\n🗂️ {file_size / (1024**2):.2f} MB")
         
-        # Auto-delete status message after 5 seconds
-        await asyncio.sleep(5)
+        # Delete status message immediately (no waiting)
         try:
             if status_msg:
                 await status_msg.delete()

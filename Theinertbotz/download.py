@@ -168,8 +168,7 @@ async def download_file(client, message, url: str, bot_username: str, kind: str 
             # final message update to indicate finished
             try:
                 await status_msg.edit_text(f"<b>✅ Download complete:</b>\n{safe_fn}", parse_mode=enums.ParseMode.HTML)
-                # Auto-delete message after 5 seconds
-                await asyncio.sleep(5)
+                # Delete message immediately (no waiting)
                 await status_msg.delete()
             except Exception:
                 try:

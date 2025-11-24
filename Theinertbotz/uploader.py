@@ -204,7 +204,6 @@ async def upload_file(client, message, filepath, bot_username: str, original_fil
         # Update and delete status message
         try:
             await status_msg.edit_text(f"<b>✅ Upload complete:</b>\n{filename}", parse_mode=enums.ParseMode.HTML)
-            await asyncio.sleep(2)
             await status_msg.delete()
         except:
             pass
