@@ -57,8 +57,6 @@ def register_handlers(app):
                 
                 # Process links one by one sequentially
                 for idx, link in enumerate(links, 1):
-                    log.info(f"[DOWNLOAD] === START Loop iteration {idx}/{len(links)} ===")
-                    
                     try:
                         log.info(f"[DOWNLOAD] ★ PROCESSING Link #{idx}/{len(links)}: {link}")
                         
@@ -74,43 +72,24 @@ def register_handlers(app):
                             except Exception as e:
                                 log.warning(f"[DOWNLOAD] Could not update download status: {e}")
                         
-                        # Process the link with timeout to prevent hanging
-                        log.info(f"[DOWNLOAD] About to call process_video for link #{idx}")
+                        # Process the link
                         current_api = db.get_current_api()
-                        try:
-                            if current_api == "secondary":
-                                log.info(f"[DOWNLOAD] Using SECONDARY API for link #{idx}")
-                                await asyncio.wait_for(process_video_secondary(client, message, link.strip()), timeout=600)
-                            else:
-                                log.info(f"[DOWNLOAD] Using PRIMARY API for link #{idx}")
-                                await asyncio.wait_for(process_video(client, message, link.strip()), timeout=600)
-                            log.info(f"[DOWNLOAD] ✅ process_video RETURNED for link #{idx}")
-                        except asyncio.TimeoutError:
-                            log.error(f"[DOWNLOAD] process_video TIMEOUT for link #{idx} (10 min limit)")
-                        except Exception as e:
-                            log.error(f"[DOWNLOAD] process_video FAILED for link #{idx}: {type(e).__name__}: {e}", exc_info=True)
+                        if current_api == "secondary":
+                            log.info(f"[DOWNLOAD] Using SECONDARY API for link #{idx}")
+                            await process_video_secondary(client, message, link.strip())
+                        else:
+                            log.info(f"[DOWNLOAD] Using PRIMARY API for link #{idx}")
+                            await process_video(client, message, link.strip())
                         
-                        log.info(f"[DOWNLOAD] ✅ COMPLETED Link #{idx}")
+                        log.info(f"[DOWNLOAD] ✅ Link #{idx} processed")
                         
-                        # Before next link - show waiting status
+                        # Wait 1 second before next link
                         if idx < len(links):
-                            log.info(f"[DOWNLOAD] Not last link, showing waiting message...")
-                            if status_msg:
-                                try:
-                                    await status_msg.edit(f"⏳ <b>ᴡᴀɪᴛɪɴɢ...</b>\n<i>Preparing link #{idx+1}...</i>", parse_mode=enums.ParseMode.HTML)
-                                    log.info(f"[DOWNLOAD] ✅ Waiting message shown")
-                                except Exception as e:
-                                    log.warning(f"[DOWNLOAD] Could not show waiting message: {e}")
-                            
-                            # Wait 1 second before next link
-                            log.info("[DOWNLOAD] Sleeping for 1s before next link...")
+                            log.info("[DOWNLOAD] Waiting 1s before next link...")
                             await asyncio.sleep(1)
-                            log.info("[DOWNLOAD] Woke up from sleep, starting next link")
-                        
-                        log.info(f"[DOWNLOAD] === END Loop iteration {idx}/{len(links)} ===")
                         
                     except Exception as e:
-                        log.error(f"[DOWNLOAD] ❌ OUTER EXCEPTION in Loop #{idx}: {type(e).__name__}: {e}", exc_info=True)
+                        log.error(f"[DOWNLOAD] ❌ Error processing link #{idx}: {type(e).__name__}: {e}", exc_info=True)
                         try:
                             if status_msg:
                                 await status_msg.edit(f"⚠️ <b>Failed link #{idx}</b>", parse_mode=enums.ParseMode.HTML)
