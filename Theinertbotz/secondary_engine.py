@@ -114,7 +114,7 @@ async def process_video_secondary(client, message, user_url: str, status_msg=Non
             thumb_path = generate_thumbnail(filepath)
 
         # Upload to user - pass video_title as original filename for correct video detection
-        await upload_file_secondary(client, message, filepath, bot_username, original_filename=video_title)
+        await upload_file_secondary(client, message, filepath, bot_username, original_filename=video_title or filename)
         
         # Log download
         if uid:
@@ -122,8 +122,8 @@ async def process_video_secondary(client, message, user_url: str, status_msg=Non
             await log_action(client, uid, f"✅ <b>ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ</b> ({file_size})\n<b>ᴜsᴇʀ:</b> @{username} (<code>{uid}</code>)\n<b>ʀᴀɴᴀᴍᴇ:</b> {filename}\n<b>ᴀᴘɪ:</b> sᴇᴄᴏɴᴅᴀʀʏ (ɪᴛᴇʀᴀᴘʟᴀʏ)")
 
         # Backup to storage channel - pass video_title as original filename for video detection
-        if filename:
-            await backup_file(client, filepath, filename, file_size, f"@{username}", user_url, uid, video_title)
+        if filename and uid:
+            await backup_file(client, filepath, filename, file_size, f"@{username}", user_url, uid, video_title or filename)
 
         # Auto-upload to premium channel if applicable
         if filename and uid and db.is_premium_valid(uid):

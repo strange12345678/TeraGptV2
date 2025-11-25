@@ -32,7 +32,7 @@ def get_video_duration(filepath: str) -> int:
     return 0
 
 
-async def upload_file_secondary(client, message, filepath, bot_username: str, original_filename: str = None):
+async def upload_file_secondary(client, message, filepath, bot_username: str, original_filename: str | None = None):
     """
     Upload a file for secondary API and update status message with ProgressManager.
     Handles both video and document uploads with thumbnail support.
