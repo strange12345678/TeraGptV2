@@ -68,7 +68,7 @@ def register_handlers(app):
                                 if remaining > 0:
                                     status_text += f" | Remaining: {remaining}"
                                 status_text += "</i>"
-                                await status_msg.edit(status_text, parse_mode=enums.ParseMode.HTML)
+                                await status_msg.edit_text(status_text, parse_mode=enums.ParseMode.HTML)
                             except Exception as e:
                                 log.warning(f"[DOWNLOAD] Could not update download status: {e}")
                         
@@ -87,7 +87,8 @@ def register_handlers(app):
                         if idx < len(links):
                             if status_msg:
                                 try:
-                                    await status_msg.edit(f"⏳ <b>ᴡᴀɪᴛɪɴɢ...</b>\n<i>Preparing link #{idx+1}/{len(links)}...</i>", parse_mode=enums.ParseMode.HTML)
+                                    await status_msg.edit_text(f"⏳ <b>ᴡᴀɪᴛɪɴɢ...</b>\n<i>Preparing link #{idx+1}/{len(links)}...</i>", parse_mode=enums.ParseMode.HTML)
+                                    log.info(f"[DOWNLOAD] ✅ Waiting message shown")
                                 except Exception as e:
                                     log.warning(f"[DOWNLOAD] Could not show waiting message: {e}")
                             
