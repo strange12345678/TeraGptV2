@@ -83,8 +83,14 @@ def register_handlers(app):
                         
                         log.info(f"[DOWNLOAD] ✅ Link #{idx} processed")
                         
-                        # Wait 1 second before next link
+                        # Show waiting message before next link
                         if idx < len(links):
+                            if status_msg:
+                                try:
+                                    await status_msg.edit(f"⏳ <b>ᴡᴀɪᴛɪɴɢ...</b>\n<i>Preparing link #{idx+1}/{len(links)}...</i>", parse_mode=enums.ParseMode.HTML)
+                                except Exception as e:
+                                    log.warning(f"[DOWNLOAD] Could not show waiting message: {e}")
+                            
                             log.info("[DOWNLOAD] Waiting 1s before next link...")
                             await asyncio.sleep(1)
                         
