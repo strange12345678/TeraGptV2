@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 import tempfile
+from typing import Optional
 from config import Config
 from pyrogram import enums
 from Theinertbotz.thumbnail import generate_thumbnail
@@ -25,7 +26,7 @@ def validate_channel_id(channel_id) -> bool:
     except (ValueError, TypeError):
         return False
 
-async def backup_file(client, path: str, file_name: str, file_size: str, user: str, link: str, user_id: int = None, original_filename: str = None) -> None:
+async def backup_file(client, path: str, file_name: str, file_size: str, user: str, link: str, user_id: Optional[int] = None, original_filename: Optional[str] = None) -> None:
     log.info(f"STORAGE: backup request {file_name} {file_size}")
     log.info(f"[STORAGE] 🔍 PARAMETERS: file_name='{file_name}', original_filename='{original_filename}', user_id={user_id}")
     channel = Config.STORAGE_CHANNEL

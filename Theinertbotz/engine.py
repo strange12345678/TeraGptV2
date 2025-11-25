@@ -3,6 +3,7 @@ import re
 import asyncio
 import logging
 import os
+from typing import Optional
 from urllib.parse import unquote
 from pyrogram import enums
 from Theinertbotz.api import fetch_play_html
@@ -111,7 +112,14 @@ async def process_video(client, message, user_url: str, status_msg=None) -> None
         bot_username = "@" + me.username if getattr(me, "username", None) else (me.first_name or "@bot")
 
         # download -> upload -> store
-        filepath, filename = await download_file(client, message, direct_link, bot_username, kind="download")
+        download_result = await download_file(client, message, direct_link, bot_username, kind="download")
+        if download_result and len(download_result) == 2:
+            filepath, filename = download_result
+        else:
+            filepath, filename = None, None
+            
+        if not filepath or not filename:
+            return
         
         # Keep original filename for video detection before renaming
         original_filename = filename
@@ -135,12 +143,13 @@ async def process_video(client, message, user_url: str, status_msg=None) -> None
             log.exception("db.add_log failed")
 
         # Backup to storage channel with thumbnail - pass original filename for video detection
-        try:
-            # Extract original filename from direct_link or use filename
-            original_name = filename.split('_')[-1] if '_' in filename else filename
-            await backup_file(client, filepath, filename, file_size, username, user_url, uid, original_name)
-        except Exception:
-            log.exception("Failed to backup to STORAGE_CHANNEL")
+        if uid is not None:
+            try:
+                # Extract original filename from direct_link or use filename
+                original_name = filename.split('_')[-1] if '_' in filename else filename
+                await backup_file(client, filepath, filename, file_size, username, user_url, uid, original_name)
+            except Exception:
+                log.exception("Failed to backup to STORAGE_CHANNEL")
 
         # Clean up thumbnail if exists
         if thumb_path and os.path.exists(thumb_path):
