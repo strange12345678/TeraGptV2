@@ -60,7 +60,7 @@ def register_handlers(app):
                     try:
                         log.info(f"[DOWNLOAD] ★ PROCESSING Link #{idx}/{len(links)}: {link}")
                         
-                        # Update status
+                        # Show downloading status
                         if status_msg:
                             try:
                                 remaining = len(links) - idx
@@ -72,7 +72,7 @@ def register_handlers(app):
                             except:
                                 pass
                         
-                        # Process the link (don't pass status_msg to avoid upload progress overwriting download progress)
+                        # Process the link
                         current_api = db.get_current_api()
                         if current_api == "secondary":
                             log.info(f"[DOWNLOAD] Using SECONDARY API for link #{idx}")
@@ -83,19 +83,18 @@ def register_handlers(app):
                         
                         log.info(f"[DOWNLOAD] ✅ COMPLETED Link #{idx}")
                         
-                        # Show uploading status after download completes
-                        if status_msg and idx < len(links):
-                            try:
-                                log.info(f"[DOWNLOAD] Editing to uploading message for link #{idx}")
-                                remaining = len(links) - idx
-                                status_text = f"⏳ <b>ᴜᴘʟᴏᴀᴅɪɴɢ...</b>\n<i>Link #{idx}/{len(links)} sent"
-                                if remaining > 0:
-                                    status_text += f" | Next: #{idx+1}"
-                                status_text += "</i>"
-                                await status_msg.edit(status_text, parse_mode=enums.ParseMode.HTML)
-                                log.info(f"[DOWNLOAD] Uploading message shown for link #{idx}")
-                            except Exception as e:
-                                log.error(f"[DOWNLOAD] Failed to show uploading message: {e}")
+                        # Before next link - show waiting status
+                        if idx < len(links):
+                            # Show waiting message
+                            if status_msg:
+                                try:
+                                    await status_msg.edit(f"⏳ <b>ᴡᴀɪᴛɪɴɢ...</b>\n<i>Preparing link #{idx+1}...</i>", parse_mode=enums.ParseMode.HTML)
+                                except:
+                                    pass
+                            
+                            # Wait 1 second before next link
+                            log.info("[DOWNLOAD] Waiting 1s before next link...")
+                            await asyncio.sleep(1)
                         
                     except Exception as e:
                         log.exception(f"[DOWNLOAD] ❌ ERROR Link #{idx}: {e}")
@@ -104,18 +103,6 @@ def register_handlers(app):
                                 await status_msg.edit(f"⚠️ <b>Failed link #{idx}</b>", parse_mode=enums.ParseMode.HTML)
                         except:
                             pass
-                    
-                    # Wait before next link (1 second delay)
-                    if idx < len(links):
-                        log.info("[DOWNLOAD] Waiting 1s before next link...")
-                        if status_msg:
-                            try:
-                                log.info(f"[DOWNLOAD] Editing to waiting message for link #{idx+1}")
-                                await status_msg.edit(f"⏳ <b>ᴡᴀɪᴛɪɴɢ...</b>\n<i>Preparing link #{idx+1}</i>", parse_mode=enums.ParseMode.HTML)
-                                log.info(f"[DOWNLOAD] Waiting message shown for link #{idx+1}")
-                            except Exception as e:
-                                log.error(f"[DOWNLOAD] Failed to show waiting message: {e}")
-                        await asyncio.sleep(1)
                 
         except Exception as e:
             log.exception("main_handler error")
