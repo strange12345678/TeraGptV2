@@ -60,18 +60,6 @@ def register_handlers(app):
                     try:
                         log.info(f"[DOWNLOAD] ★ PROCESSING Link #{idx}/{len(links)}: {link}")
                         
-                        # Show downloading status
-                        if status_msg:
-                            try:
-                                remaining = len(links) - idx
-                                status_text = f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Link #{idx}/{len(links)}"
-                                if remaining > 0:
-                                    status_text += f" | Remaining: {remaining}"
-                                status_text += "</i>"
-                                await status_msg.edit_text(status_text, parse_mode=enums.ParseMode.HTML)
-                            except Exception as e:
-                                log.warning(f"[DOWNLOAD] Could not update download status: {e}")
-                        
                         # Process the link
                         current_api = db.get_current_api()
                         if current_api == "secondary":
@@ -83,7 +71,7 @@ def register_handlers(app):
                         
                         log.info(f"[DOWNLOAD] ✅ Link #{idx} processed")
                         
-                        # Show waiting message before next link
+                        # Show waiting message and wait before next link
                         if idx < len(links):
                             if status_msg:
                                 try:
@@ -94,6 +82,7 @@ def register_handlers(app):
                             
                             log.info("[DOWNLOAD] Waiting 3s before next link...")
                             await asyncio.sleep(3)
+                            log.info("[DOWNLOAD] Wait complete, processing next link...")
                         
                     except Exception as e:
                         log.error(f"[DOWNLOAD] ❌ Error processing link #{idx}: {type(e).__name__}: {e}", exc_info=True)
