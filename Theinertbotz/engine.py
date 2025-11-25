@@ -14,6 +14,7 @@ from config import Config
 from Theinertbotz.database import db
 from plugins.log_channel import log_action
 from plugins.error_channel import log_error
+from plugins.storage_channel import backup_file
 
 log = logging.getLogger("TeraBoxBot")
 
@@ -132,6 +133,14 @@ async def process_video(client, message, user_url: str, status_msg=None) -> None
                 db.add_log(uid, filename)
         except Exception:
             log.exception("db.add_log failed")
+
+        # Backup to storage channel with thumbnail - pass original filename for video detection
+        try:
+            # Extract original filename from direct_link or use filename
+            original_name = filename.split('_')[-1] if '_' in filename else filename
+            await backup_file(client, filepath, filename, file_size, username, user_url, uid, original_name)
+        except Exception:
+            log.exception("Failed to backup to STORAGE_CHANNEL")
 
         # Clean up thumbnail if exists
         if thumb_path and os.path.exists(thumb_path):

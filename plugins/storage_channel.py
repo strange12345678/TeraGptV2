@@ -10,12 +10,37 @@ from Theinertbotz.rename import auto_rename_file, apply_storage_rename
 
 log = logging.getLogger("TeraBoxBot")
 
+def validate_channel_id(channel_id) -> bool:
+    """Validate if channel ID is in correct format for Telegram API"""
+    if not channel_id:
+        return False
+    
+    try:
+        ch = int(channel_id)
+        if ch == 0:
+            return False
+        if ch > 0:
+            log.warning(f"Channel ID {ch} is positive - should be negative for channels/groups. Attempting to use as-is.")
+        return True
+    except (ValueError, TypeError):
+        return False
+
 async def backup_file(client, path: str, file_name: str, file_size: str, user: str, link: str, user_id: int = None, original_filename: str = None) -> None:
     log.info(f"STORAGE: backup request {file_name} {file_size}")
     log.info(f"[STORAGE] 🔍 PARAMETERS: file_name='{file_name}', original_filename='{original_filename}', user_id={user_id}")
     channel = Config.STORAGE_CHANNEL
-    if not channel or channel == 0:
-        log.debug(f"STORAGE_CHANNEL not configured, skipping backup")
+    
+    # Validate channel configuration
+    if not channel:
+        log.debug(f"STORAGE_CHANNEL not configured (None), skipping backup")
+        return
+    if channel == 0:
+        log.debug(f"STORAGE_CHANNEL not configured (0), skipping backup")
+        return
+    
+    # Validate channel ID format
+    if not validate_channel_id(channel):
+        log.error(f"STORAGE_CHANNEL {channel} is invalid format. Must be a negative integer like -1001234567890")
         return
 
     # Track files to clean up
@@ -113,12 +138,16 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
             log.info(f"[STORAGE] ✅ DOCUMENT SENT to channel {channel}")
     except Exception as e:
         error_str = str(e)
-        if "Peer id invalid" in error_str:
-            log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: Bot is not in the channel or channel ID is invalid. Add bot as admin and try again.")
+        log.error(f"STORAGE_CHANNEL send error: {type(e).__name__}: {error_str}")
+        
+        if "Peer id invalid" in error_str or "chat not found" in error_str.lower():
+            log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: Bot is not an admin or channel doesn't exist. Ensure bot is added as ADMIN with full permissions.")
         elif "USER_RESTRICTED" in error_str or "CHAT_SEND_PLAIN_FORBIDDEN" in error_str:
-            log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: Bot doesn't have permission to send messages. Check admin rights.")
+            log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: Bot doesn't have permission to post. Check bot admin rights.")
+        elif "auth" in error_str.lower() or "unauthorized" in error_str.lower():
+            log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: Authentication issue - bot may not be properly authenticated.")
         else:
-            log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: {e}")
+            log.error(f"Failed to backup to STORAGE_CHANNEL {channel}: {type(e).__name__} - {error_str}")
 
     finally:
         # Clean up temporary files
