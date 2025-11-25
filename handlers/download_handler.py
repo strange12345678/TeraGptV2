@@ -83,6 +83,18 @@ def register_handlers(app):
                         
                         log.info(f"[DOWNLOAD] ✅ COMPLETED Link #{idx}")
                         
+                        # Show uploading status after download completes
+                        if status_msg and idx < len(links):
+                            try:
+                                remaining = len(links) - idx
+                                status_text = f"⏳ <b>ᴜᴘʟᴏᴀᴅɪɴɢ...</b>\n<i>Link #{idx}/{len(links)} sent"
+                                if remaining > 0:
+                                    status_text += f" | Next: #{idx+1}"
+                                status_text += "</i>"
+                                await status_msg.edit(status_text, parse_mode=enums.ParseMode.HTML)
+                            except:
+                                pass
+                        
                     except Exception as e:
                         log.exception(f"[DOWNLOAD] ❌ ERROR Link #{idx}: {e}")
                         try:
