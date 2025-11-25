@@ -2,7 +2,6 @@
 import re
 import asyncio
 import logging
-from collections import deque
 from pyrogram import filters, enums
 from pyrogram.types import Message
 from config import Config
@@ -13,108 +12,6 @@ from script import Script
 from plugins.buttons import LIMIT_REACHED_BUTTONS
 
 log = logging.getLogger("TeraBoxBot")
-
-# Global queue for sequential link processing - ensures only ONE link processes globally
-class LinkQueue:
-    def __init__(self):
-        self.queue = deque()  # Queue of {client, message, link, user_id, status_msg}
-        self.processing = False
-        self.global_counter = 0  # Global counter for all links ever added
-        self.current_status_msg = None
-        self.add_lock = asyncio.Lock()  # CRITICAL: Prevent concurrent queue modifications
-        self.first_batch = True  # Track if this is the first batch to show UI
-    
-    async def add(self, client, message, links, user_id, status_msg):
-        """Add a batch of links to the queue (thread-safe with lock)"""
-        async with self.add_lock:  # CRITICAL: Ensure only one handler adds to queue at a time
-            total = len(links)
-            is_first_batch = self.first_batch
-            
-            # Each link gets a unique global number
-            for idx, link in enumerate(links, 1):
-                self.global_counter += 1
-                # Only pass status_msg for the first batch; rest queued silently
-                msg_to_use = status_msg if is_first_batch else None
-                self.queue.append({
-                    'client': client,
-                    'message': message,
-                    'link': link,
-                    'user_id': user_id,
-                    'status_msg': msg_to_use,
-                    'global_num': self.global_counter
-                })
-            
-            # Mark that first batch has been handled
-            if is_first_batch and len(self.queue) > 0:
-                self.first_batch = False
-            
-            log.info(f"[QUEUE] Added {total} link(s). Global: #{self.global_counter}. Pending: {len(self.queue)}")
-            
-            # Start worker if not already running
-            if not self.processing:
-                asyncio.create_task(self._worker())
-    
-    async def _worker(self):
-        """Global worker that processes one link at a time sequentially"""
-        if self.processing:
-            return
-        
-        self.processing = True
-        log.info("[QUEUE] Worker STARTED - Processing links sequentially")
-        
-        try:
-            while self.queue:
-                # Get next link from queue
-                item = self.queue.popleft()
-                remaining = len(self.queue)
-                
-                try:
-                    log.info(f"[QUEUE] ★ PROCESSING Link #{item['global_num']}: {item['link']} (Remaining: {remaining})")
-                    
-                    # Update status with queue position
-                    if item['status_msg']:
-                        try:
-                            status_text = f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Link #{item['global_num']}"
-                            if remaining > 0:
-                                status_text += f"\nQueue: {remaining} pending"
-                            status_text += "</i>"
-                            await item['status_msg'].edit(status_text, parse_mode=enums.ParseMode.HTML)
-                        except:
-                            pass
-                    
-                    # Process the link - ATOMIC: No concurrent downloads
-                    current_api = db.get_current_api()
-                    if current_api == "secondary":
-                        log.info(f"[QUEUE] Using SECONDARY API for link #{item['global_num']}")
-                        await process_video_secondary(item['client'], item['message'], item['link'].strip(), status_msg=item['status_msg'])
-                    else:
-                        log.info(f"[QUEUE] Using PRIMARY API for link #{item['global_num']}")
-                        await process_video(item['client'], item['message'], item['link'].strip(), status_msg=item['status_msg'])
-                    
-                    log.info(f"[QUEUE] ✅ COMPLETED Link #{item['global_num']}")
-                    
-                except Exception as e:
-                    log.exception(f"[QUEUE] ❌ ERROR Link #{item['global_num']}: {e}")
-                    try:
-                        if item['status_msg']:
-                            await item['status_msg'].edit(f"⚠️ <b>Failed link #{item['global_num']}</b>", parse_mode=enums.ParseMode.HTML)
-                    except:
-                        pass
-                
-                # Add 5-second delay between queue items (rate limiting)
-                if self.queue:
-                    log.info("[QUEUE] Waiting 5s before next item (rate limiting)...")
-                    await asyncio.sleep(5)
-            
-            log.info("[QUEUE] Worker FINISHED - queue empty")
-            self.first_batch = True  # Reset for next batch cycle
-        
-        finally:
-            self.processing = False
-            log.info("[QUEUE] Worker cleanup - processing flag reset")
-
-# Global instance
-link_queue = LinkQueue()
 
 TERABOX_RE = re.compile(r"(https?://(?:www\.)?[^\s]*(?:terabox|1024terabox|terasharefile|tera\.co|terabox\.co|mirrobox|nephobox|freeterabox|4funbox|terabox\.app|terabox\.fun|momerybox|teraboxapp|tibibox)[^\s]*)", re.IGNORECASE)
 
@@ -146,16 +43,53 @@ def register_handlers(app):
                     pass
                 return
             
-            # Send initial feedback only if this is the start (not for subsequent batches)
+            # Send ONE response message for all links
             status_msg = None
-            if link_queue.first_batch:  # Only show message for first batch
-                try:
-                    status_msg = await message.reply(f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Processing {len(links)} link(s) sequentially...</i>", parse_mode=enums.ParseMode.HTML)
-                except:
-                    pass
+            try:
+                status_msg = await message.reply(f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Processing {len(links)} link(s) sequentially...</i>", parse_mode=enums.ParseMode.HTML)
+            except:
+                pass
             
-            # Add to global FIFO queue (guaranteed sequential processing)
-            await link_queue.add(client, message, links, user_id, status_msg)
+            # Process links one by one sequentially
+            for idx, link in enumerate(links, 1):
+                try:
+                    log.info(f"[DOWNLOAD] ★ PROCESSING Link #{idx}/{len(links)}: {link}")
+                    
+                    # Update status
+                    if status_msg:
+                        try:
+                            remaining = len(links) - idx
+                            status_text = f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Link #{idx}/{len(links)}"
+                            if remaining > 0:
+                                status_text += f"\nRemaining: {remaining}"
+                            status_text += "</i>"
+                            await status_msg.edit(status_text, parse_mode=enums.ParseMode.HTML)
+                        except:
+                            pass
+                    
+                    # Process the link
+                    current_api = db.get_current_api()
+                    if current_api == "secondary":
+                        log.info(f"[DOWNLOAD] Using SECONDARY API for link #{idx}")
+                        await process_video_secondary(client, message, link.strip(), status_msg=status_msg)
+                    else:
+                        log.info(f"[DOWNLOAD] Using PRIMARY API for link #{idx}")
+                        await process_video(client, message, link.strip(), status_msg=status_msg)
+                    
+                    log.info(f"[DOWNLOAD] ✅ COMPLETED Link #{idx}")
+                    
+                except Exception as e:
+                    log.exception(f"[DOWNLOAD] ❌ ERROR Link #{idx}: {e}")
+                    try:
+                        if status_msg:
+                            await status_msg.edit(f"⚠️ <b>Failed link #{idx}</b>", parse_mode=enums.ParseMode.HTML)
+                    except:
+                        pass
+                
+                # Wait before next link (5 second delay)
+                if idx < len(links):
+                    log.info("[DOWNLOAD] Waiting 5s before next link...")
+                    await asyncio.sleep(5)
                 
         except Exception as e:
             log.exception("main_handler error")
