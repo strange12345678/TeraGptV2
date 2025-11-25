@@ -92,8 +92,8 @@ def register_handlers(app):
                                 except Exception as e:
                                     log.warning(f"[DOWNLOAD] Could not show waiting message: {e}")
                             
-                            log.info("[DOWNLOAD] Waiting 1s before next link...")
-                            await asyncio.sleep(1)
+                            log.info("[DOWNLOAD] Waiting 3s before next link...")
+                            await asyncio.sleep(3)
                         
                     except Exception as e:
                         log.error(f"[DOWNLOAD] ❌ Error processing link #{idx}: {type(e).__name__}: {e}", exc_info=True)
