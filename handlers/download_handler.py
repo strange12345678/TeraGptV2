@@ -52,15 +52,27 @@ def register_handlers(app):
                 status_msg = None
                 try:
                     status_msg = await message.reply(f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Processing {len(links)} link(s)...</i>", parse_mode=enums.ParseMode.HTML)
-                except Exception as e:
-                    log.error(f"[DOWNLOAD] Failed to create status message: {e}")
+                except:
+                    pass
                 
                 # Process links one by one sequentially
                 for idx, link in enumerate(links, 1):
                     try:
                         log.info(f"[DOWNLOAD] ★ PROCESSING Link #{idx}/{len(links)}: {link}")
                         
-                        # Process the link
+                        # Update status
+                        if status_msg:
+                            try:
+                                remaining = len(links) - idx
+                                status_text = f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Link #{idx}/{len(links)}"
+                                if remaining > 0:
+                                    status_text += f" | Remaining: {remaining}"
+                                status_text += "</i>"
+                                await status_msg.edit(status_text, parse_mode=enums.ParseMode.HTML)
+                            except:
+                                pass
+                        
+                        # Process the link (don't pass status_msg to avoid upload progress overwriting download progress)
                         current_api = db.get_current_api()
                         if current_api == "secondary":
                             log.info(f"[DOWNLOAD] Using SECONDARY API for link #{idx}")
@@ -69,33 +81,35 @@ def register_handlers(app):
                             log.info(f"[DOWNLOAD] Using PRIMARY API for link #{idx}")
                             await process_video(client, message, link.strip())
                         
-                        log.info(f"[DOWNLOAD] ✅ Link #{idx} processed")
+                        log.info(f"[DOWNLOAD] ✅ COMPLETED Link #{idx}")
                         
-                        # Show waiting message and wait before next link
-                        if idx < len(links):
-                            if status_msg:
-                                try:
-                                    await status_msg.edit_text(f"⏳ <b>ᴡᴀɪᴛɪɴɢ...</b>\n<i>Preparing link #{idx+1}/{len(links)}...</i>", parse_mode=enums.ParseMode.HTML)
-                                    log.info(f"[DOWNLOAD] ✅ Waiting message shown")
-                                except Exception as e:
-                                    log.warning(f"[DOWNLOAD] Could not show waiting message: {e}")
-                            
-                            log.info("[DOWNLOAD] Waiting 3s before next link...")
-                            await asyncio.sleep(3)
-                            log.info("[DOWNLOAD] Wait complete, processing next link...")
+                        # Show uploading status after download completes
+                        if status_msg and idx < len(links):
+                            try:
+                                remaining = len(links) - idx
+                                status_text = f"⏳ <b>ᴜᴘʟᴏᴀᴅɪɴɢ...</b>\n<i>Link #{idx}/{len(links)} sent"
+                                if remaining > 0:
+                                    status_text += f" | Next: #{idx+1}"
+                                status_text += "</i>"
+                                await status_msg.edit(status_text, parse_mode=enums.ParseMode.HTML)
+                            except:
+                                pass
                         
                     except Exception as e:
-                        log.error(f"[DOWNLOAD] ❌ Error processing link #{idx}: {type(e).__name__}: {e}", exc_info=True)
+                        log.exception(f"[DOWNLOAD] ❌ ERROR Link #{idx}: {e}")
                         try:
                             if status_msg:
                                 await status_msg.edit(f"⚠️ <b>Failed link #{idx}</b>", parse_mode=enums.ParseMode.HTML)
                         except:
                             pass
-                
-                log.info(f"[DOWNLOAD] === ALL LINKS COMPLETED - Lock releasing ===")
+                    
+                    # Wait before next link (1 second delay)
+                    if idx < len(links):
+                        log.info("[DOWNLOAD] Waiting 1s before next link...")
+                        await asyncio.sleep(1)
                 
         except Exception as e:
-            log.error(f"[DOWNLOAD] ❌ CRITICAL ERROR in main_handler: {type(e).__name__}: {e}", exc_info=True)
+            log.exception("main_handler error")
             try:
                 await message.reply(Script.UNEXPECTED_ERROR, parse_mode=enums.ParseMode.HTML)
             except:
