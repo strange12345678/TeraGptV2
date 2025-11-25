@@ -108,10 +108,10 @@ async def process_video_secondary(client, message, user_url: str, status_msg=Non
         # Get file size
         file_size = human_size(os.path.getsize(filepath)) if os.path.exists(filepath) else "Unknown"
 
-        # Skip thumbnail generation to speed up downloads
+        # Generate thumbnail
         thumb_path = None
-        # if filename and filename.lower().endswith(('.mp4', '.mkv', '.mov', '.webm')):
-        #     thumb_path = generate_thumbnail(filepath)
+        if filename and filename.lower().endswith(('.mp4', '.mkv', '.mov', '.webm')):
+            thumb_path = generate_thumbnail(filepath)
 
         # Upload to user - pass video_title as original filename for correct video detection
         await upload_file_secondary(client, message, filepath, bot_username, original_filename=video_title)
