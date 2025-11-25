@@ -96,10 +96,10 @@ def register_handlers(app):
                         except:
                             pass
                     
-                    # Wait before next link (5 second delay)
+                    # Wait before next link (1 second delay)
                     if idx < len(links):
-                        log.info("[DOWNLOAD] Waiting 5s before next link...")
-                        await asyncio.sleep(5)
+                        log.info("[DOWNLOAD] Waiting 1s before next link...")
+                        await asyncio.sleep(1)
                 
                 # Reset for next batch cycle
                 first_batch_shown = False

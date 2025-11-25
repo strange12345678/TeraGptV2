@@ -3,7 +3,7 @@
 ## Overview
 TeraBox Telegram Bot is a Python-based Telegram bot that downloads and processes files from TeraBox links. The bot uses Pyrogram to interact with the Telegram API and includes a Flask health check server.
 
-**Current State**: Fully featured production bot with premium system, auto-upload channels, auto-delete functionality, GUARANTEED SEQUENTIAL bulk link processing with 5-second rate-limiting delay between queue items.
+**Current State**: Fully featured production bot with premium system, auto-upload channels, auto-delete functionality, GUARANTEED SEQUENTIAL bulk link processing with 1-second rate-limiting delay between links.
 
 ## Recent Changes
 - **2025-11-25**: Clean UI for bulk links - process ONE link at a time
