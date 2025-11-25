@@ -6,6 +6,12 @@ TeraBox Telegram Bot is a Python-based Telegram bot that downloads and processes
 **Current State**: Fully featured production bot with premium system, auto-upload channels, auto-delete functionality, GUARANTEED SEQUENTIAL bulk link processing with 5-second rate-limiting delay between queue items.
 
 ## Recent Changes
+- **2025-11-25**: Clean UI for bulk links - only ONE initial response message
+  - **Before**: Sending 5 messages with links = 5 "Queued..." responses (cluttered)
+  - **After**: Only first batch shows initial response, rest processed silently
+  - **Behavior**: Links still process sequentially, just cleaner chat UI
+  - **Code**: `link_queue.first_batch` flag prevents duplicate response messages
+  
 - **2025-11-24**: FIXED bulk link random downloading + Added 5-second rate-limiting delay
   - **Race Condition Fixed**: Added `asyncio.Lock()` to `LinkQueue.add()` prevents concurrent queue modifications from 20 HandlerTasks
   - **Result**: GUARANTEED sequential processing - links download one-by-one, never concurrently

@@ -22,23 +22,31 @@ class LinkQueue:
         self.global_counter = 0  # Global counter for all links ever added
         self.current_status_msg = None
         self.add_lock = asyncio.Lock()  # CRITICAL: Prevent concurrent queue modifications
+        self.first_batch = True  # Track if this is the first batch to show UI
     
     async def add(self, client, message, links, user_id, status_msg):
         """Add a batch of links to the queue (thread-safe with lock)"""
         async with self.add_lock:  # CRITICAL: Ensure only one handler adds to queue at a time
             total = len(links)
+            is_first_batch = self.first_batch
             
             # Each link gets a unique global number
             for idx, link in enumerate(links, 1):
                 self.global_counter += 1
+                # Only pass status_msg for the first batch; rest queued silently
+                msg_to_use = status_msg if is_first_batch else None
                 self.queue.append({
                     'client': client,
                     'message': message,
                     'link': link,
                     'user_id': user_id,
-                    'status_msg': status_msg,
+                    'status_msg': msg_to_use,
                     'global_num': self.global_counter
                 })
+            
+            # Mark that first batch has been handled
+            if is_first_batch and len(self.queue) > 0:
+                self.first_batch = False
             
             log.info(f"[QUEUE] Added {total} link(s). Global: #{self.global_counter}. Pending: {len(self.queue)}")
             
@@ -99,6 +107,7 @@ class LinkQueue:
                     await asyncio.sleep(5)
             
             log.info("[QUEUE] Worker FINISHED - queue empty")
+            self.first_batch = True  # Reset for next batch cycle
         
         finally:
             self.processing = False
@@ -137,12 +146,13 @@ def register_handlers(app):
                     pass
                 return
             
-            # Send immediate feedback to user
+            # Send initial feedback only if this is the start (not for subsequent batches)
             status_msg = None
-            try:
-                status_msg = await message.reply(f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Queued {len(links)} link(s) for sequential processing...</i>", parse_mode=enums.ParseMode.HTML)
-            except:
-                pass
+            if link_queue.first_batch:  # Only show message for first batch
+                try:
+                    status_msg = await message.reply(f"⏳ <b>ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ...</b>\n<i>Processing {len(links)} link(s) sequentially...</i>", parse_mode=enums.ParseMode.HTML)
+                except:
+                    pass
             
             # Add to global FIFO queue (guaranteed sequential processing)
             await link_queue.add(client, message, links, user_id, status_msg)
