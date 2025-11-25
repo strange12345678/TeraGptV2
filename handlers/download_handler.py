@@ -74,23 +74,21 @@ def register_handlers(app):
                             except Exception as e:
                                 log.warning(f"[DOWNLOAD] Could not update download status: {e}")
                         
-                        # Process the link
-                        log.info(f"[DOWNLOAD] About to call process_video_secondary for link #{idx}")
+                        # Process the link with timeout to prevent hanging
+                        log.info(f"[DOWNLOAD] About to call process_video for link #{idx}")
                         current_api = db.get_current_api()
-                        if current_api == "secondary":
-                            log.info(f"[DOWNLOAD] Using SECONDARY API for link #{idx}")
-                            try:
-                                await process_video_secondary(client, message, link.strip())
-                                log.info(f"[DOWNLOAD] ✅ process_video_secondary RETURNED for link #{idx}")
-                            except Exception as e:
-                                log.error(f"[DOWNLOAD] process_video_secondary FAILED for link #{idx}: {type(e).__name__}: {e}", exc_info=True)
-                        else:
-                            log.info(f"[DOWNLOAD] Using PRIMARY API for link #{idx}")
-                            try:
-                                await process_video(client, message, link.strip())
-                                log.info(f"[DOWNLOAD] ✅ process_video RETURNED for link #{idx}")
-                            except Exception as e:
-                                log.error(f"[DOWNLOAD] process_video FAILED for link #{idx}: {type(e).__name__}: {e}", exc_info=True)
+                        try:
+                            if current_api == "secondary":
+                                log.info(f"[DOWNLOAD] Using SECONDARY API for link #{idx}")
+                                await asyncio.wait_for(process_video_secondary(client, message, link.strip()), timeout=600)
+                            else:
+                                log.info(f"[DOWNLOAD] Using PRIMARY API for link #{idx}")
+                                await asyncio.wait_for(process_video(client, message, link.strip()), timeout=600)
+                            log.info(f"[DOWNLOAD] ✅ process_video RETURNED for link #{idx}")
+                        except asyncio.TimeoutError:
+                            log.error(f"[DOWNLOAD] process_video TIMEOUT for link #{idx} (10 min limit)")
+                        except Exception as e:
+                            log.error(f"[DOWNLOAD] process_video FAILED for link #{idx}: {type(e).__name__}: {e}", exc_info=True)
                         
                         log.info(f"[DOWNLOAD] ✅ COMPLETED Link #{idx}")
                         
