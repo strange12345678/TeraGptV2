@@ -86,14 +86,16 @@ def register_handlers(app):
                         # Show uploading status after download completes
                         if status_msg and idx < len(links):
                             try:
+                                log.info(f"[DOWNLOAD] Editing to uploading message for link #{idx}")
                                 remaining = len(links) - idx
                                 status_text = f"⏳ <b>ᴜᴘʟᴏᴀᴅɪɴɢ...</b>\n<i>Link #{idx}/{len(links)} sent"
                                 if remaining > 0:
                                     status_text += f" | Next: #{idx+1}"
                                 status_text += "</i>"
                                 await status_msg.edit(status_text, parse_mode=enums.ParseMode.HTML)
-                            except:
-                                pass
+                                log.info(f"[DOWNLOAD] Uploading message shown for link #{idx}")
+                            except Exception as e:
+                                log.error(f"[DOWNLOAD] Failed to show uploading message: {e}")
                         
                     except Exception as e:
                         log.exception(f"[DOWNLOAD] ❌ ERROR Link #{idx}: {e}")
@@ -108,9 +110,11 @@ def register_handlers(app):
                         log.info("[DOWNLOAD] Waiting 1s before next link...")
                         if status_msg:
                             try:
+                                log.info(f"[DOWNLOAD] Editing to waiting message for link #{idx+1}")
                                 await status_msg.edit(f"⏳ <b>ᴡᴀɪᴛɪɴɢ...</b>\n<i>Preparing link #{idx+1}</i>", parse_mode=enums.ParseMode.HTML)
-                            except:
-                                pass
+                                log.info(f"[DOWNLOAD] Waiting message shown for link #{idx+1}")
+                            except Exception as e:
+                                log.error(f"[DOWNLOAD] Failed to show waiting message: {e}")
                         await asyncio.sleep(1)
                 
         except Exception as e:
