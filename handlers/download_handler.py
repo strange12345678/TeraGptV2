@@ -106,6 +106,11 @@ def register_handlers(app):
                     # Wait before next link (1 second delay)
                     if idx < len(links):
                         log.info("[DOWNLOAD] Waiting 1s before next link...")
+                        if status_msg:
+                            try:
+                                await status_msg.edit(f"⏳ <b>ᴡᴀɪᴛɪɴɢ...</b>\n<i>Preparing link #{idx+1}</i>", parse_mode=enums.ParseMode.HTML)
+                            except:
+                                pass
                         await asyncio.sleep(1)
                 
         except Exception as e:
