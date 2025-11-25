@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeraBox Video - iTeraPlay Direct Player</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1W3HKNCF9N"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-1W3HKNCF9N');
+    </script>
+
+    <!-- Plyr.js CSS -->
+    <link rel="stylesheet" href="/assets/css/plyr.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+        }
+
+        #videoContainer {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        #videoPlayer {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .plyr {
+            width: 100%;
+            height: 100%;
+        }
+
+        .plyr__video-wrapper {
+            height: 100%;
+        }
+
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-content img {
+            width: 60px;
+            height: 60px;
+            filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.8));
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .loader-text {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 250px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 20px auto 0;
+        }
+
+        .progress-bar-inner {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            animation: loading 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(0%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body>
+    <div id="loader">
+        <div class="loader-content">
+            <img src="/media/logo.png" alt="Loading">
+            <div class="loader-text">Preparing your video...</div>
+            <div class="progress-bar">
+                <div class="progress-bar-inner"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="videoContainer">
+        <video id="videoPlayer" 
+               playsinline 
+               webkit-playsinline
+               controlsList="nodownload noremoteplayback"
+               disablePictureInPicture
+               oncontextmenu="return false;">
+            Your browser does not support HTML5 video.
+        </video>
+    </div>
+
+    <!-- HLS.js -->
+    <script src="/assets/js/hls.min.js"></script>
+
+    <!-- Plyr.js -->
+    <script src="/assets/js/plyr.js"></script>
+
+    <script>
+        // Frontend Worker Call (Same as Homepage)
+        const teraboxUrl = "https:\/\/1024terabox.com\/s\/1F_5CYB-m9zLbtBF_aoxgGQ";
+        let videoUrl = null;
+        let videoQualities = {};
+        let videoTitle = 'TeraBox Video';
+        let posterUrl = '';
+
+        const videoElement = document.getElementById('videoPlayer');
+        const loader = document.getElementById('loader');
+
+        // Helper function to read cookies (Same as Homepage)
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) {
+                return decodeURIComponent(parts.pop().split(';').shift());
+            }
+            return null;
+        }
+
+        // Fetch video data from worker (Same as Homepage)
+        async function fetchVideoData() {
+            try {
+                // Read cookie to get worker URL and token
+                const encodedData = getCookie('_apd');
+                if (!encodedData) {
+                    throw new Error('Security token not found. Please refresh the page.');
+                }
+
+                const autoPlayData = JSON.parse(atob(encodedData));
+                const workerUrl = autoPlayData.worker;
+                const token = autoPlayData.token;
+                const timestamp = autoPlayData.t;
+
+                // Call worker API (Same as Homepage - POST with FormData)
+                const apiUrl = `${workerUrl}?token=${token}&t=${timestamp}`;
+                
+                // Use FormData instead of JSON - NO PREFLIGHT REQUEST!
+                const formData = new FormData();
+                formData.append('url', teraboxUrl);
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch video data');
+                }
+
+                const data = await response.json();
+
+                if (!data.list || data.list.length === 0) {
+                    throw new Error('No video found');
+                }
+
+                const file = data.list[0];
+                videoTitle = file.server_filename || 'TeraBox Video';
+                posterUrl = file.thumbnail || '';
+
+                // Get video qualities
+                if (file.fast_stream_url && typeof file.fast_stream_url === 'object') {
+                    videoQualities = file.fast_stream_url;
+                    const preferredQualities = ['1080p', '720p', '480p', '360p'];
+                    for (const quality of preferredQualities) {
+                        if (videoQualities[quality]) {
+                            videoUrl = videoQualities[quality];
+                            break;
+                        }
+                    }
+                    if (!videoUrl) videoUrl = Object.values(videoQualities)[0];
+                } else if (file.fast_stream_url) {
+                    videoUrl = file.fast_stream_url;
+                }
+
+                if (!videoUrl) {
+                    throw new Error('No video URL found');
+                }
+
+                // Set poster if available
+                if (posterUrl) videoElement.poster = posterUrl;
+
+                // Initialize player
+                setupPlayer();
+
+            } catch (error) {
+                loader.style.display = 'none';
+                alert('Error loading video: ' + error.message);
+            }
+        }
+
+        // Setup HLS Player with Plyr.js (Same as watch.php)
+        function setupPlayer() {
+            if (Hls.isSupported()) {
+                const hls = new Hls({
+                    debug: false,
+                    enableWorker: true,
+                    lowLatencyMode: true,
+                    backBufferLength: 90,
+                    maxBufferLength: 30,
+                    maxMaxBufferLength: 120,
+                    liveSyncDurationCount: 3,
+                    liveMaxLatencyDurationCount: 5,
+                    manifestLoadingTimeOut: 20000,
+                    manifestLoadingMaxRetry: 3,
+                    manifestLoadingRetryDelay: 500,
+                    fragmentLoadingTimeOut: 30000,
+                    fragmentLoadingMaxRetry: 6,
+                    fragmentLoadingRetryDelay: 500,
+
+                    startLevel: -1,
+                    abrEwmaDefaultEstimate: 2000000,
+                    abrBandWidthFactor: 0.8,
+                    abrBandWidthUpFactor: 0.6,
+                    abrMaxWithRealBitrate: false,
+                    capLevelOnFPSDrop: true,
+                    capLevelToPlayerSize: false,
+                    autoStartLoad: true,
+                    maxLoadingDelay: 4,
+                    maxBufferHole: 0.5,
+                    highBufferWatchdogPeriod: 2
+                });
+
+                hls.loadSource(videoUrl);
+                hls.attachMedia(videoElement);
+
+                window.hlsInstance = hls;
+
+                // Get available qualities
+                const availableQualities = Object.keys(videoQualities).map(q => parseInt(q)).sort((a, b) => a - b);
+                const qualityOptionsWithAuto = availableQualities.length > 0 ? [-1, ...availableQualities] : [-1];
+
+                // Initialize Plyr
+                const player = new Plyr(videoElement, {
+                    controls: [
+                        'play-large',
+                        'play',
+                        'progress',
+                        'current-time',
+                        'mute',
+                        'volume',
+                        'settings',
+                        'fullscreen'
+                    ],
+                    invertTime: true,
+                    settings: availableQualities.length > 0 ? ['quality', 'speed'] : ['speed'],
+                    speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
+                    i18n: {
+                        qualityLabel: {
+                            '-1': '⚡ Auto',
+                            '360': '360p (Low)',
+                            '480': '480p (Fast)',
+                            '720': '720p (HD)',
+                            '1080': '1080p (Full HD)'
+                        }
+                    },
+                    quality: {
+                        default: -1,
+                        options: qualityOptionsWithAuto,
+                        forced: true,
+                        onChange: (quality) => {
+                            const currentTime = videoElement.currentTime;
+                            const wasPlaying = !videoElement.paused;
+
+                            if (quality === -1) {
+                                loader.style.display = 'flex';
+
+                                if (window.hlsInstance) {
+                                    window.hlsInstance.destroy();
+                                }
+
+                                const newHls = new Hls({
+                                    debug: false,
+                                    enableWorker: true,
+                                    lowLatencyMode: true,
+                                    backBufferLength: 90,
+                                    maxBufferLength: 30,
+                                    maxMaxBufferLength: 120,
+                                    startLevel: -1,
+                                    abrEwmaDefaultEstimate: 2000000,
+                                    abrBandWidthFactor: 0.8,
+                                    abrBandWidthUpFactor: 0.6,
+                                    autoStartLoad: true
+                                });
+
+                                newHls.loadSource(videoUrl);
+                                newHls.attachMedia(videoElement);
+                                window.hlsInstance = newHls;
+
+                                newHls.on(Hls.Events.MANIFEST_PARSED, () => {
+                                    videoElement.currentTime = currentTime;
+                                    if (wasPlaying) {
+                                        videoElement.play().catch(e => {});
+                                    }
+                                    setTimeout(() => {
+                                        loader.style.display = 'none';
+                                    }, 500);
+                                });
+
+                                newHls.on(Hls.Events.ERROR, (event, data) => {
+                                    if (data.fatal) {
+                                        loader.style.display = 'none';
+                                    }
+                                });
+                            } else {
+                                const qualityStr = quality + 'p';
+                                if (videoQualities[qualityStr]) {
+                                    loader.style.display = 'flex';
+
+                                    if (window.hlsInstance) {
+                                        window.hlsInstance.destroy();
+                                    }
+
+                                    const newHls = new Hls({
+                                        debug: false,
+                                        enableWorker: true,
+                                        lowLatencyMode: true,
+                                        startLevel: -1,
+                                        autoStartLoad: true
+                                    });
+
+                                    newHls.loadSource(videoQualities[qualityStr]);
+                                    newHls.attachMedia(videoElement);
+                                    window.hlsInstance = newHls;
+
+                                    newHls.on(Hls.Events.MANIFEST_PARSED, () => {
+                                        videoElement.currentTime = currentTime;
+                                        if (wasPlaying) {
+                                            videoElement.play().catch(e => {});
+                                        }
+                                        setTimeout(() => {
+                                            loader.style.display = 'none';
+                                        }, 500);
+                                    });
+
+                                    newHls.on(Hls.Events.ERROR, (event, data) => {
+                                        if (data.fatal) {
+                                            loader.style.display = 'none';
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    },
+                    ratio: '16:9',
+                    tooltips: { controls: true, seek: true },
+                    keyboard: { focused: true, global: true },
+                    clickToPlay: true,
+                    disableContextMenu: true,
+                    hideControls: true,
+                    resetOnEnd: false,
+                    autopause: false,
+                    autoplay: false,
+                    seekTime: 10,
+                    fullscreen: { 
+                        enabled: true, 
+                        fallback: true,
+                        iosNative: true
+                    }
+                });
+
+                window.plyrInstance = player;
+
+                // Hide loader when video is ready
+                videoElement.addEventListener('canplay', () => {
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 500);
+                });
+
+                // Error handling
+                hls.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) {
+                        loader.style.display = 'none';
+                        alert('Error loading video. Please try again.');
+                    }
+                });
+
+            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                // Native HLS support (Safari)
+                videoElement.src = videoUrl;
+
+                const player = new Plyr(videoElement, {
+                    controls: [
+                        'play-large',
+                        'play',
+                        'progress',
+                        'current-time',
+                        'mute',
+                        'volume',
+                        'settings',
+                        'fullscreen'
+                    ],
+                    autoplay: false
+                });
+
+                window.plyrInstance = player;
+
+                videoElement.addEventListener('canplay', () => {
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 500);
+                });
+            }
+        }
+
+        // Initialize player by fetching video data from worker first
+        fetchVideoData();
+
+        // Disable right-click
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName === 'VIDEO') {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a3fd163d93b98d5',t:'MTc2NDA1OTc4MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1382f189ba3d4fa2800765c59848f2ef","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

@@ -129,10 +129,8 @@ async def process_video_secondary(client, message, user_url: str, status_msg=Non
         if filename and uid and db.is_premium_valid(uid):
             await upload_to_premium_channel(client, filepath, filename, file_size, uid, username)
 
-        # Auto-delete if enabled
-        auto_delete_time = db.get_auto_delete_time()
-        if auto_delete_time and filepath and os.path.exists(filepath):
-            await asyncio.sleep(auto_delete_time)
+        # Auto-delete if enabled (immediate deletion, no wait)
+        if db.is_auto_delete_enabled() and filepath and os.path.exists(filepath):
             try:
                 os.remove(filepath)
                 log.info(f"Auto-deleted: {filepath}")
