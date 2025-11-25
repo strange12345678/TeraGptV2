@@ -72,14 +72,14 @@ def register_handlers(app):
                             except:
                                 pass
                         
-                        # Process the link
+                        # Process the link (don't pass status_msg to avoid upload progress overwriting download progress)
                         current_api = db.get_current_api()
                         if current_api == "secondary":
                             log.info(f"[DOWNLOAD] Using SECONDARY API for link #{idx}")
-                            await process_video_secondary(client, message, link.strip(), status_msg=status_msg)
+                            await process_video_secondary(client, message, link.strip())
                         else:
                             log.info(f"[DOWNLOAD] Using PRIMARY API for link #{idx}")
-                            await process_video(client, message, link.strip(), status_msg=status_msg)
+                            await process_video(client, message, link.strip())
                         
                         log.info(f"[DOWNLOAD] ✅ COMPLETED Link #{idx}")
                         
