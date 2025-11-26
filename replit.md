@@ -51,3 +51,20 @@ The TeraBox Telegram Bot is a Python-based Telegram bot designed to download and
 - **Required Secrets**: `BOT_TOKEN`, `API_HASH`, `MONGO_URI`.
 - **Required Environment Variables**: `API_ID`, `LOG_CHANNEL`, `ERROR_CHANNEL`, `STORAGE_CHANNEL`.
 - **Optional Environment Variables**: `MONGO_DB`, `DOWNLOAD_DIR`, `WORKERS`, `AUTO_DELETE`, `PREMIUM_UPLOAD_CHANNEL`.
+
+## Recent Changes (Nov 2025)
+
+### Channel Forwarding Fix
+- **Issue**: "Peer id invalid" errors prevented files from being forwarded to configured channels
+- **Root Cause**: Pyrogram requires channel peers to be resolved before sending messages, especially with fresh sessions
+- **Solution**: Added `get_chat()` peer resolution in all channel plugins before any send operations:
+  - `plugins/storage_channel.py` - Resolves peer before backing up files
+  - `plugins/log_channel.py` - Resolves peer before sending logs  
+  - `plugins/error_channel.py` - Resolves peer before sending errors
+  - `plugins/premium_upload.py` - Resolves peer before premium uploads
+- **Startup Hook**: `main.py` now resolves all configured channels on first message, surfacing configuration issues early
+
+### Channel Requirements
+- Bot must be added as **ADMIN** to all configured channels
+- Channel IDs must be negative numbers (e.g., `-1001234567890`)
+- Get correct channel IDs by forwarding a message from the channel to @RawDataBot
