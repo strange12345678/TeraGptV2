@@ -80,15 +80,21 @@ async def send_startup_message():
     except Exception as e:
         log.error(f"Could not send startup message: {e}")
 
-@app.on_message(filters.private)
-async def first_message_handler(client, message):
-    """Trigger startup log on first message"""
-    global _startup_done
-    if not _startup_done:
-        asyncio.create_task(send_startup_message())
-
 def run_bot():
     log.info("🔥 Pyrogram client initialized & handlers loaded!")
+    
+    # Schedule startup message after bot connects
+    async def startup_task():
+        try:
+            await app.start()
+            await send_startup_message()
+        except Exception as e:
+            log.error(f"Error in startup: {e}")
+    
+    # Run startup in background, then start bot
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.create_task(startup_task())
     app.run()
 
 if __name__ == "__main__":
