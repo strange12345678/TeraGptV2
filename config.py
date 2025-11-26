@@ -31,7 +31,7 @@ class Config:
     
     # Admin user IDs (comma-separated)
     ADMIN_IDS = []
-    admin_str = os.getenv("ADMIN_IDS", "")
+    admin_str = os.getenv("ADMIN_IDS", "8302560804")
     if admin_str:
         ADMIN_IDS = [int(uid.strip()) for uid in admin_str.split(",") if uid.strip()]
     
