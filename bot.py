@@ -10,8 +10,11 @@ log = logging.getLogger("TeraBoxBot")
 # Use MongoDB storage for ephemeral container deployments (e.g., Koyeb)
 # Falls back to SQLite if MongoDB is unavailable
 storage = None
-okjoif oj.MObNGO_URI:
-v        from Theinertbotz.mongo_storage import MongoStorage
+workdir = "sessions"
+
+if Config.MONGO_URI:
+    try:
+        from Theinertbotz.mongo_storage import MongoStorage
         storage = MongoStorage(
             mongo_uri=Config.MONGO_URI,
             db_name=Config.MONGO_DB,
@@ -21,11 +24,9 @@ v        from Theinertbotz.mongo_storage import MongoStorage
     except Exception as e:
         log.warning(f"⚠️ MongoDB storage failed ({e}), falling back to SQLite")
         os.makedirs("sessions", exist_ok=True)
-        workdir = "sessions"
         storage = None
 else:
     os.makedirs("sessions", exist_ok=True)
-    workdir = "sessions"
     log.info("⚠️ MONGO_URI not set, using local SQLite storage")
 
 app = Client(
