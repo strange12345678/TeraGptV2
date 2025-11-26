@@ -13,49 +13,31 @@ class Script:
 
     # ===== Help & Commands =====
     COMMANDS_TEXT = """
-<b>📋 ᴀʟʟ ᴀᴠᴀɪʟᴀʙʟᴇ ᴄᴏᴍᴍᴀɴᴅs:</b>
+<b>📋 ᴀᴠᴀɪʟᴀʙʟᴇ ᴄᴏᴍᴍᴀɴᴅs:</b>
 
-<b>🎯 ᴜsᴇʀ ᴄᴏᴍᴍᴀɴᴅs:</b>
-<b>/start</b> - sʜᴏᴡ ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ
-<b>/help</b> - sʜᴏᴡ ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs
-<b>/premium</b> - ᴘʀᴇᴍɪᴜᴍ ɪɴꜰᴏ & ᴜᴘɢʀᴀᴅᴇ ᴏᴘᴛɪᴏɴs
-<b>/rename</b> - ᴠɪᴇᴡ/ᴍᴀɴᴀɢᴇ ʀᴇɴᴀᴍᴇ sᴇᴛᴛɪɴɢs
-<b>/set_rename &lt;pattern&gt;</b> - sᴇᴛ ᴄᴜsᴛᴏᴍ ꜰɪʟᴇ ɴᴀᴍɪɴɢ
+<b>🎯 ʙᴀsɪᴄ:</b>
+<b>/start</b> - ᴡᴇʟᴄᴏᴍᴇ
+<b>/premium</b> - ᴘʀᴇᴍɪᴜᴍ ɪɴꜰᴏ
+<b>/rename</b> - ʀᴇɴᴀᴍᴇ sᴇᴛᴛɪɴɢs
 
-<b>💎 ᴘʀᴇᴍɪᴜᴍ ᴄᴏᴍᴍᴀɴᴅs:</b>
-<b>/set_upload_channel &lt;channel_id&gt;</b> - ᴀᴜᴛᴏ-ᴜᴘʟᴏᴀᴅ ᴛᴏ ᴄʜᴀɴɴᴇʟ
-<b>/remove_upload_channel</b> - ʀᴇᴍᴏᴠᴇ ᴀᴜᴛᴏ-ᴜᴘʟᴏᴀᴅ ᴄʜᴀɴɴᴇʟ
+<b>⚙️ ʀᴇɴᴀᴍᴇ:</b>
+<b>/set_rename &lt;pattern&gt;</b>
+ᴠᴀʀɪᴀʙʟᴇs: {file_name}, {file_size}
+ᴇxᴀᴍᴘʟᴇ: /set_rename @Bot_{file_name}
 
-<b>🗑️ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴄᴏᴍᴍᴀɴᴅs:</b>
-<b>/auto_delete</b> - sʜᴏᴡ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ sᴛᴀᴛᴜs
-<b>/auto_delete on</b> - ᴇɴᴀʙʟᴇ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴍᴇssᴀɢᴇs
-<b>/auto_delete off</b> - ᴅɪsᴀʙʟᴇ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ᴍᴇssᴀɢᴇs
-<b>/set_auto_delete &lt;time&gt;</b> - sᴇᴛ ᴅᴇʟᴇᴛᴇ ᴛɪᴍᴇ (30s, 5m, 1h)
-<b>/remove_auto_delete</b> - ᴅɪsᴀʙʟᴇ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ
+<b>🗑️ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ:</b>
+<b>/auto_delete on|off</b>
+<b>/set_auto_delete &lt;time&gt;</b>
+ᴛɪᴍᴇ: 30s, 5m, 1h
 
-<b>🛠️ ᴀᴅᴍɪɴ ᴄᴏᴍᴍᴀɴᴅs:</b>
-<b>/admin</b> - ᴏᴘᴇɴ ᴀᴅᴍɪɴ ᴄᴏɴᴛʀᴏʟ ᴘᴀɴᴇʟ
-<b>/addpremium &lt;user_id&gt; [days]</b> - ᴀᴅᴅ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀ
-<b>/removepremium &lt;user_id&gt;</b> - ʀᴇᴍᴏᴠᴇ ᴘʀᴇᴍɪᴜᴍ sᴛᴀᴛᴜs
-<b>/checkuser &lt;user_id&gt;</b> - ᴄʜᴇᴄᴋ ᴜsᴇʀ ᴛɪᴇʀ & sᴛᴀᴛs
-<b>/toggle_autodelete</b> - ᴛᴏɢɢʟᴇ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ sᴇᴛᴛɪɴɢ
-<b>/checkchannels</b> - ᴠᴇʀɪꜰʏ ᴄʜᴀɴɴᴇʟ ᴀᴄᴄᴇss
+<b>💎 ᴘʀᴇᴍɪᴜᴍ:</b>
+<b>/set_upload_channel</b>
+<b>/remove_upload_channel</b>
 
-<b>📌 ʀᴇɴᴀᴍᴇ ᴠᴀʀɪᴀʙʟᴇs:</b>
-• {file_name} • {file_size}
-• {original_name} • {ext}
-
-<b>💡 ᴇxᴀᴍᴘʟᴇ ᴘᴀᴛᴛᴇʀɴs:</b>
-<code>/set_rename @Bot_{file_name}_{file_size}</code>
-<code>/set_rename Download_{original_name}</code>
-
-<b>📊 ʜᴏᴡ ɪᴛ ᴡᴏʀᴋs:</b>
-sɪᴍᴘʟʏ sᴇɴᴅ ᴛᴇʀᴀʙᴏx ʟɪɴᴋs ᴀɴᴅ ᴛʜᴇ ʙᴏᴛ ᴡɪʟʟ ᴅᴏᴡɴʟᴏᴀᴅ & sᴇɴᴅ ᴛʜᴇᴍ ᴡɪᴛʜ:
-✅ ᴀᴜᴛᴏ-ɢᴇɴᴇʀᴀᴛᴇᴅ ᴠɪᴅᴇᴏ ᴛʜᴜᴍʙɴᴀɪʟs
-✅ ʀᴇᴀʟ-ᴛɪᴍᴇ ᴘʀᴏɢʀᴇss ᴛʀᴀᴄᴋɪɴɢ
-✅ ᴄᴜsᴛᴏᴍ ꜰɪʟᴇ ɴᴀᴍɪɴɢ
-✅ ᴍᴜʟᴛɪ-ꜰɪʟᴇ sᴜᴘᴘᴏʀᴛ
-✅ ᴀᴜᴛᴏ-ᴅᴇʟᴇᴛᴇ ꜰᴏʀ ᴄᴏᴘʏʀɪɢʜᴛ ᴘʀᴏᴛᴇᴄᴛɪᴏɴ
+<b>🛠️ ᴀᴅᴍɪɴ:</b>
+<b>/admin</b> - ᴄᴏɴᴛʀᴏʟ ᴘᴀɴᴇʟ
+<b>/addpremium</b> - ᴀᴅᴅ ᴘʀᴇᴍɪᴜᴍ
+<b>/checkuser</b> - ᴄʜᴇᴄᴋ sᴛᴀᴛᴜs
 """
 
     # ===== About =====
