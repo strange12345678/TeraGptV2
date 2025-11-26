@@ -24,6 +24,15 @@ async def upload_to_premium_channel(client, filepath: str, filename: str, file_s
         return
     
     try:
+        # Resolve channel peer first (required for new sessions)
+        try:
+            chat = await client.get_chat(channel)
+            log.debug(f"Premium channel resolved: {chat.title if hasattr(chat, 'title') else channel}")
+        except Exception as resolve_err:
+            log.error(f"Failed to resolve PREMIUM_UPLOAD_CHANNEL {channel}: {resolve_err}")
+            log.error(f"Make sure bot is added as ADMIN to the channel")
+            return
+        
         user_str = f"@{username}" if username and username != "Unknown" else f"User {user_id}"
         caption = f"<b>📂 File:</b> <code>{filename}</code>\n<b>📊 Size:</b> {file_size}\n<b>👤 User:</b> {user_str}\n<b>⏰ Premium Upload:</b> Auto-forwarded"
         

@@ -43,12 +43,14 @@ async def log_error(client, error_text: str) -> None:
         msg = f"<b>❌ Error Report</b>\n<pre>{error_text}</pre>"
         log.debug(f"Attempting to send error to channel {channel}")
         
-        # Try to get chat info first for better error diagnosis
+        # Resolve channel peer first (required for new sessions)
         try:
             chat_info = await client.get_chat(channel)
-            log.debug(f"Channel found: {chat_info.title if hasattr(chat_info, 'title') else 'Unknown'}")
+            log.debug(f"Channel resolved: {chat_info.title if hasattr(chat_info, 'title') else 'Unknown'}")
         except Exception as chat_err:
-            log.warning(f"Could not get chat info for {channel}: {chat_err}")
+            log.error(f"Failed to resolve ERROR_CHANNEL {channel}: {chat_err}")
+            log.error(f"Make sure bot is added as ADMIN to the channel")
+            return
         
         await client.send_message(chat_id=channel, text=msg, parse_mode=enums.ParseMode.HTML)
         log.debug(f"Error sent to channel {channel}")

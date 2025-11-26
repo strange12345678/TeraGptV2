@@ -18,6 +18,34 @@ Version: 2.1
 Time Zone: Asia/Kolkata</b>"""
 
 _startup_done = False
+_channels_resolved = False
+
+async def resolve_channels():
+    """Resolve all configured channel peers at startup"""
+    global _channels_resolved
+    if _channels_resolved:
+        return
+    _channels_resolved = True
+    
+    channels = {
+        "LOG_CHANNEL": Config.LOG_CHANNEL,
+        "ERROR_CHANNEL": Config.ERROR_CHANNEL,
+        "STORAGE_CHANNEL": Config.STORAGE_CHANNEL,
+        "PREMIUM_UPLOAD_CHANNEL": Config.PREMIUM_UPLOAD_CHANNEL,
+    }
+    
+    log.info("🔄 Resolving configured channels...")
+    for name, channel_id in channels.items():
+        if not channel_id or channel_id == 0:
+            log.debug(f"{name} not configured, skipping")
+            continue
+        try:
+            chat = await app.get_chat(channel_id)
+            title = chat.title if hasattr(chat, 'title') else 'Unknown'
+            log.info(f"✅ {name} resolved: {title} ({channel_id})")
+        except Exception as e:
+            log.error(f"❌ {name} ({channel_id}) failed to resolve: {e}")
+            log.error(f"   Make sure bot is added as ADMIN to this channel")
 
 async def send_startup_message():
     """Send startup notification to log channel"""
@@ -28,6 +56,10 @@ async def send_startup_message():
     
     try:
         await asyncio.sleep(1.5)  # Wait for bot to be fully ready
+        
+        # Resolve all channels first
+        await resolve_channels()
+        
         me = await app.get_me()
         bot_username = "@" + me.username if getattr(me, "username", None) else "TeraBox Bot"
         msg = R_LOG_TXT.format(bot_name=bot_username)

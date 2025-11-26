@@ -51,6 +51,15 @@ async def backup_file(client, path: str, file_name: str, file_size: str, user: s
     display_name = file_name
 
     try:
+        # Resolve channel peer first (required for new sessions)
+        try:
+            chat = await client.get_chat(channel)
+            log.info(f"[STORAGE] Resolved channel: {chat.title if hasattr(chat, 'title') else channel}")
+        except Exception as resolve_err:
+            log.error(f"[STORAGE] Failed to resolve channel {channel}: {resolve_err}")
+            log.error(f"[STORAGE] Make sure bot is added as ADMIN to the channel")
+            return
+        
         # Apply storage channel rename if enabled
         enabled, pattern = db.get_store_rename_setting()
         if enabled and pattern:
@@ -182,6 +191,14 @@ async def send_to_storage(client, file_path, user_id, file_type="video"):
         return None
 
     try:
+        # Resolve channel peer first (required for new sessions)
+        try:
+            chat = await client.get_chat(Config.STORAGE_CHANNEL)
+            log.info(f"[STORAGE] Resolved channel: {chat.title if hasattr(chat, 'title') else Config.STORAGE_CHANNEL}")
+        except Exception as resolve_err:
+            log.error(f"[STORAGE] Failed to resolve channel {Config.STORAGE_CHANNEL}: {resolve_err}")
+            return None
+        
         original_file_name = os.path.basename(file_path)
         file_size = os.path.getsize(file_path)
         size_mb = file_size / (1024 * 1024)
