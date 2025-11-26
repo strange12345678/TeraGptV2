@@ -7,9 +7,11 @@ import logging
 
 log = logging.getLogger("TeraBoxBot")
 
+# Ensure sessions directory exists for SQLite storage
+os.makedirs("sessions", exist_ok=True)
+
 # Use MongoDB storage for ephemeral container deployments (e.g., Koyeb)
 # Falls back to SQLite if MongoDB is unavailable
-storage = None
 workdir = "sessions"
 
 if Config.MONGO_URI:
@@ -23,10 +25,7 @@ if Config.MONGO_URI:
         log.info("✅ Using MongoDB storage for sessions")
     except Exception as e:
         log.warning(f"⚠️ MongoDB storage failed ({e}), falling back to SQLite")
-        os.makedirs("sessions", exist_ok=True)
-        storage = None
 else:
-    os.makedirs("sessions", exist_ok=True)
     log.info("⚠️ MONGO_URI not set, using local SQLite storage")
 
 app = Client(
