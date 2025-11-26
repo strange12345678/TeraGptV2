@@ -1,10 +1,10 @@
-modules = ["python-3.11"]
+modules = ["web", "python-3.12"]
 [agent]
 expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["cacert", "ffmpeg", "gitFull", "playwright-driver", "nspr", "nss", "dbus", "atk", "at-spi2-atk", "cups", "xorg.libxcb", "libxkbcommon", "at-spi2-core", "xorg.libXcomposite", "xorg.libXdamage", "xorg.libXfixes", "mesa", "cairo", "pango", "alsa-lib", "libgbm"]
+packages = ["alsa-lib", "at-spi2-atk", "at-spi2-core", "atk", "cacert", "cairo", "cups", "dbus", "ffmpeg", "gitFull", "libgbm", "libxkbcommon", "mesa", "nspr", "nss", "pango", "playwright-driver", "xorg.libXcomposite", "xorg.libXdamage", "xorg.libXfixes", "xorg.libxcb"]
 
 [workflows]
 runButton = "Project"
@@ -37,6 +37,10 @@ externalPort = 8000
 [[ports]]
 localPort = 34981
 externalPort = 3001
+
+[[ports]]
+localPort = 38973
+externalPort = 6000
 
 [[ports]]
 localPort = 40023

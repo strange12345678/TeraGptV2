@@ -21,3 +21,11 @@ pymongo
 pyrogram==2.0.106
 requests
 tgcrypto
+aiohttp
+dnspython
+flask
+playwright
+pymongo
+pyrogram==2.0.106
+requests
+tgcrypto
