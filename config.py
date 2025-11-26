@@ -14,10 +14,11 @@ class Config:
     MONGO_DB = os.getenv("MONGO_DB", "teraboxbot")
 
     # Channels - must be numeric ids (e.g. -1001234567890)
-    LOG_CHANNEL = int(os.getenv("LOG_CHANNEL", "-1003449198561")) if os.getenv("LOG_CHANNEL") else None
-    ERROR_CHANNEL = int(os.getenv("ERROR_CHANNEL", "-1003337738910")) if os.getenv("ERROR_CHANNEL") else None
-    STORAGE_CHANNEL = int(os.getenv("STORAGE_CHANNEL", "-1003340725721")) if os.getenv("STORAGE_CHANNEL") else None
-    PREMIUM_UPLOAD_CHANNEL = int(os.getenv("PREMIUM_UPLOAD_CHANNEL", "0")) if os.getenv("PREMIUM_UPLOAD_CHANNEL") else None
+    # Set these via environment variables - no defaults to avoid using wrong channels
+    LOG_CHANNEL = int(os.getenv("LOG_CHANNEL")) if os.getenv("LOG_CHANNEL") else None
+    ERROR_CHANNEL = int(os.getenv("ERROR_CHANNEL")) if os.getenv("ERROR_CHANNEL") else None
+    STORAGE_CHANNEL = int(os.getenv("STORAGE_CHANNEL")) if os.getenv("STORAGE_CHANNEL") else None
+    PREMIUM_UPLOAD_CHANNEL = int(os.getenv("PREMIUM_UPLOAD_CHANNEL")) if os.getenv("PREMIUM_UPLOAD_CHANNEL") else None
 
     # Only the play endpoint (the only reliable one you said)
     TERAAPI_PLAY = "https://teraapi.boogafantastic.workers.dev/play?url={url}"
