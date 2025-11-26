@@ -2,7 +2,7 @@
 import logging
 import threading
 import asyncio
-from pyrogram import filters
+from pyrogram import filters, enums
 from bot import app
 from health import create_health_app
 from config import Config
@@ -11,11 +11,12 @@ from plugins.log_channel import log_action
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 log = logging.getLogger("TeraBoxBot")
 
-R_LOG_TXT = """<u><b>🚀{bot_name} Restarted</b></u>
+R_LOG_TXT = """<u><b>🚀 {bot_name} Restarted</b></u>
 
-<b>Status: 🟢 Online
-Version: 2.1
-Time Zone: Asia/Kolkata</b>"""
+<b>⏱️ Status:</b> 🟢 <b>Online</b>
+<b>📦 Version:</b> 2.1
+<b>🕐 Time Zone:</b> Asia/Kolkata
+<b>✅ All systems operational</b>"""
 
 _startup_done = False
 _channels_resolved = False
@@ -55,7 +56,7 @@ async def send_startup_message():
     _startup_done = True
     
     try:
-        await asyncio.sleep(1.5)  # Wait for bot to be fully ready
+        await asyncio.sleep(2)  # Wait for bot to be fully ready
         
         # Resolve all channels first
         await resolve_channels()
@@ -63,8 +64,19 @@ async def send_startup_message():
         me = await app.get_me()
         bot_username = "@" + me.username if getattr(me, "username", None) else "TeraBox Bot"
         msg = R_LOG_TXT.format(bot_name=bot_username)
-        await log_action(app, None, msg)
-        log.info("✅ Startup message sent to LOG_CHANNEL")
+        
+        # Send restart message directly to log channel
+        if Config.LOG_CHANNEL:
+            try:
+                await app.send_message(
+                    chat_id=Config.LOG_CHANNEL,
+                    text=msg,
+                    parse_mode=enums.ParseMode.HTML
+                )
+                log.info("✅ Restart message sent to LOG_CHANNEL")
+            except Exception as e:
+                log.error(f"Failed to send restart message: {e}")
+                log.error("Make sure bot is added as ADMIN to LOG_CHANNEL")
     except Exception as e:
         log.error(f"Could not send startup message: {e}")
 
