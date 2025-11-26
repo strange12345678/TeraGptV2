@@ -1,11 +1,20 @@
 # bot.py
 import os
+import shutil
 from pyrogram import Client
 from config import Config
 from core.router import register_all
 import logging
 
 log = logging.getLogger("TeraBoxBot")
+
+# Clean up corrupted session files to prevent auth key errors
+if os.path.exists("sessions"):
+    try:
+        shutil.rmtree("sessions")
+        log.info("🧹 Cleaned up old session files")
+    except Exception as e:
+        log.warning(f"⚠️ Could not clean sessions: {e}")
 
 # Ensure sessions directory exists for SQLite storage
 os.makedirs("sessions", exist_ok=True)
