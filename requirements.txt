@@ -6,3 +6,11 @@ pymongo
 flask
 aiohttp
 playwright
+aiohttp
+dnspython
+flask
+playwright
+pymongo
+pyrogram
+requests
+tgcrypto
