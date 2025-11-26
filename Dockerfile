@@ -1,17 +1,9 @@
-FROM python:3.12-slim
+ python:3.12-slim
 
 RUN apt-get update && apt-get install -y \
     ffmpeg \
-    ffprobe \
-    chromium \
-    chromium-driver \
-    libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender-dev \
-    libssl-dev \
-    libffi-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    curl \
+    && apt-get cleanFROM && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
