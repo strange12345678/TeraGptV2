@@ -1,0 +1,319 @@
+Instance created. Preparing to start...
+Instance is starting... Waiting for health checks to pass.
+2025-11-26 13:28:59,930 | INFO | TeraBoxBot | 🔥 Pyrogram client initialized & handlers loaded!
+2025-11-26 13:28:59,936 | INFO | werkzeug | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://10.4.194.135:8000
+2025-11-26 13:28:59,936 | INFO | werkzeug | [33mPress CTRL+C to quit[0m
+ * Serving Flask app 'health'
+ * Debug mode: off
+2025-11-26 13:29:00,223 | INFO | pyrogram.session.auth | Start creating a new auth key on DC2
+2025-11-26 13:29:00,224 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:00,233 | INFO | pyrogram.session.auth | Start creating a new auth key on DC2
+2025-11-26 13:29:00,234 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:00,245 | INFO | pyrogram.connection.connection | Connected! Production DC2 - IPv4
+2025-11-26 13:29:00,246 | INFO | pyrogram.connection.connection | Connected! Production DC2 - IPv4
+2025-11-26 13:29:01,508 | INFO | pyrogram.session.auth | Done auth key exchange: DhGenOk
+2025-11-26 13:29:01,509 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:01,577 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:01,586 | INFO | pyrogram.connection.connection | Connected! Production DC2 - IPv4
+2025-11-26 13:29:01,587 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:01,693 | INFO | pyrogram.session.session | Session initialized: Layer 158
+2025-11-26 13:29:01,693 | INFO | pyrogram.session.session | Device: CPython 3.10.19 - Pyrogram 2.0.106
+2025-11-26 13:29:01,694 | INFO | pyrogram.session.session | System: Linux 6.1.62 (en)
+2025-11-26 13:29:01,694 | INFO | pyrogram.session.session | Session started
+2025-11-26 13:29:01,695 | INFO | pyrogram.session.session | PingTask started
+2025-11-26 13:29:01,720 | INFO | pyrogram.session.session | PingTask stopped
+2025-11-26 13:29:01,721 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:01,721 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:01,721 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:01,725 | INFO | pyrogram.session.auth | Start creating a new auth key on DC5
+2025-11-26 13:29:01,725 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:02,049 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+Instance is healthy. All health checks are passing.
+2025-11-26 13:29:02,956 | INFO | pyrogram.session.auth | Done auth key exchange: DhGenOk
+2025-11-26 13:29:02,957 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:02,962 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:03,281 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:03,281 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:03,963 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:03,964 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:04,583 | INFO | pyrogram.session.auth | Done auth key exchange: DhGenOk
+2025-11-26 13:29:04,584 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:04,588 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:04,833 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:04,833 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:05,283 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:05,283 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:05,284 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:05,525 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:05,525 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:05,867 | INFO | pyrogram.session.session | Session initialized: Layer 158
+2025-11-26 13:29:05,867 | INFO | pyrogram.session.session | Device: CPython 3.10.19 - Pyrogram 2.0.106
+2025-11-26 13:29:05,867 | INFO | pyrogram.session.session | System: Linux 6.1.62 (en)
+2025-11-26 13:29:05,867 | INFO | pyrogram.session.session | Session started
+2025-11-26 13:29:05,868 | INFO | pyrogram.session.session | PingTask started
+2025-11-26 13:29:06,048 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:06,048 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:06,662 | INFO | pyrogram.dispatcher | Started 20 HandlerTasks
+2025-11-26 13:29:07,542 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:07,620 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:07,620 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:07,882 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:07,884 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:08,406 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:08,406 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:09,887 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:09,887 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:09,888 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:10,126 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:10,126 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:10,644 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:10,644 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:12,129 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:12,129 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:12,129 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:12,288 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:12,289 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:12,648 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:12,649 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:14,292 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:14,292 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:14,292 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:14,534 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:14,535 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:15,060 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:15,060 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:16,537 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:16,537 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:16,537 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:16,856 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:16,856 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:17,534 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:17,534 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:18,859 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:18,859 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:18,860 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:19,177 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:19,177 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:19,853 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:19,853 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:21,179 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:21,179 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:21,179 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:21,377 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:21,378 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:21,814 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:21,814 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:23,381 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:23,381 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:23,381 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:23,579 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:23,580 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:24,015 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:24,015 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:25,582 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:25,583 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:25,583 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:25,817 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:25,817 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:26,324 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:26,325 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:27,821 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:27,821 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:27,821 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:27,977 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:27,977 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:28,330 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:28,330 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:29,981 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:29,982 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:29,982 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:30,224 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:30,224 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:30,751 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:30,751 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:32,227 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:32,227 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:32,227 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:32,471 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:32,471 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:33,001 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:33,001 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:34,474 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:34,475 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:34,475 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:34,793 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:34,794 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:35,474 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:35,475 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:36,796 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:36,796 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:36,797 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:37,081 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:37,082 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:37,695 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:37,695 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:39,086 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:39,086 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:39,087 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:39,320 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:39,321 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:39,829 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:39,830 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:41,323 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:41,323 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:41,323 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:41,566 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:41,567 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:42,097 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:42,097 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:43,570 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:43,570 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:43,571 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:43,894 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:43,895 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:44,584 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:44,584 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:45,896 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:45,896 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:45,896 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:46,226 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:46,227 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:46,932 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:46,932 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:48,229 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:48,229 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:48,230 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:48,559 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:48,560 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:49,261 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:49,261 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:50,562 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:50,563 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:50,563 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:50,721 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:50,722 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:51,082 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:51,082 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:52,724 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:52,725 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:52,725 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:53,044 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:53,045 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:53,724 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:53,725 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:55,048 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:55,048 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:55,048 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:55,378 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:55,379 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:56,085 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:56,085 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:57,382 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:57,382 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:57,382 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:57,702 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:57,702 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:29:58,382 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:29:58,382 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:29:59,705 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:29:59,705 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:29:59,706 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:29:59,861 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:29:59,861 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:00,216 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:00,217 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:01,863 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:01,863 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:01,864 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:02,062 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:02,063 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:02,502 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:02,502 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:04,066 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:04,066 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:04,066 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:04,351 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:04,351 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:04,960 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:04,960 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:06,353 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:06,354 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:06,354 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:06,592 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:06,593 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:07,111 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:07,111 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:08,595 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:08,595 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:08,596 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:08,840 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:08,841 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:09,371 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:09,371 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:10,843 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:10,844 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:10,844 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:11,082 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:11,083 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:11,605 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:11,605 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:13,084 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:13,084 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:13,084 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:13,282 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:13,283 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:13,716 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:13,716 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:15,286 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:15,287 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:15,287 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:15,610 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:15,611 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:16,302 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:16,302 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:17,614 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:17,614 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:17,614 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:17,772 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:17,772 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:18,128 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:18,128 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:19,776 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:19,776 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:19,776 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:20,019 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:20,020 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:20,552 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:20,552 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:22,023 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:22,023 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:22,023 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:22,347 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:22,347 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:23,037 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:23,038 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:24,350 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:24,350 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:24,350 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:24,634 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:24,634 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:25,244 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:25,244 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:26,636 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:26,636 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:26,636 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:26,921 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:26,921 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:27,531 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:27,532 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:28,924 | INFO | pyrogram.connection.connection | Disconnected
+2025-11-26 13:30:28,924 | INFO | pyrogram.session.session | Session stopped
+2025-11-26 13:30:28,924 | INFO | pyrogram.connection.connection | Connecting...
+2025-11-26 13:30:29,209 | INFO | pyrogram.connection.connection | Connected! Production DC5 - IPv4
+2025-11-26 13:30:29,209 | INFO | pyrogram.session.session | NetworkTask started
+2025-11-26 13:30:29,817 | WARNING | pyrogram.session.session | Server sent transport error: 404 (auth key not found)
+2025-11-26 13:30:29,818 | INFO | pyrogram.session.session | NetworkTask stopped
+2025-11-26 13:30:31,211 | INFO | pyrogram.connection.connection | Disconnected
