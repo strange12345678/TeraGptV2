@@ -118,7 +118,6 @@ async def process_video_secondary(client, message, user_url: str, status_msg=Non
         # Log download
         if uid:
             db.increment_daily_downloads(uid)
-            await log_action(client, uid, f"✅ <b>ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ</b> ({file_size})\n<b>ᴜsᴇʀ:</b> @{username} (<code>{uid}</code>)\n<b>ʀᴀɴᴀᴍᴇ:</b> {filename}\n<b>ᴀᴘɪ:</b> sᴇᴄᴏɴᴅᴀʀʏ (ɪᴛᴇʀᴀᴘʟᴀʏ)")
 
         # Backup to storage channel - pass video_title as original filename for video detection
         if filename and uid:
